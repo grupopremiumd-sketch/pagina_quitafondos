@@ -14,13 +14,11 @@
         * { box-sizing: border-box; }
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
 
-        /* --- HEADER --- */
         header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: #0b0b0b; display: flex; align-items: center; justify-content: space-between; height: 60px; }
         .logo-text { font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, var(--vip), #0081ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         #status-tag { font-size: 11px; padding: 4px 10px; border-radius: 20px; background: #222; color: #888; font-weight: bold; border: 1px solid #333; }
         .status-vip { background: #052e1a !important; color: var(--success) !important; border-color: var(--success) !important; }
 
-        /* --- ESTRUCTURA --- */
         .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
         .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; z-index: 100; }
         h2 { font-size: 11px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
@@ -29,27 +27,24 @@
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
         .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 50px; text-align: center; font-size: 11px; }
         
-        /* SELECTORES */
         .cp-container { display: flex; gap: 10px; height: 120px; margin-top: 10px; user-select: none; }
         #cpSV { flex: 1; border-radius: 6px; border: 1px solid #2a2a2a; cursor: crosshair; }
         #cpH { width: 20px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: ns-resize; }
 
-        /* HERRAMIENTAS */
         .btn-group { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
-        .btn-s { flex: 1; min-width: 100px; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; }
+        .btn-s { flex: 1; min-width: 100px; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; transition: 0.2s; }
+        .btn-s:hover { background: #222; border-color: var(--vip); }
         .btn-dl { width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 20px; font-weight: 900; cursor: pointer; }
 
-        /* ESCENARIO */
         .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; height: 100%; }
         #canvas-container { position: relative; display: inline-block; }
         canvas#canvas { display: block; max-height: 85vh; }
         #crop-box { position: absolute; border: 2px dashed #fff; cursor: move; display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); z-index: 50; }
         .resizer { width: 12px; height: 12px; background: #fff; border: 2px solid var(--accent); position: absolute; right: -6px; bottom: -6px; cursor: nwse-resize; border-radius: 50%; }
-        #qr-preview { position: absolute; cursor: move; border: 2px dashed var(--vip); display: none; z-index: 60; }
+        #qr-preview { position: absolute; cursor: move; border: 2px dashed var(--vip); display: none; z-index: 60; background: #fff; }
 
-        /* MODALES */
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 520px; border: 1px solid #262626; box-shadow: 0 25px 60px rgba(0,0,0,.5); text-align: center; }
+        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 520px; border: 1px solid #262626; text-align: center; }
         .m-input { background: #fffbe6; color: #333; border: 1px solid #d4b106; padding: 6px 10px; border-radius: 4px; font-weight: bold; width: 110px; }
         .hidden { display: none !important; }
 
@@ -65,7 +60,7 @@
     <div id="choice-modal" class="modal-back hidden">
         <div class="modal">
             <h3 style="margin-top:0; color:var(--vip)">¡Casi listo!</h3>
-            <p style="color:var(--muted); font-size:14px; margin-bottom:25px;">Elige una opción para descargar:</p>
+            <p style="color:var(--muted); font-size:14px; margin-bottom:25px;">Para descargar elige una opción:</p>
             <div class="choice-card" onclick="openLogin()">
                 <div style="font-size:24px;">💎</div>
                 <div><div style="font-weight:bold; color:white;">Soy Suscriptor VIP</div><div style="font-size:12px; color:var(--muted)">Inicia sesión para descargar.</div></div>
@@ -80,7 +75,7 @@
 
     <div id="login-modal" class="modal-back hidden">
         <div class="modal" style="max-width:380px;">
-            <h3 style="margin-top:0">Validar Membresía</h3>
+            <h3>Validar Membresía</h3>
             <input type="text" id="user-id" placeholder="📱 Número de Celular" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
             <input type="password" id="access-key" placeholder="🔑 Contraseña" style="width:100%; padding:12px; margin-bottom:20px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
             <button class="btn-dl" onclick="validateAccess()" style="margin:0;">VERIFICAR Y ENTRAR</button>
@@ -149,9 +144,14 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec";
         
-        // SESIÓN PERSISTENTE
         let isVip = localStorage.getItem('jj_session') === 'active';
-        if(isVip) { document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO"; document.getElementById('status-tag').classList.add('status-vip'); }
+
+        window.onload = () => {
+            if(isVip) { 
+                document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO"; 
+                document.getElementById('status-tag').classList.add('status-vip'); 
+            }
+        };
 
         function handleDownloadClick() { if (isVip) { openExport(); } else { document.getElementById('choice-modal').classList.remove('hidden'); } }
         function openLogin() { closeChoice(); document.getElementById('login-modal').classList.remove('hidden'); }
@@ -166,7 +166,14 @@
             try {
                 const res = await fetch(`${WEB_APP_URL}?user=${u}&pass=${p}`);
                 const data = await res.json();
-                if(data.access) { isVip = true; localStorage.setItem('jj_session', 'active'); document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO"; document.getElementById('status-tag').classList.add('status-vip'); closeLogin(); alert("¡Membresía validada!"); }
+                if(data.access) { 
+                    isVip = true; 
+                    localStorage.setItem('jj_session', 'active'); 
+                    document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO"; 
+                    document.getElementById('status-tag').classList.add('status-vip'); 
+                    closeLogin(); 
+                    alert("¡Membresía validada!"); 
+                }
                 else { alert("Error: Socio no encontrado."); }
             } catch(e) { alert("Error de conexión"); }
         }
@@ -215,7 +222,7 @@
             cropBox.style.display='none'; document.getElementById('btn-apply-crop').classList.add('hidden'); process();
         };
 
-        // --- QR DINÁMICO ---
+        // --- QR ---
         let isDraggingQR = false;
         document.getElementById('btn-gen-qr').onclick = () => {
             const txt = document.getElementById('qrText').value; if(!txt) return;
@@ -238,7 +245,7 @@
             qp.style.display = "none"; document.getElementById('btn-add-qr').classList.add('hidden'); process();
         };
 
-        // --- COLOR LIENZO ---
+        // --- LIENZO ---
         const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
         let hue=0, svDragging=false, hDragging=false;
         function drawCP() {
@@ -276,7 +283,6 @@
         }
 
         ['fuzz','feather','contract','mode'].forEach(id => document.getElementById(id).oninput = process);
-        canvas.onclick = (e) => { if(document.getElementById('mode').value !== 'pick') return; const rect=canvas.getBoundingClientRect(); const x=Math.round((e.clientX-rect.left)*(oCanvas.width/rect.width)), y=Math.round((e.clientY-rect.top)*(oCanvas.height/rect.height)); const p=oCtx.getImageData(x,y,1,1).data; targetColor=[p[0],p[1],p[2]]; process(); };
     </script>
 </body>
 </html>
