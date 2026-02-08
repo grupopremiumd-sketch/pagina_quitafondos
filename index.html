@@ -28,10 +28,10 @@
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
         .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 50px; text-align: center; font-size: 12px; }
         
-        /* SELECTOR COLOR LIENZO */
-        .cp-container { display: flex; gap: 10px; height: 120px; margin-top: 10px; }
-        #cpSV { flex: 1; border-radius: 6px; border: 1px solid #2a2a2a; cursor: crosshair; }
-        #cpH { width: 20px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: ns-resize; }
+        /* SELECTOR COLOR LIENZO MEJORADO */
+        .cp-container { display: flex; gap: 10px; height: 120px; margin-top: 10px; user-select: none; }
+        #cpSV { flex: 1; border-radius: 6px; border: 1px solid #2a2a2a; cursor: crosshair; background: white; }
+        #cpH { width: 25px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: ns-resize; }
 
         /* HERRAMIENTAS */
         .btn-group { display: flex; gap: 8px; margin-top: 15px; }
@@ -39,13 +39,13 @@
         .btn-dl { width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 20px; font-weight: 900; cursor: pointer; font-size: 14px; }
 
         /* ESCENARIO */
-        .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; height: 100%; }
+        .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; height: 100%; transition: background 0.1s; }
         #canvas-container { position: relative; display: inline-block; }
         canvas#canvas { display: block; max-height: 85vh; }
         #crop-box { position: absolute; border: 2px dashed #fff; cursor: move; display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); z-index: 50; }
         .resizer { width: 12px; height: 12px; background: #fff; border: 2px solid var(--accent); position: absolute; right: -6px; bottom: -6px; cursor: nwse-resize; border-radius: 50%; }
 
-        /* --- MODALES --- */
+        /* MODALES */
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
         .modal { background: #121212; padding: 25px; border-radius: 18px; width: 520px; border: 1px solid #262626; box-shadow: 0 25px 60px rgba(0,0,0,.5); text-align: center; }
         .m-input { background: #fffbe6; color: #333; border: 1px solid #d4b106; padding: 6px 10px; border-radius: 4px; font-weight: bold; width: 110px; }
@@ -53,7 +53,6 @@
 
         .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 20px; border-radius: 12px; cursor: pointer; transition: 0.3s; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; text-align: left; width: 100%; }
         .choice-card:hover { border-color: var(--vip); background: #222; transform: scale(1.02); }
-        
         .wa-float { position: fixed; bottom: 20px; right: 20px; background: var(--wa); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000; }
     </style>
 </head>
@@ -127,12 +126,15 @@
             <h2>Herramientas</h2>
             <div class="btn-group"><button class="btn-s" id="btn-init-crop">✂️ Recortar</button><button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000;">✓ Aplicar</button><button class="btn-s" onclick="location.reload()">Reiniciar</button></div>
 
-            <label style="margin-top:20px; display:block; font-size:12px;">Color del lienzo</label>
-            <div class="cp-container"><canvas id="cpSV" width="220" height="120"></canvas><canvas id="cpH" width="20" height="120"></canvas></div>
+            <label style="margin-top:20px; display:block; font-size:12px; font-weight: bold;">COLOR DEL LIENZO</label>
+            <div class="cp-container">
+                <canvas id="cpSV" width="220" height="120"></canvas>
+                <canvas id="cpH" width="25" height="120"></canvas>
+            </div>
 
             <button class="btn-dl" onclick="handleDownloadClick()">DESCARGAR PNG</button>
         </section>
-        <section class="stage"><div id="canvas-container"><canvas id="canvas"></canvas><div id="crop-box"><div class="resizer"></div></div></div></section>
+        <section class="stage" id="stage"><div id="canvas-container"><canvas id="canvas"></canvas><div id="crop-box"><div class="resizer"></div></div></div></section>
     </main>
 
     <script>
@@ -203,18 +205,62 @@
             cropBox.style.display='none'; document.getElementById('btn-apply-crop').classList.add('hidden'); process();
         };
 
-        // --- LIENZO ---
+        // --- SELECTOR DE COLOR DE LIENZO (ARREGLADO) ---
         const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
-        let hue=0;
+        let hue=0, svDragging=false, hDragging=false;
+
         function drawCP() {
-            hCtx.clearRect(0,0,20,120); const gH=hCtx.createLinearGradient(0,0,0,120); for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`); hCtx.fillStyle=gH; hCtx.fillRect(0,0,20,120);
-            svCtx.fillStyle=`hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,220,120);
-            const gW=svCtx.createLinearGradient(0,0,220,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent'); svCtx.fillStyle=gW; svCtx.fillRect(0,0,220,120);
-            const gB=svCtx.createLinearGradient(0,0,0,120); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000'); svCtx.fillStyle=gB; svCtx.fillRect(0,0,220,120);
+            // Dibujar Barra de Tonos (Hue)
+            hCtx.clearRect(0,0,cpH.width,cpH.height);
+            const gH=hCtx.createLinearGradient(0,0,0,cpH.height);
+            for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`);
+            hCtx.fillStyle=gH; hCtx.fillRect(0,0,cpH.width,cpH.height);
+
+            // Dibujar Cuadrado Saturación/Brillo
+            svCtx.fillStyle=`hsl(${hue},100%,50%)`;
+            svCtx.fillRect(0,0,cpSV.width,cpSV.height);
+            const gW=svCtx.createLinearGradient(0,0,cpSV.width,0);
+            gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent');
+            svCtx.fillStyle=gW; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
+            const gB=svCtx.createLinearGradient(0,0,0,cpSV.height);
+            gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000');
+            svCtx.fillStyle=gB; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
         }
-        drawCP();
-        cpH.onclick = (e) => { hue=(e.offsetY/120)*360; drawCP(); };
-        cpSV.onclick = (e) => { const id=svCtx.getImageData(e.offsetX,e.offsetY,1,1).data; document.getElementById('stage').style.background=`rgb(${id[0]},${id[1]},${id[2]})`; };
+
+        function updateStageColor(x, y) {
+            const id=svCtx.getImageData(x, y, 1, 1).data;
+            const color = `rgb(${id[0]},${id[1]},${id[2]})`;
+            document.getElementById('stage').style.backgroundColor = color;
+        }
+
+        cpH.onmousedown = (e) => { hDragging=true; handleH(e); };
+        cpSV.onmousedown = (e) => { svDragging=true; handleSV(e); };
+
+        window.addEventListener('mousemove', (e) => {
+            if(hDragging) handleH(e);
+            if(svDragging) handleSV(e);
+        });
+
+        window.addEventListener('mouseup', () => { hDragging=false; svDragging=false; });
+
+        function handleH(e) {
+            const rect = cpH.getBoundingClientRect();
+            let y = e.clientY - rect.top;
+            y = Math.max(0, Math.min(y, rect.height - 1));
+            hue = (y / rect.height) * 360;
+            drawCP();
+        }
+
+        function handleSV(e) {
+            const rect = cpSV.getBoundingClientRect();
+            let x = e.clientX - rect.left;
+            let y = e.clientY - rect.top;
+            x = Math.max(0, Math.min(x, rect.width - 1));
+            y = Math.max(0, Math.min(y, rect.height - 1));
+            updateStageColor(x, y);
+        }
+
+        drawCP(); // Inicializar
 
         // --- EXPORT ---
         const rzW=document.getElementById('rzW'), rzH=document.getElementById('rzH'), lock=document.getElementById('lockAspect'), rzUnit=document.getElementById('rzUnit'), rzDPI=document.getElementById('rzDPI');
