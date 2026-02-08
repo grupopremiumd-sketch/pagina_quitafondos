@@ -3,140 +3,146 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro — Quitar Fondo</title>
+    <title>J&J Studio Pro — Herramienta Definitiva</title>
     <style>
         :root {
-            --bg: #0a0a0a; --panel: #111; --text: #eeeeee; --muted: #9ca3af;
+            --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
             --accent: #f87171; --border: #1f1f1f; --success: #10b981; --wa: #25d366;
         }
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
 
-        /* --- NAVEGACIÓN PRO --- */
-        header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: #0b0b0b; display: flex; align-items: center; justify-content: space-between; height: 65px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        .logo-group { display: flex; align-items: center; gap: 10px; }
-        .logo-text { font-size: 1.5rem; font-weight: 900; background: linear-gradient(to right, #00d2ff, #0081ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        /* --- ESTADO DE SESIÓN --- */
-        .user-status { display: flex; align-items: center; gap: 15px; }
-        #login-trigger { background: var(--panel); color: #fff; border: 1px solid var(--border); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; transition: 0.3s; }
-        #login-trigger:hover { background: #222; border-color: #444; }
-        .active-user { color: var(--success); font-size: 13px; font-weight: 700; display: none; }
+        /* --- HEADER Y SESIÓN --- */
+        header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: #0b0b0b; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+        .logo-text { font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, #00d2ff, #0081ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .session-info { display: flex; align-items: center; gap: 10px; }
+        #status-tag { font-size: 11px; padding: 4px 8px; border-radius: 5px; background: #222; color: #888; font-weight: bold; }
+        .status-vip { background: #052e1a !important; color: var(--success) !important; }
 
         /* --- ESTRUCTURA --- */
-        .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 65px); }
-        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; }
-        h2 { font-size: 12px; color: var(--muted); margin: 25px 0 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-        
+        .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
+        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; z-index: 100; }
+        h2 { font-size: 13px; color: var(--muted); margin-bottom: 15px; font-weight: 700; text-transform: uppercase; }
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
-        label { font-size: 13px; color: #ccc; }
+        label { font-size: 13px; color: #ddd; width: 120px; }
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
-        .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 45px; text-align: center; font-size: 11px; margin-left: 10px; }
+        .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 50px; text-align: center; font-size: 12px; margin-left: 10px; }
         
-        .btn-tool { background: #1a1a1a; border: 1px solid var(--border); color: white; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; margin-bottom: 10px; transition: 0.2s; }
-        .btn-tool:hover { background: #252525; }
-        .btn-dl { width: 100%; padding: 16px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 10px; margin-top: 15px; font-weight: 900; cursor: pointer; font-size: 15px; transition: 0.3s; }
-        .btn-dl:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(34,197,94,0.3); }
+        /* SELECTORES */
+        .cp-container { display: flex; gap: 10px; height: 120px; margin-top: 10px; }
+        #cpSV { flex: 1; border-radius: 6px; border: 1px solid #2a2a2a; cursor: crosshair; }
+        #cpH { width: 20px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: ns-resize; }
+
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+        .btn-s { flex: 1; min-width: 100px; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 12px; font-weight: 800; }
+        .btn-dl { width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 20px; font-weight: 900; cursor: pointer; font-size: 14px; }
 
         /* --- ESCENARIO --- */
-        .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-        canvas#canvas { display: block; max-height: 85vh; border-radius: 4px; }
-
-        /* --- BOTÓN WHATSAPP --- */
-        .wa-float { position: fixed; bottom: 30px; right: 30px; background: var(--wa); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000; transition: 0.3s; }
-        .wa-float:hover { transform: scale(1.1); }
+        .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; height: 100%; }
+        #canvas-container { position: relative; display: inline-block; }
+        canvas#canvas { display: block; max-height: 85vh; }
+        
+        #crop-box { position: absolute; border: 2px dashed #fff; cursor: move; display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); z-index: 50; }
+        .resizer { width: 12px; height: 12px; background: #fff; border: 2px solid var(--accent); position: absolute; right: -6px; bottom: -6px; cursor: nwse-resize; border-radius: 50%; }
 
         /* --- MODALES --- */
-        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-        .modal { background: #161616; padding: 30px; border-radius: 20px; width: 500px; border: 1px solid #262626; box-shadow: 0 25px 60px rgba(0,0,0,0.8); }
-        .input-box { background: #fffbe6; color: #333; border: 1px solid #d4b106; padding: 8px 12px; border-radius: 6px; font-weight: bold; width: 110px; }
+        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal { background: #121212; padding: 25px; border-radius: 14px; width: 560px; border: 1px solid #262626; box-shadow: 0 25px 60px rgba(0,0,0,.5); }
+        .m-input { background: #fffbe6; color: #333; border: 1px solid #d4b106; padding: 6px 10px; border-radius: 4px; font-weight: bold; width: 110px; }
         .hidden { display: none !important; }
+
+        /* BOTÓN WHATSAPP */
+        .wa-float { position: fixed; bottom: 20px; right: 20px; background: var(--wa); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000; transition: 0.3s; }
+        .wa-float:hover { transform: scale(1.1); }
     </style>
 </head>
 <body>
 
-    <a href="https://wa.me/51916689969?text=Hola,%20me%20gustaría%20adquirir%20la%20membresía%20de%20J&J%20Studio" class="wa-float" target="_blank">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="35" alt="WA">
+    <a href="https://wa.me/51916689969?text=Hola,%20necesito%20activar%20mi%20suscripción%20para%20descargar%20en%20J&J%20Studio" class="wa-float" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="30" alt="WA">
     </a>
 
     <div id="login-modal" class="modal-back hidden">
-        <div class="modal" style="max-width: 380px; text-align: center;">
-            <div class="logo-text" style="font-size: 2rem; margin-bottom: 10px;">INICIAR SESIÓN</div>
-            <p style="color: var(--muted); font-size: 14px; margin-bottom: 25px;">Ingresa tus datos de socio J&J</p>
-            <input type="text" id="user-id" placeholder="📱 Número de Celular" style="width:100%; padding:14px; margin-bottom:12px; background:#000; border:1px solid #333; color:#fff; border-radius:10px;">
-            <input type="password" id="access-key" placeholder="🔑 Contraseña" style="width:100%; padding:14px; margin-bottom:20px; background:#000; border:1px solid #333; color:#fff; border-radius:10px;">
-            <button class="btn-dl" onclick="validateAccess()" style="margin:0;">VERIFICAR ACCESO</button>
-            <button onclick="closeLogin()" style="background:none; border:none; color:var(--muted); margin-top:15px; cursor:pointer;">Cancelar</button>
+        <div class="modal" style="max-width: 400px; text-align: center;">
+            <div class="logo-text" style="font-size: 2rem; margin-bottom: 20px;">INICIAR SESIÓN</div>
+            <input type="text" id="user-id" placeholder="📱 Celular" style="width:100%; padding:12px; margin-bottom:10px; background:#000; color:#fff; border:1px solid #333; border-radius:8px;">
+            <input type="password" id="access-key" placeholder="🔑 Contraseña (Celular)" style="width:100%; padding:12px; margin-bottom:20px; background:#000; color:#fff; border:1px solid #333; border-radius:8px;">
+            <button class="btn-dl" onclick="validateAccess()" style="margin:0;">VERIFICAR SOCIO</button>
+            <button onclick="closeLogin()" style="background:none; border:none; color:var(--muted); margin-top:15px; cursor:pointer;">Continuar como invitado</button>
         </div>
     </div>
 
     <header>
-        <div class="logo-group">
-            <div class="logo-text">J&J STUDIO PRO</div>
-            <span style="background: #222; font-size: 10px; padding: 3px 8px; border-radius: 10px; color: #00d2ff; font-weight: 800;">VIP TOOLS</span>
-        </div>
-        <div class="user-status">
-            <span id="user-active-msg" class="active-user">✅ SUSCRIPCIÓN ACTIVA</span>
-            <button id="login-trigger" onclick="openLogin()">INICIAR SESIÓN</button>
+        <div class="logo-text">J&J STUDIO PRO</div>
+        <div class="session-info">
+            <span id="status-tag">INVITADO</span>
+            <button id="btn-login-header" class="btn-s" style="width:auto; padding: 5px 15px;" onclick="openLogin()">Inicia Sesión</button>
         </div>
     </header>
 
     <main class="wrap">
         <section class="panel">
-            <h2>1. Importar Diseño</h2>
-            <input type="file" id="file" accept="image/*" class="btn-tool">
+            <h2>Cargar imagen</h2>
+            <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:12px; margin-bottom:20px;">
             
-            <h2>2. Ajustes de Limpieza</h2>
+            <h2>Configuración</h2>
             <div class="control-row">
                 <label>Modo</label>
-                <select id="mode" class="btn-tool" style="width: auto; margin: 0; padding: 5px 10px;">
-                    <option value="white">Fondo Blanco</option>
-                    <option value="black">Fondo Negro</option>
-                    <option value="pick">Elegir Color</option>
-                    <option value="auto">Auto Inteligente</option>
+                <select id="mode" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; flex:1;">
+                    <option value="white">Quitar blanco</option>
+                    <option value="black">Quitar negro</option>
+                    <option value="pick">Elegir color...</option>
+                    <option value="auto">Auto (esquinas)</option>
                 </select>
             </div>
-            <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="255" value="60"><div class="val-box" id="fuzzV">60</div></div>
+            <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" step="1" value="0"><div class="val-box" id="contractV">0</div></div>
 
-            <h2>3. Visualización</h2>
-            <div class="control-row">
-                <label>Color Lienzo</label>
-                <input type="color" id="bgColor" value="#0b0b0b" style="width: 100%; height: 35px; border: none; background: none; cursor: pointer;">
+            <h2>Herramientas</h2>
+            <div class="btn-group">
+                <button class="btn-s" id="btn-init-crop">✂️ Recortar</button>
+                <button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000;">✓ Aplicar</button>
+                <button class="btn-s" onclick="location.reload()">Reiniciar</button>
             </div>
 
-            <button class="btn-dl" onclick="handleDownloadAttempt()">DESCARGAR PNG</button>
-            <p style="font-size: 10px; text-align: center; color: var(--muted); margin-top: 10px;">Requiere Membresía J&J Activa</p>
+            <label style="margin-top:20px; display:block; font-size:12px;">Color del lienzo</label>
+            <div class="cp-container">
+                <canvas id="cpSV" width="220" height="120"></canvas>
+                <canvas id="cpH" width="20" height="120"></canvas>
+            </div>
+
+            <button class="btn-dl" id="btn-download-trigger" onclick="checkSubscriptionBeforeExport()">DESCARGAR PNG</button>
         </section>
 
         <section class="stage" id="stage">
-            <div id="canvas-container"><canvas id="canvas"></canvas></div>
+            <div id="canvas-container">
+                <canvas id="canvas"></canvas>
+                <div id="crop-box"><div class="resizer"></div></div>
+            </div>
         </section>
     </main>
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
             <h3>Exportar — Redimensionar</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                <div class="control-row"><label>Ancho</label><input type="number" id="rzW" class="input-box"></div>
-                <div class="control-row"><label>Alto</label><input type="number" id="rzH" class="input-box"></div>
-                <div class="control-row"><label>Unidad</label><select id="rzUnit" class="btn-tool" style="width:110px; margin:0;"><option value="cm">cm</option><option value="in">in</option><option value="px">px</option></select></div>
-                <div class="control-row"><label>DPI</label><input type="number" id="rzDPI" value="300" class="input-box"></div>
-                <div style="grid-column: span 2; font-size: 12px; color: #888;">
-                    <input type="checkbox" id="lockAspect" checked> Mantener proporción original
-                </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
+                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
+                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Unidad</label><select id="rzUnit" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:6px; border-radius:6px; width:110px;"><option value="cm">cm</option><option value="in">in</option><option value="px">px</option></select></div>
+                <div style="display:flex; justify-content:space-between; align-items:center;"><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
+                <div style="grid-column: span 2;"><input type="checkbox" id="lockAspect" checked> <span style="font-size:12px; color:#888;">Mantener proporción de aspecto</span></div>
             </div>
-            <div style="display:flex; gap:10px; margin-top:30px; justify-content:flex-end;">
-                <button onclick="closeExport()" style="background:none; border:none; color:#888; cursor:pointer;">Cancelar</button>
-                <button class="btn-dl" style="width:auto; margin:0; padding:10px 30px;" onclick="finalDownload()">DESCARGAR</button>
+            <div style="display:flex; gap:10px; margin-top:20px; justify-content:flex-end;">
+                <button class="btn-s" onclick="closeExport()">Cancelar</button>
+                <button class="btn-s" style="background:#2a2a2a; color:#fff;" onclick="finalDownload()">DESCARGAR</button>
             </div>
         </div>
     </div>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec";
-        let isLoggedIn = false;
+        let isVip = false;
 
         // --- MANEJO DE SESIÓN ---
         function openLogin() { document.getElementById('login-modal').classList.remove('hidden'); }
@@ -146,38 +152,39 @@
             const u = document.getElementById('user-id').value;
             const p = document.getElementById('access-key').value;
             if(!u || !p) return;
-            const btn = document.querySelector('#login-modal .btn-dl');
-            btn.innerText = "VERIFICANDO...";
-            
             try {
                 const res = await fetch(`${WEB_APP_URL}?user=${u}&pass=${p}`);
                 const data = await res.json();
                 if(data.access) {
-                    isLoggedIn = true;
-                    document.getElementById('user-active-msg').style.display = 'block';
-                    document.getElementById('login-trigger').style.display = 'none';
+                    isVip = true;
+                    document.getElementById('status-tag').innerText = "SOCIO ACTIVO";
+                    document.getElementById('status-tag').classList.add('status-vip');
+                    document.getElementById('btn-login-header').style.display = 'none';
                     closeLogin();
-                    alert("¡Bienvenido socio J&J! Descargas habilitadas.");
+                    alert("¡Acceso total concedido! Ya puedes descargar.");
                 } else {
-                    alert(data.message || "Suscripción no activa.");
+                    alert("Suscripción no encontrada o vencida.");
                 }
-            } catch(e) { alert("Error de servidor."); }
-            btn.innerText = "VERIFICAR ACCESO";
+            } catch(e) { alert("Error de conexión"); }
         }
 
-        function handleDownloadAttempt() {
-            if(!isLoggedIn) {
-                alert("❌ ACCESO RESTRINGIDO\n\nDebes ser miembro activo de la Comunidad J&J para descargar diseños. Contacta a soporte por WhatsApp para activar tu cuenta.");
+        function checkSubscriptionBeforeExport() {
+            if(!isVip) {
+                const confirmWA = confirm("⚠️ SUSCRIPCIÓN REQUERIDA\n\nSolo los socios activos de la Comunidad J&J pueden descargar los diseños.\n\n¿Quieres contactar con soporte por WhatsApp para activar tu membresía ahora?");
+                if(confirmWA) {
+                    window.open("https://wa.me/51916689969?text=Hola,%20quiero%20activar%20mi%20suscripción%20para%20usar%20la%20herramienta%20J&J%20Studio", "_blank");
+                }
                 openLogin();
             } else {
                 openExport();
             }
         }
 
-        // --- MOTOR DE IMAGEN (Sin cambios en tu lógica) ---
+        // --- MOTOR DE IMAGEN (TODO EL CÓDIGO ANTERIOR SE MANTIENE) ---
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
-        let aspectRatio = 1, targetColor = [255,255,255];
+        let aspectRatio = 1, targetColor = [255,255,255], isResizing = false, isDragging = false;
+        const cropBox = document.getElementById('crop-box');
 
         document.getElementById('file').onchange = e => {
             const f = e.target.files[0];
@@ -194,33 +201,112 @@
         function process() {
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value);
+            const feather = parseFloat(document.getElementById('feather').value);
+            const contract = parseInt(document.getElementById('contract').value);
+            const mode = document.getElementById('mode').value;
             document.getElementById('fuzzV').innerText = fuzz;
+            document.getElementById('featherV').innerText = feather;
+            document.getElementById('contractV').innerText = contract;
+
             const id = oCtx.getImageData(0, 0, oCanvas.width, oCanvas.height);
             const d = id.data, out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
             
+            if(mode === 'white') targetColor = [255,255,255];
+            else if(mode === 'black') targetColor = [0,0,0];
+            else if(mode === 'auto') targetColor = [d[0], d[1], d[2]];
+
+            const threshold = (fuzz * 2.5) + (contract * 10);
+            const soft = (feather * 15) + 1;
+
             for(let i=0; i<d.length; i+=4) {
-                const dist = Math.sqrt((d[i]-255)**2 + (d[i+1]-255)**2 + (d[i+2]-255)**2);
+                const dist = Math.sqrt((d[i]-targetColor[0])**2 + (d[i+1]-targetColor[1])**2 + (d[i+2]-targetColor[2])**2);
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                o[i+3] = dist < fuzz ? 0 : 255;
+                if(dist < threshold - soft) o[i+3] = 0;
+                else if(dist < threshold) o[i+3] = ((dist - (threshold - soft)) / soft) * d[i+3];
+                else o[i+3] = d[i+3];
             }
             canvas.width = oCanvas.width; canvas.height = oCanvas.height;
             ctx.putImageData(out, 0, 0);
         }
 
-        // --- EXPORTACIÓN ---
-        function openExport() { if(!oCanvas.width) return; document.getElementById('rzW').value = oCanvas.width; document.getElementById('modalExport').classList.remove('hidden'); }
+        // --- RECORTE ---
+        document.getElementById('btn-init-crop').onclick = () => {
+            if(!oCanvas.width) return;
+            cropBox.style.display = 'block'; cropBox.style.width = '200px'; cropBox.style.height = '200px';
+            document.getElementById('btn-apply-crop').classList.remove('hidden');
+        };
+        cropBox.onmousedown = (e) => { if(!e.target.classList.contains('resizer')) isDragging = true; };
+        document.querySelector('.resizer').onmousedown = (e) => { isResizing = true; e.preventDefault(); };
+        window.onmousemove = (e) => {
+            if(!oCanvas.width) return;
+            const rect = document.getElementById('canvas-container').getBoundingClientRect();
+            if(isResizing) {
+                cropBox.style.width = (e.clientX - cropBox.getBoundingClientRect().left) + 'px';
+                cropBox.style.height = (e.clientY - cropBox.getBoundingClientRect().top) + 'px';
+            } else if(isDragging) {
+                cropBox.style.left = (e.clientX - rect.left - cropBox.offsetWidth/2) + 'px';
+                cropBox.style.top = (e.clientY - rect.top - cropBox.offsetHeight/2) + 'px';
+            }
+        };
+        window.onmouseup = () => { isResizing = false; isDragging = false; };
+        document.getElementById('btn-apply-crop').onclick = () => {
+            const canvRect = canvas.getBoundingClientRect(), boxRect = cropBox.getBoundingClientRect();
+            const scale = oCanvas.width / canvRect.width;
+            const x = (boxRect.left - canvRect.left) * scale, y = (boxRect.top - canvRect.top) * scale;
+            const w = boxRect.width * scale, h = boxRect.height * scale;
+            const temp = document.createElement('canvas'); temp.width = w; temp.height = h;
+            temp.getContext('2d').drawImage(oCanvas, x, y, w, h, 0, 0, w, h);
+            oCanvas.width = w; oCanvas.height = h; aspectRatio = w/h;
+            oCtx.clearRect(0,0,w,h); oCtx.drawImage(temp, 0, 0);
+            cropBox.style.display = 'none'; document.getElementById('btn-apply-crop').classList.add('hidden');
+            process();
+        };
+
+        // --- COLOR LIENZO ---
+        const cpSV = document.getElementById('cpSV'), cpH = document.getElementById('cpH');
+        const svCtx = cpSV.getContext('2d'), hCtx = cpH.getContext('2d');
+        let hue = 0;
+        function drawCP() {
+            hCtx.clearRect(0,0,20,120); const gH = hCtx.createLinearGradient(0,0,0,120);
+            for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`);
+            hCtx.fillStyle = gH; hCtx.fillRect(0,0,20,120);
+            svCtx.fillStyle = `hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,220,120);
+            const gW = svCtx.createLinearGradient(0,0,220,0); gW.addColorStop(0, '#fff'); gW.addColorStop(1, 'transparent');
+            svCtx.fillStyle = gW; svCtx.fillRect(0,0,220,120);
+            const gB = svCtx.createLinearGradient(0,0,0,120); gB.addColorStop(0, 'transparent'); gB.addColorStop(1, '#000');
+            svCtx.fillStyle = gB; svCtx.fillRect(0,0,220,120);
+        }
+        drawCP();
+        cpH.onclick = (e) => { hue = (e.offsetY / 120) * 360; drawCP(); };
+        cpSV.onclick = (e) => {
+            const id = svCtx.getImageData(e.offsetX, e.offsetY, 1, 1).data;
+            document.getElementById('stage').style.background = `rgb(${id[0]},${id[1]},${id[2]})`;
+        };
+
+        // --- EXPORTAR ---
+        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect'), rzUnit = document.getElementById('rzUnit'), rzDPI = document.getElementById('rzDPI');
+        function openExport() { rzW.value = oCanvas.width; rzH.value = oCanvas.height; document.getElementById('modalExport').classList.remove('hidden'); }
         function closeExport() { document.getElementById('modalExport').classList.add('hidden'); }
+        rzW.oninput = () => { if(lock.checked) rzH.value = Math.round(rzW.value / aspectRatio); };
+        rzH.oninput = () => { if(lock.checked) rzW.value = Math.round(rzH.value * aspectRatio); };
         function finalDownload() {
-            const a = document.createElement('a'); a.download = 'jj_studio.png'; a.href = canvas.toDataURL(); a.click();
+            const dpi = parseInt(rzDPI.value);
+            let fW = rzW.value;
+            if(rzUnit.value === 'cm') fW = (rzW.value / 2.54 * dpi);
+            else if(rzUnit.value === 'in') fW = (rzW.value * dpi);
+            const temp = document.createElement('canvas'); temp.width = fW; temp.height = fW / aspectRatio;
+            temp.getContext('2d').drawImage(canvas, 0, 0, temp.width, temp.height);
+            const a = document.createElement('a'); a.download = 'jj_studio.png'; a.href = temp.toDataURL(); a.click();
             closeExport();
         }
 
-        ['fuzz','mode','bgColor'].forEach(id => {
-            document.getElementById(id).oninput = () => {
-                if(id==='bgColor') document.getElementById('stage').style.background = document.getElementById(id).value;
-                process();
-            };
-        });
+        ['fuzz','feather','contract','mode'].forEach(id => document.getElementById(id).oninput = process);
+        canvas.onclick = (e) => {
+            if(document.getElementById('mode').value !== 'pick') return;
+            const rect = canvas.getBoundingClientRect();
+            const x = Math.round((e.clientX - rect.left) * (oCanvas.width / rect.width)), y = Math.round((e.clientY - rect.top) * (oCanvas.height / rect.height));
+            const p = oCtx.getImageData(x, y, 1, 1).data; targetColor = [p[0],p[1],p[2]]; process();
+        };
     </script>
 </body>
 </html>
