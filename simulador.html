@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Simulador Pro</title>
+    <title>J&J Studio - Simulador</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root { --bg: #050505; --panel: #111; --text: #eee; --vip: #00d2ff; --border: #262626; }
@@ -12,21 +12,20 @@
         .app { display: grid; grid-template-columns: 280px 1fr; height: 100vh; }
         aside { background: var(--panel); border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; }
         main { display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a1a 1px, transparent 1px); background-size: 25px 25px; position: relative; }
-        .container { position: relative; width: 90%; max-width: 500px; aspect-ratio: 1/1; }
-        canvas { width: 100%; height: 100%; border-radius: 8px; }
-        .btn { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .container { position: relative; width: 500px; height: 500px; background: #111; border-radius: 15px; border: 1px solid #333; }
+        canvas { width: 100%; height: 100%; }
+        .btn { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
         .btn-vip { background: var(--vip); color: #000; }
         .btn-nav { background: #222; color: #fff; font-size: 11px; }
         input[type="range"] { width: 100%; accent-color: var(--vip); margin: 10px 0; }
-        #qr-box { position: absolute; z-index: 100; cursor: move; display: none; padding: 5px; background: #fff; top: 20px; right: 20px; }
-        .color-dot { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #333; cursor: pointer; display: inline-block; margin-right: 10px; }
+        #qr-box { position: absolute; z-index: 100; cursor: move; display: none; padding: 5px; background: #fff; top: 20px; right: 20px; border: 2px solid var(--vip); }
     </style>
 </head>
 <body>
     <div class="app">
         <aside>
             <h2 style="color:var(--vip); text-align:center;">J&J STUDIO</h2>
-            <button class="btn btn-nav" onclick="location.href='index.html'">← VOLVER AL INICIO</button>
+            <button class="btn btn-nav" onclick="location.href='index.html'">← VOLVER A INICIO</button>
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
             
             <p style="font-size:11px; color:#888;">1. CARGAR DISEÑO PNG</p>
@@ -35,21 +34,17 @@
 
             <div style="margin-top:20px;">
                 <p style="font-size:11px; color:#888;">2. AJUSTAR TAMAÑO</p>
-                <input type="range" id="size" min="0.1" max="1.5" step="0.01" value="0.5">
+                <input type="range" id="size" min="0.1" max="1.5" step="0.01" value="0.6">
                 <p style="font-size:11px; color:#888;">3. POSICIÓN VERTICAL</p>
                 <input type="range" id="posY" min="-250" max="250" value="0">
             </div>
 
-            <div style="margin-top:20px;">
-                <p style="font-size:11px; color:#888;">4. COLOR PRENDA</p>
-                <div class="color-dot" style="background:#fff;" onclick="change('white')"></div>
-                <div class="color-dot" style="background:#111;" onclick="change('black')"></div>
-                <div class="color-dot" style="background:#777;" onclick="change('gray')"></div>
-            </div>
-
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-            <input type="text" id="qrInp" placeholder="WhatsApp Link" style="width:100%; padding:8px; background:#000; color:#fff; border:1px solid #333; border-radius:5px;">
-            <button class="btn" style="background:#222; color:#fff;" onclick="genQR()">AÑADIR QR</button>
+            <p style="font-size:11px; color:#888;">4. QR DE VENTA</p>
+            <input type="text" id="qrInp" placeholder="Link de WhatsApp" style="width:100%; padding:8px; background:#000; color:#fff; border:1px solid #333; border-radius:5px;">
+            <button class="btn" style="background:#171717; color:#fff;" onclick="genQR()">GENERAR QR</button>
+            
+            <button class="btn" style="margin-top:40px; background:#fff; color:#000;" onclick="down()">DESCARGAR</button>
         </aside>
 
         <main>
@@ -57,46 +52,61 @@
                 <canvas id="cv"></canvas>
                 <div id="qr-box"></div>
             </div>
-            <button class="btn" style="position:fixed; bottom:20px; right:20px; width:auto; padding:15px 30px; background:#fff; color:#000;" onclick="down()">DESCARGAR</button>
         </main>
     </div>
 
     <script>
         const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
-        let mock = new Image(), user = new Image(), mode = 'white';
+        let mock = new Image(), user = new Image();
 
-        const imgMap = {
-            white: 'https://raw.githubusercontent.com/tdonofrio/mockup-assets/main/white_front.png',
-            black: 'https://raw.githubusercontent.com/tdonofrio/mockup-assets/main/black_front.png',
-            gray: 'https://raw.githubusercontent.com/tdonofrio/mockup-assets/main/gray_front.png'
-        };
+        // Camiseta blanca genérica de alta disponibilidad
+        mock.crossOrigin = "anonymous";
+        mock.src = "https://www.clothes2order.com/product_images/Front/70-White.png";
 
-        function change(c) {
-            mode = c;
-            mock.src = imgMap[c];
-        }
-
-        document.getElementById('loader').onchange = e => {
-            const reader = new FileReader();
-            reader.onload = f => { user.src = f.target.result; user.onload = draw; };
-            reader.readAsDataURL(e.target.files[0]);
+        // Si la imagen falla, dibujamos una silueta básica para que no se vea negro
+        mock.onerror = () => {
+            console.log("Error de carga de imagen, usando respaldo visual");
+            ctx.fillStyle = "#eee";
+            ctx.fillRect(200, 100, 600, 800); // Dibuja un rectángulo gris claro
+            draw();
         };
 
         mock.onload = draw;
-        mock.crossOrigin = "anonymous";
-        change('white'); // Carga inicial
+
+        document.getElementById('loader').onchange = e => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onload = f => { 
+                user = new Image();
+                user.onload = draw;
+                user.src = f.target.result; 
+            };
+            reader.readAsDataURL(file);
+        };
 
         function draw() {
             cv.width = 1000; cv.height = 1000;
             ctx.clearRect(0, 0, 1000, 1000);
-            if (mock.complete) ctx.drawImage(mock, 0, 0, 1000, 1000);
-            if (user.src) {
+            
+            // Dibujar camiseta
+            if (mock.complete && mock.naturalWidth > 0) {
+                ctx.drawImage(mock, 0, 0, 1000, 1000);
+            } else {
+                // Silueta de emergencia si falla internet
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath();
+                ctx.roundRect(250, 150, 500, 700, 20);
+                ctx.fill();
+            }
+
+            // Dibujar diseño del usuario
+            if (user.src && user.complete) {
                 const s = document.getElementById('size').value;
                 const y = parseInt(document.getElementById('posY').value);
                 const w = user.width * s, h = user.height * s;
+                
                 ctx.save();
-                ctx.globalAlpha = 0.9;
-                if(mode !== 'black') ctx.globalCompositeOperation = 'multiply';
+                ctx.globalAlpha = 0.95;
                 ctx.drawImage(user, (1000-w)/2, (1000-h)/2 + y, w, h);
                 ctx.restore();
             }
@@ -113,6 +123,7 @@
             new QRCode(b, { text: v, width: 80, height: 80 });
         }
 
+        // Lógica para mover el QR
         let drag = false;
         const qb = document.getElementById('qr-box');
         qb.onmousedown = () => drag = true;
@@ -133,6 +144,4 @@
         }
     </script>
 </body>
-</html>
-
 </html>
