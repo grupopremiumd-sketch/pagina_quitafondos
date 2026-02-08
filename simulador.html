@@ -14,39 +14,68 @@
         body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
 
         .app-container { display: grid; grid-template-columns: 280px 1fr; height: 100vh; }
+        aside.sidebar { background: var(--panel); border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; z-index: 100; }
         
-        /* Sidebar */
-        aside.sidebar { background: var(--panel); border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; }
-        
-        /* Área del Simulador */
         main.simulator-space {
             display: flex; align-items: center; justify-content: center;
             background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
             background-size: 30px 30px; position: relative;
         }
 
-        .mockup-container { position: relative; width: 85%; max-width: 550px; aspect-ratio: 1/1; }
-        #mockup-base { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.6)); }
+        /* CONTENEDOR MAESTRO */
+        .mockup-container { 
+            position: relative; 
+            width: 90%; 
+            max-width: 500px; 
+            aspect-ratio: 1/1; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-        /* Diseños Estampados */
+        /* LA CAMISETA - Debe estar siempre visible */
+        #mockup-base { 
+            position: absolute;
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain; 
+            z-index: 5;
+            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+        }
+
+        /* EL DISEÑO - Encima de la camiseta con efecto de fusión */
         .design-overlay {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            pointer-events: none; mix-blend-mode: multiply; opacity: 0.9; width: 150px;
+            position: absolute; 
+            z-index: 10;
+            pointer-events: none; 
+            mix-blend-mode: multiply; 
+            opacity: 0.85; 
+            width: 160px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
-        /* QR Movible */
+        /* QR MOVIBLE - Encima de todo */
         #qr-on-mockup { 
-            position: absolute; cursor: move; border: 1px dashed var(--vip); 
-            z-index: 100; display: none; padding: 5px; background: white;
+            position: absolute; 
+            z-index: 20;
+            cursor: move; 
+            border: 1px dashed var(--vip); 
+            display: none; 
+            padding: 5px; 
+            background: white;
+            top: 10%;
+            right: 10%;
         }
 
-        /* UI Controles */
+        /* UI CONTROLES */
         .label-sm { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1px; }
         .view-selector { display: flex; background: #000; padding: 4px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #222; }
         .view-btn { flex: 1; padding: 8px; border: none; background: transparent; color: #666; cursor: pointer; border-radius: 7px; font-weight: bold; font-size: 11px; }
         .view-btn.active { background: #222; color: var(--vip); }
 
-        .btn-main { width: 100%; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; margin-top: 10px; }
+        .btn-main { width: 100%; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; margin-top: 10px; }
         .btn-upload { background: var(--vip); color: #000; }
         .btn-nav { background: #222; color: #fff; border: 1px solid #444; font-size: 10px; margin-bottom: 15px; }
         
@@ -55,10 +84,8 @@
         .btn-download {
             position: fixed; bottom: 30px; right: 30px; padding: 15px 35px;
             background: #fff; color: #000; border-radius: 50px; font-weight: 900;
-            border: none; cursor: pointer; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            border: none; cursor: pointer; box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 200;
         }
-        #status-tag { font-size: 10px; color: #888; margin-bottom: 10px; display: block; text-align: center; }
-        .status-active { color: var(--success) !important; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -66,12 +93,12 @@
     <div class="app-container">
         <aside class="sidebar">
             <h2 style="color: var(--vip); margin-bottom: 5px; text-align: center; font-weight: 900;">J&J STUDIO</h2>
-            <span id="status-tag">INVITADO</span>
+            <div id="status-tag" style="font-size: 10px; text-align: center; margin-bottom: 15px; color:#666;">MODO INVITADO</div>
             
-            <button class="btn-main btn-nav" onclick="location.href='index.html'">← QUITAR FONDOS</button>
+            <button class="btn-main btn-nav" onclick="location.href='index.html'">← VOLVER A QUITAR FONDOS</button>
             <hr style="border: 0; border-top: 1px solid #222; margin: 15px 0;">
 
-            <label class="label-sm">Vista de Prenda</label>
+            <label class="label-sm">Vista</label>
             <div class="view-selector">
                 <button id="btn-front" class="view-btn active" onclick="setView('front')">FRENTE</button>
                 <button id="btn-back" class="view-btn" onclick="setView('back')">ESPALDA</button>
@@ -81,18 +108,23 @@
             <button class="btn-main btn-upload" onclick="document.getElementById('fileInput').click()">☁️ SUBIR DISEÑO</button>
 
             <div style="margin-top:20px;">
-                <label class="label-sm">Escala del Diseño</label>
-                <input type="range" id="sizeRange" style="width:100%; accent-color:var(--vip);" min="30" max="400" value="150">
+                <label class="label-sm">Escala</label>
+                <input type="range" id="sizeRange" style="width:100%; accent-color:var(--vip);" min="30" max="400" value="160">
+            </div>
+
+            <div style="margin-top:20px;">
+                <label class="label-sm">Posición Vertical</label>
+                <input type="range" id="yRange" style="width:100%; accent-color:var(--vip);" min="-150" max="150" value="0">
             </div>
 
             <hr style="border: 0; border-top: 1px solid #222; margin: 20px 0;">
             
-            <label class="label-sm">QR Personalizado (WhatsApp)</label>
-            <input type="text" id="qrText" class="input-dark" placeholder="Pega tu link de WhatsApp aquí">
+            <label class="label-sm">QR de Contacto (WhatsApp)</label>
+            <input type="text" id="qrText" class="input-dark" placeholder="https://wa.me/51916689969">
             <button class="btn-main" style="background:#171717; color:#fff; border:1px solid #333;" onclick="generateQR()">✨ CREAR QR</button>
 
             <div style="margin-top:20px;">
-                <label class="label-sm">Color de Prenda</label>
+                <label class="label-sm">Color Camiseta</label>
                 <div style="display: flex; gap: 10px; margin-top:5px;">
                     <button onclick="changeColor('white')" style="width:25px; height:25px; background:#fff; border-radius:50%; border:none; cursor:pointer;"></button>
                     <button onclick="changeColor('black')" style="width:25px; height:25px; background:#000; border-radius:50%; border:1px solid #444; cursor:pointer;"></button>
@@ -103,27 +135,28 @@
 
         <main class="simulator-space">
             <div class="mockup-container" id="mockContainer">
-                <img id="mockup-base" src="https://i.imgur.com/2m65Ww1.png">
+                <img id="mockup-base" src="https://i.imgur.com/2m65Ww1.png" crossorigin="anonymous">
                 
-                <img id="design-front" class="design-overlay" src="">
+                <img id="design-front" class="design-overlay" src="" style="display: block;">
                 <img id="design-back" class="design-overlay" src="" style="display: none;">
                 
-                <div id="qr-on-mockup" title="Arrastra el QR para posicionarlo"></div>
+                <div id="qr-on-mockup"></div>
             </div>
             <button class="btn-download" id="dl-btn">DESCARGAR MOCKUP</button>
         </main>
     </div>
 
     <script>
-        // --- DETECTAR SESIÓN COMPARTIDA ---
         let isVip = localStorage.getItem('jj_session') === 'active';
         if(isVip) {
             document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO";
-            document.getElementById('status-tag').classList.add('status-active');
+            document.getElementById('status-tag').style.color = "#10b981";
         }
 
         let currentView = 'front';
         let currentColor = 'white';
+        
+        // URLs directas y seguras
         const mockups = {
             white: { front: 'https://i.imgur.com/2m65Ww1.png', back: 'https://i.imgur.com/39lXU6f.png' },
             black: { front: 'https://i.imgur.com/vE9C88R.png', back: 'https://i.imgur.com/XwE4M9T.png' },
@@ -136,7 +169,6 @@
             document.getElementById('btn-back').classList.toggle('active', view === 'back');
             document.getElementById('mockup-base').src = mockups[currentColor][view];
             
-            // Mostrar u ocultar diseño según la vista
             document.getElementById('design-front').style.display = view === 'front' ? 'block' : 'none';
             document.getElementById('design-back').style.display = view === 'back' ? 'block' : 'none';
         }
@@ -158,41 +190,40 @@
             target.style.width = e.target.value + "px";
         };
 
-        // --- LÓGICA DEL CÓDIGO QR ---
+        document.getElementById('yRange').oninput = (e) => {
+            const target = currentView === 'front' ? document.getElementById('design-front') : document.getElementById('design-back');
+            target.style.transform = `translate(-50%, calc(-50% + ${e.target.value}px))`;
+        };
+
+        // --- LÓGICA QR ---
         let isDraggingQR = false;
         function generateQR() {
             const link = document.getElementById('qrText').value;
-            if(!link) return alert("Por favor, ingresa un enlace.");
-            const qrContainer = document.getElementById('qr-on-mockup');
-            qrContainer.innerHTML = "";
-            qrContainer.style.display = "block";
-            // Crear el QR (tamaño pequeño para el mockup)
-            new QRCode(qrContainer, { text: link, width: 70, height: 70 });
+            if(!link) return alert("Ingresa un enlace.");
+            const qrDiv = document.getElementById('qr-on-mockup');
+            qrDiv.innerHTML = "";
+            qrDiv.style.display = "block";
+            new QRCode(qrDiv, { text: link, width: 60, height: 60 });
         }
 
         const qrElement = document.getElementById('qr-on-mockup');
-        qrElement.onmousedown = () => { isDraggingQR = true; };
+        qrElement.onmousedown = () => isDraggingQR = true;
         
         window.addEventListener('mousemove', (e) => {
             if(isDraggingQR) {
-                const containerRect = document.getElementById('mockContainer').getBoundingClientRect();
-                // Centrar el QR bajo el mouse dentro del contenedor
-                let x = e.clientX - containerRect.left - 35; 
-                let y = e.clientY - containerRect.top - 35;
-                qrElement.style.left = x + 'px';
-                qrElement.style.top = y + 'px';
+                const rect = document.getElementById('mockContainer').getBoundingClientRect();
+                qrElement.style.left = (e.clientX - rect.left - 30) + 'px';
+                qrElement.style.top = (e.clientY - rect.top - 30) + 'px';
             }
         });
+        window.addEventListener('mouseup', () => isDraggingQR = false);
 
-        window.addEventListener('mouseup', () => { isDraggingQR = false; });
-
-        // --- BOTÓN DE DESCARGA ---
         document.getElementById('dl-btn').onclick = () => {
             if(!isVip) {
-                alert("Esta función es exclusiva para socios VIP.");
+                alert("Suscripción requerida.");
                 window.open("https://wa.me/51916689969?text=Hola,%20necesito%20mi%20diseño%20del%20simulador", "_blank");
             } else {
-                alert("¡Generando Mockup VIP! Toma una captura de pantalla para guardar tu creación con el QR.");
+                alert("Preparando descarga de alta calidad...");
             }
         };
     </script>
