@@ -3,295 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro | Acceso VIP</title>
+    <title>J&J Studio Pro — Herramienta Avanzada</title>
     <style>
         :root {
-            --primary: #00d2ff;
-            --secondary: #0081ff;
-            --bg: #0a0b10;
-            --card: #161b22;
-            --text: #ffffff;
-            --accent: #25d366;
+            --bg: #0a0a0a; --panel: #111; --text: #eeeeee; --muted: #9ca3af;
+            --accent: #00d2ff; --accent-2: #0ea5e9; --border: #1f1f1f;
+            --success: #10b981; --overlay: rgba(0,0,0,.7);
         }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
 
-        body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
+        /* --- LOGIN SYSTEM --- */
+        #login-overlay {
+            position: fixed; inset: 0; background: var(--bg); z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
         }
-
-        /* LOGIN */
-        #login-container {
-            background: var(--card);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 0 30px rgba(0, 210, 255, 0.15);
-            width: 90%;
-            max-width: 380px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        .login-card {
+            background: var(--panel); padding: 40px; border-radius: 20px;
+            border: 1px solid var(--border); width: 90%; max-width: 400px; text-align: center;
         }
-
         .logo-text {
-            font-size: 2.2rem;
-            font-weight: 800;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
+            font-size: 2.2rem; font-weight: 800; background: linear-gradient(to right, var(--accent), #0081ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px;
+            border: 1px solid var(--border); background: #000; color: #fff;
+        }
+        .btn-login {
+            width: 100%; padding: 12px; background: var(--accent); border: none;
+            color: #000; font-weight: bold; border-radius: 8px; cursor: pointer;
         }
 
-        input {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            border-radius: 10px;
-            border: 1px solid #30363d;
-            background: #0d1117;
-            color: white;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
+        /* --- APP INTERFACE --- */
+        header { padding: 12px 16px; border-bottom: 1px solid var(--border); background: #0b0b0b; display: flex; align-items: center; justify-content: space-between; }
+        .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
+        .panel { padding: 16px; background: var(--panel); border-right: 1px solid var(--border); overflow-y: auto; }
+        .stage { position: relative; background: #0f0f0f; display: flex; align-items: center; justify-content: center; overflow: hidden; height: 100%; }
+        canvas#canvas { display: block; transform-origin: top left; }
+        canvas#overlay { position: absolute; inset: 0; pointer-events: none; }
+        
+        /* HERRAMIENTAS */
+        .row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; margin: 15px 0; }
+        .kbd { background: #222; padding: 2px 4px; border-radius: 4px; font-size: 10px; }
+        .btn-tool { background: #1a1a1a; border: 1px solid var(--border); color: white; padding: 8px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
+        .btn-download { background: var(--success); color: #000; font-weight: 900; width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; }
+        .hidden { display: none !important; }
 
-        .btn {
-            background: linear-gradient(45deg, var(--secondary), var(--primary));
-            color: white;
-            border: none;
-            padding: 14px;
-            border-radius: 10px;
-            font-weight: bold;
-            width: 100%;
-            cursor: pointer;
-            margin-top: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: 0.3s;
-        }
-
-        .btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        /* HERRAMIENTA */
-        #app-container {
-            display: none;
-            width: 95%;
-            max-width: 1100px;
-            background: var(--card);
-            padding: 25px;
-            border-radius: 20px;
-            text-align: center;
-            animation: fadeIn 0.5s ease;
-        }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .canvas-container {
-            background: #0d1117;
-            border-radius: 15px;
-            padding: 15px;
-            margin-top: 20px;
-            border: 1px solid #30363d;
-            overflow: auto;
-            min-height: 300px;
-        }
-
-        canvas {
-            max-width: 100%;
-            cursor: crosshair;
-            background-image: repeating-conic-gradient(#1d2128 0% 25%, transparent 0% 50%) 50% / 20px 20px;
-        }
-
-        .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            justify-content: center;
-            background: #0d1117;
-            padding: 20px;
-            border-radius: 15px;
-            margin-top: 15px;
-        }
-
-        .error { color: #ff6b6b; font-size: 0.85rem; margin-top: 12px; display: none; font-weight: 500; }
-
-        .ws-float {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            background: var(--accent);
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            z-index: 1000;
-            transition: 0.3s;
-        }
-        .ws-float:hover { transform: scale(1.1); }
+        /* MODALES */
+        .modal-back { position: fixed; inset: 0; background: var(--overlay); display: flex; align-items: center; justify-content: center; z-index: 100; }
+        .modal { background: #121212; padding: 20px; border-radius: 12px; width: 400px; border: 1px solid var(--border); }
     </style>
 </head>
 <body>
 
-    <div id="login-container">
-        <div class="logo-text">COMUNIDAD J&J</div>
-        <p style="color: #8b949e; margin-bottom: 25px;">Herramienta Profesional de Diseño</p>
-        
-        <input type="text" id="user-id" placeholder="📱 Número de Celular">
-        <input type="password" id="access-key" placeholder="🔑 Contraseña (Tu Celular)">
-        
-        <button class="btn" id="login-btn" onclick="validateAccess()">Entrar al Panel</button>
-        <p id="login-error" class="error"></p>
+    <div id="login-overlay">
+        <div class="login-card">
+            <div class="logo-text">COMUNIDAD J&J</div>
+            <p style="color: var(--muted);">Panel de Diseño Avanzado</p>
+            <input type="text" id="user-id" placeholder="📱 Celular">
+            <input type="password" id="access-key" placeholder="🔑 Contraseña (Celular)">
+            <button class="btn-login" onclick="validateAccess()">ENTRAR</button>
+            <p id="login-error" style="color: #ff4d4d; font-size: 12px; margin-top: 10px; display: none;"></p>
+        </div>
     </div>
 
-    <div id="app-container">
-        <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div class="logo-text" style="font-size: 1.4rem;">J&J STUDIO PRO</div>
-            <button onclick="location.reload()" style="background: rgba(255,255,255,0.1); border: none; color: white; cursor: pointer; border-radius: 8px; padding: 8px 15px;">Cerrar Sesión</button>
-        </header>
+    <header>
+        <div style="font-weight: 900; color: var(--accent);">J&J STUDIO PRO</div>
+        <button onclick="location.reload()" style="background:none; border:none; color:var(--muted); cursor:pointer;">Cerrar Sesión</button>
+    </header>
 
-        <div style="margin-bottom: 20px;">
-            <label class="btn" style="width: auto; display: inline-block; cursor: pointer;">
-                📁 Seleccionar Imagen
-                <input type="file" id="upload" accept="image/*" style="display: none;">
-            </label>
-            <p style="font-size: 0.8rem; color: #8b949e; margin-top: 10px;">Haz clic en el color de la imagen que quieres quitar.</p>
-        </div>
-        
-        <div class="controls">
-            <div>
-                <span style="font-size: 0.75rem; color: #8b949e; text-transform: uppercase;">Color</span><br>
-                <div id="colorShow" style="width: 45px; height: 45px; border-radius: 10px; border: 2px solid white; display: inline-block; background: #fff; margin-top: 5px; box-shadow: 0 0 10px rgba(255,255,255,0.2);"></div>
-            </div>
-            <div style="flex-grow: 1; max-width: 250px; text-align: left;">
-                <span style="font-size: 0.75rem; color: #8b949e; text-transform: uppercase;">Tolerancia: <b id="tolVal" style="color: var(--primary);">30</b></span><br>
-                <input type="range" id="tolerance" min="0" max="150" value="30" style="margin-top: 15px;">
-            </div>
-            <div style="display: flex; align-items: center;">
-                <button class="btn" onclick="downloadImage()" style="width: auto; padding: 0 30px; background: #fff; color: #000;">⬇️ Guardar PNG</button>
-            </div>
-        </div>
+    <main class="wrap">
+        <section class="panel">
+            <h2>Cargar Imagen</h2>
+            <input type="file" id="file" accept="image/*" class="btn-tool">
+            
+            <hr style="border:0; border-top:1px solid var(--border); margin: 20px 0;">
 
-        <div class="canvas-container">
+            <h2>Configuración</h2>
+            <div class="row">
+                <label>Modo</label>
+                <select id="mode" class="btn-tool" style="width: auto;">
+                    <option value="white">Quitar Blanco</option>
+                    <option value="black">Quitar Negro</option>
+                    <option value="pick">Elegir Color...</option>
+                    <option value="auto">Auto (Esquinas)</option>
+                </select>
+            </div>
+
+            <div class="row">
+                <label>Tolerancia</label>
+                <input type="range" id="fuzz" min="0" max="200" value="60">
+            </div>
+
+            <div class="row">
+                <label>Suavizado (px)</label>
+                <input type="range" id="feather" min="0" max="10" step="0.1" value="0.8">
+            </div>
+
+            <div class="row">
+                <label>Contraer/Expandir</label>
+                <input type="range" id="contract" min="-10" max="10" step="1" value="1">
+            </div>
+
+            <div style="display: flex; gap: 5px;">
+                <button id="btnCrop" class="btn-tool">✂️ Recortar</button>
+                <button id="btnApplyCrop" class="btn-tool hidden" style="background: var(--success); color: #000;">Aplicar</button>
+                <button id="btnCancelCrop" class="btn-tool hidden" style="background: #3a1212;">X</button>
+            </div>
+
+            <button id="download" class="btn-download">DESCARGAR PNG</button>
+            
+            <p style="font-size: 11px; color: var(--muted); margin-top: 20px;">
+                Atajos: <span class="kbd">Espacio</span> mover · <span class="kbd">Rueda</span> zoom · <span class="kbd">Ctrl+Z</span> deshacer.
+            </p>
+        </section>
+
+        <section class="stage" id="stage">
             <canvas id="canvas"></canvas>
+            <canvas id="overlay"></canvas>
+        </section>
+    </main>
+
+    <div id="resizeModal" class="modal-back hidden">
+        <div class="modal">
+            <h3>Exportar Diseño</h3>
+            <div class="row"><label>Ancho (px)</label><input type="number" id="rzWidth"></div>
+            <div class="row"><label>Alto (px)</label><input type="number" id="rzHeight"></div>
+            <div class="row"><label>DPI (DTF)</label><input type="number" id="rzDPI" value="300"></div>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button onclick="closeResize()" class="btn-tool">Cancelar</button>
+                <button id="rzApply" class="btn-login">DESCARGAR</button>
+            </div>
         </div>
     </div>
-
-    <a href="https://wa.me/519XXXXXXXX" class="ws-float" target="_blank" title="Soporte J&J">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="35" alt="WhatsApp">
-    </a>
 
     <script>
-        // ENLACE DE TU GOOGLE APPS SCRIPT
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec"; 
+        // --- CONEXIÓN BASE DE DATOS ---
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec";
 
         async function validateAccess() {
             const user = document.getElementById('user-id').value.trim();
             const pass = document.getElementById('access-key').value.trim();
-            const btn = document.getElementById('login-btn');
-            const errorMsg = document.getElementById('login-error');
-
-            if(!user || !pass) {
-                errorMsg.innerText = "Ingresa tu número de celular.";
-                errorMsg.style.display = 'block';
-                return;
-            }
-
-            btn.innerText = "Validando...";
-            btn.disabled = true;
-            errorMsg.style.display = 'none';
+            const err = document.getElementById('login-error');
             
+            if(!user || !pass) return;
+            err.innerText = "Verificando..."; err.style.display = "block";
+
             try {
-                // Consultamos a Google Sheets
-                const response = await fetch(`${WEB_APP_URL}?user=${user}&pass=${pass}`);
-                const data = await response.json();
-
-                if (data.access) {
-                    document.getElementById('login-container').style.display = 'none';
-                    document.getElementById('app-container').style.display = 'block';
+                const res = await fetch(`${WEB_APP_URL}?user=${user}&pass=${pass}`);
+                const data = await res.json();
+                if(data.access) {
+                    document.getElementById('login-overlay').style.display = 'none';
                 } else {
-                    errorMsg.innerText = data.message || "Error: Datos incorrectos.";
-                    errorMsg.style.display = 'block';
+                    err.innerText = data.message || "Acceso denegado.";
                 }
-            } catch (e) {
-                errorMsg.innerText = "Error de conexión con la base de datos.";
-                errorMsg.style.display = 'block';
-            } finally {
-                btn.innerText = "Entrar al Panel";
-                btn.disabled = false;
-            }
+            } catch(e) { err.innerText = "Error de conexión."; }
         }
 
-        // --- MOTOR DE PROCESAMIENTO DE IMAGEN ---
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        let originalImageData = null;
-        let selectedColor = { r: 255, g: 255, b: 255 };
+        // --- LÓGICA DE IMAGEN AVANZADA ---
+        const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
+        const overlay = document.getElementById('overlay'), octx = overlay.getContext('2d');
+        let ocanvas = document.createElement('canvas'), octx_base = ocanvas.getContext('2d');
+        let scale = 1, offsetX = 0, offsetY = 0;
+        let lastOut = null;
 
-        document.getElementById('upload').addEventListener('change', (e) => {
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                const img = new Image();
-                img.onload = () => {
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
-                    originalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                };
-                img.src = event.target.result;
+        // Cargar imagen
+        document.getElementById('file').addEventListener('change', e => {
+            const f = e.target.files[0];
+            if(!f) return;
+            const url = URL.createObjectURL(f);
+            const img = new Image();
+            img.onload = () => {
+                ocanvas.width = img.width; ocanvas.height = img.height;
+                octx_base.drawImage(img, 0, 0);
+                fitCanvas();
+                processNow();
             };
-            reader.readAsDataURL(e.target.files[0]);
+            img.src = url;
         });
 
-        canvas.addEventListener('mousedown', (e) => {
-            if(!originalImageData) return;
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / rect.width;
-            const scaleY = canvas.height / rect.height;
-            const x = Math.floor((e.clientX - rect.left) * scaleX);
-            const y = Math.floor((e.clientY - rect.top) * scaleY);
-            
-            const pixel = ctx.getImageData(x, y, 1, 1).data;
-            selectedColor = { r: pixel[0], g: pixel[1], b: pixel[2] };
-            document.getElementById('colorShow').style.background = `rgb(${selectedColor.r},${selectedColor.g},${selectedColor.b})`;
-            processImage();
-        });
-
-        document.getElementById('tolerance').addEventListener('input', (e) => {
-            document.getElementById('tolVal').innerText = e.target.value;
-            processImage();
-        });
-
-        function processImage() {
-            if (!originalImageData) return;
-            const tolerance = parseInt(document.getElementById('tolerance').value);
-            const imageData = new ImageData(new Uint8ClampedArray(originalImageData.data), originalImageData.width, originalImageData.height);
-            const data = imageData.data;
-
-            for (let i = 0; i < data.length; i += 4) {
-                const diff = Math.sqrt(
-                    Math.pow(data[i] - selectedColor.r, 2) +
-                    Math.pow(data[i+1] - selectedColor.g, 2) +
-                    Math.pow(data[i+2] - selectedColor.b, 2)
-                );
-                if (diff < tolerance) data[i+3] = 0; // Transparencia
-            }
-            ctx.putImageData(imageData, 0, 0);
+        function fitCanvas() {
+            const stage = document.getElementById('stage');
+            scale = Math.min(stage.clientWidth / ocanvas.width, stage.clientHeight / ocanvas.height, 1);
+            offsetX = (stage.clientWidth - ocanvas.width * scale) / 2;
+            offsetY = (stage.clientHeight - ocanvas.height * scale) / 2;
+            render();
         }
 
-        function downloadImage() {
-            const link = document.createElement('a');
-            link.download = 'JJ-Studio-Transparente.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
+        function render() {
+            canvas.width = ocanvas.width; canvas.height = ocanvas.height;
+            if(lastOut) ctx.putImageData(lastOut, 0, 0);
+            else ctx.drawImage(ocanvas, 0, 0);
+            canvas.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
         }
-    </script>
-</body>
-</html>
+
+        // Procesado de fondo (Algoritmo optimizado)
+        function processNow() {
+            if(!ocanvas.width) return;
+            const mode = document.getElementById('mode').value;
+            const fuzz = document.getElementById('fuzz').value;
+            const id = octx_base.getImageData(0, 0, ocanvas.width, ocanvas.height);
+            const data = id.data;
+            const out = ctx.createImageData(ocanvas.width, ocanvas.height);
+            const o = out.data;
+
+            let target = [255, 255, 255]; // Por defecto blanco
+            if(mode === 'black') target
