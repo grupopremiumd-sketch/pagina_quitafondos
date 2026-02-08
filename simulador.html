@@ -22,30 +22,14 @@
             background-size: 30px 30px; position: relative;
         }
 
-        .mockup-container { 
-            position: relative; 
-            width: 90%; 
-            max-width: 500px; 
-            aspect-ratio: 1/1; 
-            background: transparent;
-        }
+        .mockup-container { position: relative; width: 90%; max-width: 500px; aspect-ratio: 1/1; }
+        canvas#previewCanvas { width: 100%; height: 100%; display: block; filter: drop-shadow(0 15px 40px rgba(0,0,0,0.6)); }
 
-        /* Lienzo donde se dibuja todo */
-        canvas#previewCanvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-            filter: drop-shadow(0 15px 40px rgba(0,0,0,0.6));
-        }
-
-        /* QR sobre el canvas */
         #qr-on-mockup { 
-            position: absolute; z-index: 50; cursor: move; 
-            border: 1px dashed var(--vip); display: none; padding: 5px; background: white;
-            top: 20px; right: 20px;
+            position: absolute; z-index: 50; cursor: move; border: 1px dashed var(--vip); 
+            display: none; padding: 5px; background: white; top: 20px; right: 20px;
         }
 
-        /* UI CONTROLES */
         .label-sm { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1px; }
         .btn-main { width: 100%; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; margin-top: 10px; }
         .btn-upload { background: var(--vip); color: #000; }
@@ -53,9 +37,7 @@
         .input-dark { background: #000; color: #fff; border: 1px solid #333; padding: 10px; width: 100%; border-radius: 8px; font-size: 12px; margin-bottom: 10px; }
         .btn-download { position: fixed; bottom: 30px; right: 30px; padding: 15px 35px; background: #fff; color: #000; border-radius: 50px; font-weight: 900; border: none; cursor: pointer; box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 200; }
         
-        /* Selectores de color */
-        .color-dot { width: 25px; height: 25px; border-radius: 50%; border: 1px solid #333; cursor: pointer; transition: 0.2s; }
-        .color-dot:hover { transform: scale(1.2); }
+        .color-dot { width: 25px; height: 25px; border-radius: 50%; border: 1px solid #333; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -65,7 +47,7 @@
             <h2 style="color: var(--vip); margin-bottom: 5px; text-align: center; font-weight: 900;">J&J STUDIO</h2>
             <div id="status-tag" style="font-size: 10px; text-align: center; margin-bottom: 15px; color:#666;">MODO INVITADO</div>
             
-            <button class="btn-main btn-nav" onclick="location.href='index.html'">← VOLVER A QUITAR FONDOS</button>
+            <button class="btn-main btn-nav" onclick="location.href='index.html'">← QUITAR FONDOS</button>
             <hr style="border: 0; border-top: 1px solid #222; margin: 15px 0;">
 
             <label class="label-sm">Vista</label>
@@ -74,26 +56,26 @@
                 <button id="vBack" class="btn-main" style="margin:0; background:#111; color:#555;" onclick="setView('back')">ESPALDA</button>
             </div>
 
-            <input type="file" id="fileInput" hidden>
-            <button class="btn-main btn-upload" onclick="document.getElementById('fileInput').click()">☁️ SUBIR DISEÑO</button>
+            <input type="file" id="fileInput" accept="image/*" hidden>
+            <button class="btn-main btn-upload" onclick="document.getElementById('fileInput').click()">☁️ CARGAR DISEÑO</button>
 
             <div style="margin-top:20px;">
-                <label class="label-sm">Ajustes de Estampado</label>
+                <label class="label-sm">Ajustes</label>
                 <div style="font-size:9px; color:#666;">ESCALA</div>
                 <input type="range" id="pScale" style="width:100%;" min="0.1" max="1.5" step="0.01" value="0.5">
-                <div style="font-size:9px; color:#666; margin-top:10px;">POSICIÓN VERTICAL</div>
+                <div style="font-size:9px; color:#666; margin-top:10px;">ALTURA</div>
                 <input type="range" id="pY" style="width:100%;" min="-200" max="200" value="0">
             </div>
 
             <hr style="border: 0; border-top: 1px solid #222; margin: 20px 0;">
             
-            <label class="label-sm">QR WhatsApp</label>
+            <label class="label-sm">Generar QR</label>
             <input type="text" id="qrText" class="input-dark" placeholder="Link de WhatsApp">
             <button class="btn-main" style="background:#171717; color:#fff; border:1px solid #333;" onclick="generateQR()">CREAR QR</button>
 
             <div style="margin-top:20px;">
                 <label class="label-sm">Color Camiseta</label>
-                <div style="display: flex; gap: 10px; margin-top:5px;">
+                <div style="display: flex; gap: 10px;">
                     <div class="color-dot" style="background:#fff;" onclick="setColor('white')"></div>
                     <div class="color-dot" style="background:#111;" onclick="setColor('black')"></div>
                     <div class="color-dot" style="background:#777;" onclick="setColor('gray')"></div>
@@ -106,7 +88,7 @@
                 <canvas id="previewCanvas"></canvas>
                 <div id="qr-on-mockup"></div>
             </div>
-            <button class="btn-download" onclick="handleDownload()">DESCARGAR MOCKUP</button>
+            <button class="btn-download" onclick="handleDownload()">DESCARGAR</button>
         </main>
     </div>
 
@@ -121,7 +103,6 @@
         let userImg = new Image();
         let mockupImg = new Image();
 
-        // URLs de respaldo (Directas de servidor de imágenes estable)
         const assets = {
             white_front: 'https://images.clothes2order.com/product_images/Front/70-White.png',
             white_back:  'https://images.clothes2order.com/product_images/Back/70-White.png',
@@ -140,6 +121,7 @@
         }
 
         function loadMockup() {
+            mockupImg = new Image();
             mockupImg.crossOrigin = "anonymous";
             mockupImg.src = assets[`${currentColor}_${currentView}`];
             mockupImg.onload = render;
@@ -147,7 +129,9 @@
 
         function setView(v) {
             currentView = v;
+            document.getElementById('vFront').style.background = v === 'front' ? '#222' : '#111';
             document.getElementById('vFront').style.color = v === 'front' ? '#00d2ff' : '#555';
+            document.getElementById('vBack').style.background = v === 'back' ? '#222' : '#111';
             document.getElementById('vBack').style.color = v === 'back' ? '#00d2ff' : '#555';
             loadMockup();
         }
@@ -158,12 +142,15 @@
         }
 
         fileInput.onchange = e => {
+            const file = e.target.files[0];
+            if (!file) return;
             const reader = new FileReader();
             reader.onload = event => {
+                userImg = new Image();
                 userImg.onload = render;
                 userImg.src = event.target.result;
             };
-            reader.readAsDataURL(e.target.files[0]);
+            reader.readAsDataURL(file);
         };
 
         function render() {
@@ -172,11 +159,11 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             // 1. Dibujar Camiseta
-            if (mockupImg.complete) {
+            if (mockupImg.complete && mockupImg.src) {
                 ctx.drawImage(mockupImg, 0, 0, 800, 800);
             }
 
-            // 2. Dibujar Estampado
+            // 2. Dibujar Estampado con fusión
             if (userImg.complete && userImg.src) {
                 const scale = document.getElementById('pScale').value;
                 const moveY = parseInt(document.getElementById('pY').value);
@@ -187,8 +174,9 @@
                 const y = (canvas.height - h) / 2 + moveY;
 
                 ctx.save();
-                ctx.globalAlpha = 0.85; // Efecto de fusión
-                ctx.globalCompositeOperation = "multiply";
+                ctx.globalAlpha = 0.85;
+                // Si la camiseta es negra, usamos 'screen', si es clara usamos 'multiply'
+                ctx.globalCompositeOperation = currentColor === 'black' ? "source-over" : "multiply";
                 ctx.drawImage(userImg, x, y, w, h);
                 ctx.restore();
             }
@@ -216,7 +204,7 @@
         window.onmouseup = () => isDragging = false;
 
         function handleDownload() {
-            if(!isVip) return window.open("https://wa.me/51916689969", "_blank");
+            if(!isVip) return window.open("https://wa.me/51916689969?text=Hola,%20necesito%20mi%20descarga%20de%20mockup", "_blank");
             const link = document.createElement('a');
             link.download = 'jj_studio_mockup.png';
             link.href = canvas.toDataURL();
