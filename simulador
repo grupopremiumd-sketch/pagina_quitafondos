@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J&J Studio Pro — Simulador Elite</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        :root {
+            --bg: #050505; --panel: #111111; --text: #f5f5f5;
+            --accent: #f87171; --border: #262626; --vip: #00d2ff; --success: #10b981;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+
+        .app-container { display: grid; grid-template-columns: 280px 1fr; height: 100vh; }
+        
+        /* Sidebar */
+        aside.sidebar { background: var(--panel); border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; }
+        
+        /* Área Central */
+        main.simulator-space {
+            display: flex; align-items: center; justify-content: center;
+            background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
+            background-size: 30px 30px; position: relative;
+        }
+
+        .mockup-container { position: relative; width: 85%; max-width: 550px; aspect-ratio: 1/1; }
+        #mockup-base { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.6)); }
+
+        /* Capas de diseño */
+        .design-overlay {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            pointer-events: none; mix-blend-mode: multiply; opacity: 0.9; width: 150px;
+        }
+
+        /* QR en el Mockup */
+        #qr-on-mockup { position: absolute; cursor: move; border: 1px dashed var(--vip); z-index: 100; display: none; }
+
+        /* UI CONTROLES */
+        .label-sm { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1px; }
+        .view-selector { display: flex; background: #000; padding: 4px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #222; }
+        .view-btn { flex: 1; padding: 8px; border: none; background: transparent; color: #666; cursor: pointer; border-radius: 7px; font-weight: bold; font-size: 11px; }
+        .view-btn.active { background: #222; color: var(--vip); }
+
+        .btn-main { width: 100%; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; margin-top: 10px; }
+        .btn-upload { background: var(--vip); color: #000; }
+        .btn-nav { background: #222; color: #fff; border: 1px solid #444; font-size: 10px; margin-bottom: 15px; }
+        
+        .input-dark { background: #000; color: #fff; border: 1px solid #333; padding: 10px; width: 100%; border-radius: 8px; font-size: 12px; margin-bottom: 10px; }
+        
+        .btn-download {
+            position: fixed; bottom: 30px; right: 30px; padding: 15px 35px;
+            background: #fff; color: #000; border-radius: 50px; font-weight: 900;
+            border: none; cursor: pointer; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+        #status-tag { font-size: 10px; color: #888; margin-bottom: 10px; display: block; text-align: center; }
+        .status-active { color: var(--success) !important; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <h2 style="color: var(--vip); margin-bottom: 5px; text-align: center; font-weight: 900;">J&J STUDIO</h2>
+            <span id="status-tag">INVITADO</span>
+            
+            <button class="btn-main btn-nav" onclick="location.href='./index.html'">← QUITAR FONDOS</button>
+            <hr style="border: 0; border-top: 1px solid #222; margin: 15px 0;">
+
+            <label class="label-sm">Vista de Prenda</label>
+            <div class="view-selector">
+                <button id="btn-front" class="view-btn active" onclick="setView('front')">FRENTE</button>
+                <button id="btn-back" class="view-btn" onclick="setView('back')">ESPALDA</button>
+            </div>
+
+            <input type="file" id="fileInput" hidden>
+            <button class="btn-main btn-upload" onclick="document.getElementById('fileInput').click()">☁️ SUBIR DISEÑO</button>
+
+            <div style="margin-top:20px;">
+                <label class="label-sm">Tamaño Estampado</label>
+                <input type="range" id="sizeRange" style="width:100%; accent-color:var(--vip);" min="30" max="400" value="150">
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid #222; margin: 20px 0;">
+            
+            <label class="label-sm">QR del Vendedor</label>
+            <input type="text" id="qrText" class="input-dark" placeholder="Enlace de tu WhatsApp">
+            <button class="btn-main" style="background:#171717; color:#fff; border:1px solid #333;" onclick="generateQR()">✨ GENERAR QR</button>
+
+            <div style="margin-top:20px;">
+                <label class="label-sm">Color Camiseta</label>
+                <div style="display: flex; gap: 10px; margin-top:5px;">
+                    <button onclick="changeColor('white')" style="width:25px; height:25px; background:#fff; border-radius:50%; border:none; cursor:pointer;"></button>
+                    <button onclick="changeColor('black')" style="width:25px; height:25px; background:#000; border-radius:50%; border:1px solid #444; cursor:pointer;"></button>
+                    <button onclick="changeColor('gray')" style="width:25px; height:25px; background:#888; border-radius:50%; border:none; cursor:pointer;"></button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="simulator-space">
+            <div class="mockup-container" id="capture-area">
+                <img id="mockup-base" src="https://i.imgur.com/2m65Ww1.png">
+                <img id="design-front" class="design-overlay" src="">
+                <img id="design-back" class="design-overlay" src="" style="display: none;">
+                
+                <div id="qr-on-mockup"></div>
+            </div>
+            <button class="btn-download" id="dl-btn">DESCARGAR MOCKUP</button>
+        </main>
+    </div>
+
+    <script>
+        let isVip = localStorage.getItem('jj_session') === 'active';
+        if(isVip) {
+            document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO";
+            document.getElementById('status-tag').classList.add('status-active');
+        }
+
+        let currentView = 'front';
+        let currentColor = 'white';
+        const mockups = {
+            white: { front: 'https://i.imgur.com/2m65Ww1.png', back: 'https://i.imgur.com/39lXU6f.png' },
+            black: { front: 'https://i.imgur.com/vE9C88R.png', back: 'https://i.imgur.com/XwE4M9T.png' },
+            gray:  { front: 'https://i.imgur.com/vH9jI8z.png', back: 'https://i.imgur.com/839FpM3.png' }
+        };
+
+        function setView(view) {
+            currentView = view;
+            document.getElementById('btn-front').classList.toggle('active', view === 'front');
+            document.getElementById('btn-back').classList.toggle('active', view === 'back');
+            document.getElementById('mockup-base').src = mockups[currentColor][view];
+            document.getElementById('design-front').style.display = view === 'front' ? 'block' : 'none';
+            document.getElementById('design-back').style.display = view === 'back' ? 'block' : 'none';
+        }
+
+        function changeColor(color) {
+            currentColor = color;
+            document.getElementById('mockup-base').src = mockups[color][currentView];
+        }
+
+        document.getElementById('fileInput').onchange = (e) => {
+            const file = e.target.files[0];
+            const url = URL.createObjectURL(file);
+            if (currentView === 'front') document.getElementById('design-front').src = url;
+            else document.getElementById('design-back').src = url;
+        };
+
+        document.getElementById('sizeRange').oninput = (e) => {
+            const target = currentView === 'front' ? document.getElementById('design-front') : document.getElementById('design-back');
+            target.style.width = e.target.value + "px";
+        };
+
+        // --- LÓGICA QR ---
+        let isDraggingQR = false;
+        function generateQR() {
+            const val = document.getElementById('qrText').value;
+            if(!val) return alert("Ingresa un link");
+            const qrDiv = document.getElementById('qr-on-mockup');
+            qrDiv.innerHTML = "";
+            qrDiv.style.display = "block";
+            new QRCode(qrDiv, { text: val, width: 80, height: 80 });
+        }
+
+        const qrBox = document.getElementById('qr-on-mockup');
+        qrBox.onmousedown = () => isDraggingQR = true;
+        window.onmousemove = (e) => {
+            if(isDraggingQR) {
+                const rect = document.querySelector('.mockup-container').getBoundingClientRect();
+                qrBox.style.left = (e.clientX - rect.left - 40) + 'px';
+                qrBox.style.top = (e.clientY - rect.top - 40) + 'px';
+            }
+        };
+        window.onmouseup = () => isDraggingQR = false;
+
+        document.getElementById('dl-btn').onclick = () => {
+            if(!isVip) {
+                alert("Suscripción requerida para descargar.");
+                window.open("https://wa.me/51916689969?text=Hola,%20necesito%20mi%20diseño%20del%20simulador", "_blank");
+            } else {
+                alert("¡Socio VIP detectado! Generando imagen de alta resolución...");
+                // Aquí se podría integrar html2canvas para una descarga real de lo que se ve
+            }
+        };
+    </script>
+</body>
+</html>
