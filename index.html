@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro | Miembros VIP</title>
+    <title>J&J Studio Pro | Acceso VIP</title>
     <style>
-        /* COLORES PERSONALIZADOS J&J */
         :root {
-            --primary: #00d2ff; /* Azul Neón */
-            --secondary: #0081ff; /* Azul Profundo */
-            --bg: #0a0b10; /* Negro Espacial */
-            --card: #161b22; /* Gris Oscuro */
+            --primary: #00d2ff;
+            --secondary: #0081ff;
+            --bg: #0a0b10;
+            --card: #161b22;
             --text: #ffffff;
-            --accent: #25d366; /* Verde WhatsApp */
+            --accent: #25d366;
         }
 
         body {
@@ -24,27 +23,28 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* DISEÑO DEL LOGIN */
+        /* LOGIN */
         #login-container {
             background: var(--card);
             padding: 40px;
             border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.15);
             width: 90%;
             max-width: 380px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .logo-text {
-            font-size: 2rem;
+            font-size: 2.2rem;
             font-weight: 800;
             background: linear-gradient(to right, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
+            margin-bottom: 10px;
         }
 
         input {
@@ -57,12 +57,6 @@
             color: white;
             box-sizing: border-box;
             font-size: 1rem;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 8px rgba(0, 210, 255, 0.3);
         }
 
         .btn {
@@ -80,88 +74,109 @@
             transition: 0.3s;
         }
 
-        .btn:hover {
-            filter: brightness(1.2);
-            transform: translateY(-2px);
-        }
+        .btn:hover { filter: brightness(1.2); transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        /* DISEÑO DE LA HERRAMIENTA */
+        /* HERRAMIENTA */
         #app-container {
             display: none;
             width: 95%;
-            max-width: 1000px;
+            max-width: 1100px;
             background: var(--card);
-            padding: 20px;
+            padding: 25px;
             border-radius: 20px;
             text-align: center;
+            animation: fadeIn 0.5s ease;
         }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
         .canvas-container {
             background: #0d1117;
             border-radius: 15px;
-            padding: 10px;
+            padding: 15px;
             margin-top: 20px;
             border: 1px solid #30363d;
             overflow: auto;
+            min-height: 300px;
         }
 
         canvas {
             max-width: 100%;
             cursor: crosshair;
-            background-image: linear-gradient(45deg, #1d2128 25%, transparent 25%), linear-gradient(-45deg, #1d2128 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #1d2128 75%), linear-gradient(-45deg, transparent 75%, #1d2128 75%);
-            background-size: 20px 20px;
+            background-image: repeating-conic-gradient(#1d2128 0% 25%, transparent 0% 50%) 50% / 20px 20px;
         }
 
-        .error { color: #ff6b6b; font-size: 0.85rem; margin-top: 10px; display: none; }
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            background: #0d1117;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 15px;
+        }
 
-        /* WHATSAPP */
+        .error { color: #ff6b6b; font-size: 0.85rem; margin-top: 12px; display: none; font-weight: 500; }
+
         .ws-float {
             position: fixed;
             bottom: 25px;
             right: 25px;
             background: var(--accent);
-            width: 55px;
-            height: 55px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            z-index: 100;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 1000;
+            transition: 0.3s;
         }
+        .ws-float:hover { transform: scale(1.1); }
     </style>
 </head>
 <body>
 
     <div id="login-container">
         <div class="logo-text">COMUNIDAD J&J</div>
-        <p style="color: #8b949e;">Acceso Exclusivo para Suscriptores</p>
+        <p style="color: #8b949e; margin-bottom: 25px;">Herramienta Profesional de Diseño</p>
         
         <input type="text" id="user-id" placeholder="📱 Número de Celular">
-        <input type="password" id="access-key" placeholder="🔑 Contraseña (Celular)">
+        <input type="password" id="access-key" placeholder="🔑 Contraseña (Tu Celular)">
         
-        <button class="btn" onclick="validateAccess()">Iniciar Sesión</button>
-        <p id="login-error" class="error">⚠️ Acceso denegado. Revisa tus datos o membresía.</p>
+        <button class="btn" id="login-btn" onclick="validateAccess()">Entrar al Panel</button>
+        <p id="login-error" class="error"></p>
     </div>
 
     <div id="app-container">
         <header style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <div class="logo-text" style="font-size: 1.2rem;">J&J STUDIO PRO</div>
-            <button onclick="location.reload()" style="background: none; border: 1px solid #444; color: #8b949e; cursor: pointer; border-radius: 5px; padding: 5px 10px;">Cerrar Sesión</button>
+            <div class="logo-text" style="font-size: 1.4rem;">J&J STUDIO PRO</div>
+            <button onclick="location.reload()" style="background: rgba(255,255,255,0.1); border: none; color: white; cursor: pointer; border-radius: 8px; padding: 8px 15px;">Cerrar Sesión</button>
         </header>
 
-        <input type="file" id="upload" accept="image/*" style="margin-bottom: 15px; color: #8b949e;">
+        <div style="margin-bottom: 20px;">
+            <label class="btn" style="width: auto; display: inline-block; cursor: pointer;">
+                📁 Seleccionar Imagen
+                <input type="file" id="upload" accept="image/*" style="display: none;">
+            </label>
+            <p style="font-size: 0.8rem; color: #8b949e; margin-top: 10px;">Haz clic en el color de la imagen que quieres quitar.</p>
+        </div>
         
-        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; background: #0d1117; padding: 15px; border-radius: 12px;">
+        <div class="controls">
             <div>
-                <span style="font-size: 0.8rem; color: #8b949e;">COLOR SELECCIONADO</span><br>
-                <div id="colorShow" style="width: 40px; height: 40px; border-radius: 8px; border: 2px solid white; display: inline-block; background: #fff; margin-top: 5px;"></div>
+                <span style="font-size: 0.75rem; color: #8b949e; text-transform: uppercase;">Color</span><br>
+                <div id="colorShow" style="width: 45px; height: 45px; border-radius: 10px; border: 2px solid white; display: inline-block; background: #fff; margin-top: 5px; box-shadow: 0 0 10px rgba(255,255,255,0.2);"></div>
             </div>
-            <div style="flex-grow: 1; max-width: 200px;">
-                <span style="font-size: 0.8rem; color: #8b949e;">TOLERANCIA: <b id="tolVal">30</b></span><br>
+            <div style="flex-grow: 1; max-width: 250px; text-align: left;">
+                <span style="font-size: 0.75rem; color: #8b949e; text-transform: uppercase;">Tolerancia: <b id="tolVal" style="color: var(--primary);">30</b></span><br>
                 <input type="range" id="tolerance" min="0" max="150" value="30" style="margin-top: 15px;">
             </div>
-            <button class="btn" onclick="downloadImage()" style="width: auto; padding: 0 25px;">⬇️ Descargar PNG</button>
+            <div style="display: flex; align-items: center;">
+                <button class="btn" onclick="downloadImage()" style="width: auto; padding: 0 30px; background: #fff; color: #000;">⬇️ Guardar PNG</button>
+            </div>
         </div>
 
         <div class="canvas-container">
@@ -169,23 +184,32 @@
         </div>
     </div>
 
-    <a href="https://wa.me/TU_NUMERO" class="ws-float" target="_blank">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="30">
+    <a href="https://wa.me/519XXXXXXXX" class="ws-float" target="_blank" title="Soporte J&J">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="35" alt="WhatsApp">
     </a>
 
     <script>
-        const WEB_APP_URL = "TU_URL_DE_GOOGLE_APPS_SCRIPT"; 
+        // ENLACE DE TU GOOGLE APPS SCRIPT
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec"; 
 
         async function validateAccess() {
-            const user = document.getElementById('user-id').value;
-            const pass = document.getElementById('access-key').value;
-            const btn = document.querySelector('.btn');
+            const user = document.getElementById('user-id').value.trim();
+            const pass = document.getElementById('access-key').value.trim();
+            const btn = document.getElementById('login-btn');
             const errorMsg = document.getElementById('login-error');
 
-            if(!user || !pass) return;
-            btn.innerText = "VERIFICANDO...";
+            if(!user || !pass) {
+                errorMsg.innerText = "Ingresa tu número de celular.";
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            btn.innerText = "Validando...";
+            btn.disabled = true;
+            errorMsg.style.display = 'none';
             
             try {
+                // Consultamos a Google Sheets
                 const response = await fetch(`${WEB_APP_URL}?user=${user}&pass=${pass}`);
                 const data = await response.json();
 
@@ -193,17 +217,19 @@
                     document.getElementById('login-container').style.display = 'none';
                     document.getElementById('app-container').style.display = 'block';
                 } else {
-                    errorMsg.innerText = data.message || "Datos incorrectos.";
+                    errorMsg.innerText = data.message || "Error: Datos incorrectos.";
                     errorMsg.style.display = 'block';
                 }
             } catch (e) {
-                alert("Error de conexión con la base de datos.");
+                errorMsg.innerText = "Error de conexión con la base de datos.";
+                errorMsg.style.display = 'block';
             } finally {
-                btn.innerText = "INICIAR SESIÓN";
+                btn.innerText = "Entrar al Panel";
+                btn.disabled = false;
             }
         }
 
-        // LÓGICA DE IMAGEN
+        // --- MOTOR DE PROCESAMIENTO DE IMAGEN ---
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         let originalImageData = null;
@@ -225,9 +251,13 @@
         });
 
         canvas.addEventListener('mousedown', (e) => {
+            if(!originalImageData) return;
             const rect = canvas.getBoundingClientRect();
-            const x = Math.floor((e.clientX - rect.left) * (canvas.width / rect.width));
-            const y = Math.floor((e.clientY - rect.top) * (canvas.height / rect.height));
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const x = Math.floor((e.clientX - rect.left) * scaleX);
+            const y = Math.floor((e.clientY - rect.top) * scaleY);
+            
             const pixel = ctx.getImageData(x, y, 1, 1).data;
             selectedColor = { r: pixel[0], g: pixel[1], b: pixel[2] };
             document.getElementById('colorShow').style.background = `rgb(${selectedColor.r},${selectedColor.g},${selectedColor.b})`;
@@ -246,16 +276,20 @@
             const data = imageData.data;
 
             for (let i = 0; i < data.length; i += 4) {
-                const diff = Math.sqrt(Math.pow(data[i]-selectedColor.r,2)+Math.pow(data[i+1]-selectedColor.g,2)+Math.pow(data[i+2]-selectedColor.b,2));
-                if (diff < tolerance) data[i+3] = 0;
+                const diff = Math.sqrt(
+                    Math.pow(data[i] - selectedColor.r, 2) +
+                    Math.pow(data[i+1] - selectedColor.g, 2) +
+                    Math.pow(data[i+2] - selectedColor.b, 2)
+                );
+                if (diff < tolerance) data[i+3] = 0; // Transparencia
             }
             ctx.putImageData(imageData, 0, 0);
         }
 
         function downloadImage() {
             const link = document.createElement('a');
-            link.download = 'JJ_Pro_Design.png';
-            link.href = canvas.toDataURL();
+            link.download = 'JJ-Studio-Transparente.png';
+            link.href = canvas.toDataURL('image/png');
             link.click();
         }
     </script>
