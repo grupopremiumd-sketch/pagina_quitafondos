@@ -7,48 +7,33 @@
     <style>
         :root {
             --bg: #050505; --panel: #111111; --text: #f5f5f5;
-            --accent: #f87171; --border: #262626; --vip: #00d2ff;
+            --accent: #f87171; --border: #262626; --vip: #00d2ff; --success: #10b981;
         }
         * { box-sizing: border-box; }
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
-
         .app-container { display: grid; grid-template-columns: 280px 1fr; height: 100vh; }
         aside.sidebar { background: var(--panel); border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; }
-        
-        main.simulator-space {
-            display: flex; align-items: center; justify-content: center;
-            background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px);
-            background-size: 30px 30px; position: relative;
-        }
-
+        main.simulator-space { display: flex; align-items: center; justify-content: center; background-image: radial-gradient(circle, #1a1a1a 1px, transparent 1px); background-size: 30px 30px; position: relative; }
         .mockup-container { position: relative; width: 85%; max-width: 550px; aspect-ratio: 1/1; }
         #mockup-base { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 20px 50px rgba(0,0,0,0.6)); }
-
-        .design-overlay {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            pointer-events: none; mix-blend-mode: multiply; opacity: 0.9; width: 150px;
-        }
-
+        .design-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; mix-blend-mode: multiply; opacity: 0.9; width: 150px; }
         .view-selector { display: flex; background: #000; padding: 4px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #222; }
         .view-btn { flex: 1; padding: 8px; border: none; background: transparent; color: #666; cursor: pointer; border-radius: 7px; font-weight: bold; font-size: 11px; }
         .view-btn.active { background: #222; color: var(--vip); }
-
         .btn-main { width: 100%; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; margin-top: 5px; }
         .btn-upload { background: var(--vip); color: #000; }
-        .btn-nav { background: #222; color: #fff; margin-top: 20px; border: 1px solid #444; }
-
-        .btn-download {
-            position: fixed; bottom: 30px; right: 30px; padding: 15px 35px;
-            background: #fff; color: #000; border-radius: 50px; font-weight: 900;
-            border: none; cursor: pointer; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-        }
+        .btn-nav { background: #222; color: #fff; margin-top: 10px; border: 1px solid #444; font-size: 10px; }
+        .btn-download { position: fixed; bottom: 30px; right: 30px; padding: 15px 35px; background: #fff; color: #000; border-radius: 50px; font-weight: 900; border: none; cursor: pointer; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
+        #status-tag { font-size: 10px; color: #888; margin-bottom: 10px; display: block; text-align: center; }
+        .status-active { color: var(--success) !important; font-weight: bold; }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         <aside class="sidebar">
-            <h2 style="color: var(--vip); margin-bottom: 20px;">J&J SIMULADOR</h2>
+            <h2 style="color: var(--vip); margin-bottom: 5px; text-align: center;">J&J STUDIO</h2>
+            <span id="status-tag">INVITADO</span>
             
             <button class="btn-main btn-nav" onclick="location.href='index.html'">← QUITAR FONDOS</button>
             <hr style="border: 0; border-top: 1px solid #222; margin: 20px 0;">
@@ -83,11 +68,18 @@
                 <img id="design-front" class="design-overlay" src="">
                 <img id="design-back" class="design-overlay" src="" style="display: none;">
             </div>
-            <button class="btn-download" onclick="window.open('https://wa.me/51916689969?text=Hola,%20necesito%20mi%20diseño%20del%20simulador', '_blank')">DESCARGAR MOCKUP</button>
+            <button class="btn-download" id="dl-btn">DESCARGAR MOCKUP</button>
         </main>
     </div>
 
     <script>
+        // --- DETECTAR SESIÓN COMPARTIDA ---
+        let isVip = localStorage.getItem('jj_session') === 'active';
+        if(isVip) {
+            document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO";
+            document.getElementById('status-tag').classList.add('status-active');
+        }
+
         let currentView = 'front';
         let currentColor = 'white';
         const mockups = {
@@ -120,6 +112,16 @@
         document.getElementById('sizeRange').oninput = (e) => {
             const target = currentView === 'front' ? document.getElementById('design-front') : document.getElementById('design-back');
             target.style.width = e.target.value + "px";
+        };
+
+        document.getElementById('dl-btn').onclick = () => {
+            if(!isVip) {
+                alert("Suscripción requerida para descargar.");
+                window.open("https://wa.me/51916689969?text=Hola,%20necesito%20mi%20diseño%20del%20simulador", "_blank");
+            } else {
+                alert("Preparando descarga VIP...");
+                // Aquí podrías añadir la lógica de exportar el canvas si lo deseas
+            }
         };
     </script>
 </body>
