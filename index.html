@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro — Herramienta Definitiva</title>
+    <title>J&J Studio Pro — Quitar Fondo</title>
     <style>
         :root {
-            --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
+            --bg: #0a0a0a; --panel: #111; --text: #eeeeee; --muted: #9ca3af;
             --accent: #f87171; --border: #1f1f1f; --success: #10b981;
         }
         * { box-sizing: border-box; }
@@ -20,41 +20,32 @@
 
         /* --- PANEL LATERAL --- */
         .wrap { display: grid; grid-template-columns: 350px 1fr; height: 100vh; }
-        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; z-index: 100; }
+        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; }
         h2 { font-size: 14px; color: var(--muted); margin-bottom: 15px; font-weight: 700; text-transform: uppercase; }
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
         label { font-size: 13px; color: #ddd; width: 120px; }
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
         .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 50px; text-align: center; font-size: 13px; margin-left: 10px; }
         
-        /* SELECTOR COLOR LIENZO */
-        .cp-container { display: flex; gap: 10px; height: 140px; margin-top: 10px; }
-        #cpSV { flex: 1; border-radius: 6px; border: 1px solid #2a2a2a; cursor: crosshair; }
-        #cpH { width: 20px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: ns-resize; }
+        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
+        .btn-s { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 12px; font-weight: 800; }
+        .btn-dl { width: 100%; padding: 12px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 10px; font-weight: 900; cursor: pointer; box-shadow: 0 6px 16px rgba(34,197,94,.25); }
 
-        .btn-group { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
-        .btn-s { flex: 1; min-width: 100px; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 12px; font-weight: 800; }
-        .btn-dl { width: 100%; padding: 12px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 10px; font-weight: 900; cursor: pointer; }
-
-        /* --- ESCENARIO Y RECORTE --- */
+        /* --- ESCENARIO --- */
         .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; height: 100%; }
-        #canvas-container { position: relative; display: inline-block; }
-        canvas#canvas { display: block; cursor: crosshair; }
-        
-        #crop-box {
-            position: absolute; border: 2px dashed #fff; cursor: move; display: none;
-            box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); z-index: 50;
-        }
-        .resizer {
-            width: 12px; height: 12px; background: #fff; border: 2px solid var(--accent);
-            position: absolute; right: -6px; bottom: -6px; cursor: nwse-resize; border-radius: 50%;
-        }
+        canvas#canvas { display: block; max-width: 95%; max-height: 95%; cursor: crosshair; }
 
-        /* --- MODAL EXPORTAR --- */
-        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal { background: #121212; padding: 20px; border-radius: 14px; width: 560px; border: 1px solid #262626; }
+        /* --- RECUADRO DE EXPORTACIÓN (Tal cual la imagen) --- */
+        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal { background: #121212; padding: 20px; border-radius: 14px; width: 560px; border: 1px solid #262626; box-shadow: 0 25px 60px rgba(0,0,0,.5); }
+        .modal h3 { font-size: 16px; margin: 0 0 15px; color: #fff; font-weight: bold; }
         .m-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .m-row { display: flex; align-items: center; gap: 10px; justify-content: space-between; }
         .m-input { background: #fffbe6; color: #333; border: 1px solid #d4b106; padding: 6px 10px; border-radius: 4px; font-weight: bold; width: 110px; }
+        .tag-m { font-size: 11px; padding: 2px 6px; border: 1px solid #2a2a2a; border-radius: 6px; background: #171717; color: #cbd5e1; }
+        .btn-f { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+        .b-cancel { background: #1a0b0b; color: #fecaca; border: 1px solid #3a1212; padding: 8px 20px; border-radius: 8px; cursor: pointer; font-weight: 800; }
+        .b-apply { background: #2a2a2a; color: #eee; border: 1px solid #444; padding: 8px 25px; border-radius: 8px; cursor: pointer; font-weight: 800; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -63,8 +54,8 @@
     <div id="login-overlay">
         <div class="login-card">
             <div class="logo-text">COMUNIDAD J&J</div>
-            <input type="text" id="user-id" placeholder="📱 Celular" style="width:100%; padding:12px; margin-bottom:10px; background:#000; color:#fff; border:1px solid #333; border-radius:8px;">
-            <input type="password" id="access-key" placeholder="🔑 Contraseña" style="width:100%; padding:12px; margin-bottom:20px; background:#000; color:#fff; border:1px solid #333; border-radius:8px;">
+            <input type="text" id="user-id" placeholder="📱 Celular" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
+            <input type="password" id="access-key" placeholder="🔑 Contraseña" style="width:100%; padding:12px; margin-bottom:20px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
             <button class="btn-login" onclick="validateAccess()">INGRESAR</button>
         </div>
     </div>
@@ -78,8 +69,8 @@
             <div class="control-row">
                 <label>Modo</label>
                 <select id="mode" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; flex:1;">
-                    <option value="white">Quitar blanco</option>
-                    <option value="black">Quitar negro</option>
+                    <option value="white">Quitar fondo blanco</option>
+                    <option value="black">Quitar fondo negro</option>
                     <option value="pick">Elegir color...</option>
                     <option value="auto">Auto (esquinas)</option>
                 </select>
@@ -87,58 +78,60 @@
 
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
-            <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" step="1" value="0"><div class="val-box" id="contractV">0</div></div>
-
-            <h2>Herramientas</h2>
-            <div class="btn-group">
-                <button class="btn-s" id="btn-init-crop">✂️ Recortar</button>
-                <button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000;">Aplicar</button>
-                <button class="btn-s" onclick="location.reload()">Reiniciar</button>
-            </div>
-
-            <label style="margin-top:15px; display:block;">Color del lienzo</label>
-            <div class="cp-container">
-                <canvas id="cpSV" width="220" height="140"></canvas>
-                <canvas id="cpH" width="20" height="140"></canvas>
-            </div>
+            <div class="control-row"><label>Contraer / Expandir</label><input type="range" id="contract" min="-10" max="10" step="1" value="1"><div class="val-box" id="contractV">1</div></div>
 
             <button class="btn-dl" id="openExport">DESCARGAR PNG</button>
         </section>
 
-        <section class="stage" id="stage">
-            <div id="canvas-container">
-                <canvas id="canvas"></canvas>
-                <div id="crop-box"><div class="resizer"></div></div>
-            </div>
-        </section>
+        <section class="stage" id="stage"><canvas id="canvas"></canvas></section>
     </main>
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
             <h3>Exportar — Redimensionar</h3>
             <div class="m-grid">
-                <div class="m-row" style="display:flex; justify-content:space-between; align-items:center;"><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
-                <div class="m-row" style="display:flex; justify-content:space-between; align-items:center;"><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
-                <div class="m-row" style="display:flex; justify-content:space-between; align-items:center;"><label>Unidades</label><select id="rzUnit" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:6px; border-radius:6px; width:110px;"><option value="cm">cm</option><option value="in">in</option><option value="px">px</option></select></div>
-                <div class="m-row" style="display:flex; justify-content:space-between; align-items:center;"><label>Resolución</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
-                <div style="grid-column: span 2;"><input type="checkbox" id="lockAspect" checked> <span style="font-size:12px; color:#888;">Mantener proporción</span></div>
+                <div class="m-row"><label>Ancho</label><div style="display:flex;gap:5px;"><input type="number" id="rzW" class="m-input"><span class="tag-m" id="utW">cm</span></div></div>
+                <div class="m-row"><label>Alto</label><div style="display:flex;gap:5px;"><input type="number" id="rzH" class="m-input"><span class="tag-m" id="utH">cm</span></div></div>
+                <div class="m-row"><label>Unidades</label>
+                    <select id="rzUnit" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:6px; border-radius:6px; width:120px;">
+                        <option value="cm">cm (centímetros)</option>
+                        <option value="in">in (pulgadas)</option>
+                        <option value="px">px (píxeles)</option>
+                    </select>
+                </div>
+                <div class="m-row"><label>Resolución</label><div style="display:flex;gap:5px;"><input type="number" id="rzDPI" class="m-input" value="300"><span class="tag-m">ppi</span></div></div>
+                <div class="m-row"><label>Método</label>
+                    <select id="rzMethod" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:6px; border-radius:6px; width:100%;">
+                        <option value="high">Alta calidad (Bicúbica)</option>
+                        <option value="medium">Bueno (Bilinear)</option>
+                        <option value="low">Rápido (Nearest)</option>
+                    </select>
+                </div>
+                <div class="m-row" style="grid-column: span 2; justify-content: flex-start;">
+                    <label style="width:auto; margin-right:15px;">Proporción</label>
+                    <input type="checkbox" id="lockAspect" checked style="width:auto; margin-right:8px;">
+                    <span style="font-size:12px; color:var(--muted)">Mantener relación de aspecto</span>
+                </div>
             </div>
-            <div style="display:flex; gap:10px; margin-top:20px; justify-content:flex-end;">
-                <button class="btn-s" onclick="closeModal()">Cancelar</button>
-                <button class="btn-s" style="background:#2a2a2a;" onclick="finalDownload()">Aplicar</button>
+            <p id="infoSize" style="font-size:11px; color:#9aa0a6; margin-top:15px;">Tamaño actual: —</p>
+            <div class="btn-f">
+                <button style="background:none; border:none; color:#9aa0a6; cursor:pointer; font-size:12px;" onclick="useCurrent()">Usar tamaño actual</button>
+                <button class="b-cancel" onclick="closeModal()">Cancelar</button>
+                <button class="b-apply" onclick="finalDownload()">Aplicar</button>
             </div>
         </div>
     </div>
 
     <script>
+        // CONFIGURACIÓN DE CONEXIÓN (Reemplazar con tu URL de AppScript si es necesario)
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec";
 
         async function validateAccess() {
-            const u = document.getElementById('user-id').value;
-            const p = document.getElementById('access-key').value;
-            if(!u || !p) return;
+            const user = document.getElementById('user-id').value.trim();
+            const pass = document.getElementById('access-key').value.trim();
+            if(!user || !pass) return;
             try {
-                const res = await fetch(`${WEB_APP_URL}?user=${u}&pass=${p}`);
+                const res = await fetch(`${WEB_APP_URL}?user=${user}&pass=${pass}`);
                 const data = await res.json();
                 if(data.access) document.getElementById('login-overlay').style.display='none';
                 else alert("Acceso denegado");
@@ -147,139 +140,80 @@
 
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
-        let aspectRatio = 1, targetColor = [255,255,255], isResizing = false, isDragging = false;
-        const cropBox = document.getElementById('crop-box');
+        let aspectRatio = 1, targetColor = [255,255,255];
 
-        document.getElementById('file').onchange = e => {
+        document.getElementById('file').addEventListener('change', e => {
             const f = e.target.files[0];
+            if(!f) return;
             const img = new Image();
             img.onload = () => {
                 oCanvas.width = img.width; oCanvas.height = img.height;
                 aspectRatio = img.width / img.height;
                 oCtx.drawImage(img, 0, 0);
+                document.getElementById('infoSize').innerText = `Tamaño actual: ${img.width} × ${img.height} px · ppi (meta): 300`;
                 process();
             };
             img.src = URL.createObjectURL(f);
-        };
+        });
 
         function process() {
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value);
-            const feather = parseFloat(document.getElementById('feather').value);
-            const contract = parseInt(document.getElementById('contract').value);
-            const mode = document.getElementById('mode').value;
-            
-            document.getElementById('fuzzV').innerText = fuzz;
-            document.getElementById('featherV').innerText = feather;
-            document.getElementById('contractV').innerText = contract;
-
             const id = oCtx.getImageData(0, 0, oCanvas.width, oCanvas.height);
             const d = id.data, out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
-            if(mode === 'white') targetColor = [255,255,255];
-            else if(mode === 'black') targetColor = [0,0,0];
-            else if(mode === 'auto') targetColor = [d[0], d[1], d[2]];
-
-            const threshold = (fuzz * 2.5) + (contract * 10);
-            const soft = (feather * 15) + 1;
-
+            document.getElementById('fuzzV').innerText = fuzz;
             for(let i=0; i<d.length; i+=4) {
-                const dist = Math.sqrt((d[i]-targetColor[0])**2 + (d[i+1]-targetColor[1])**2 + (d[i+2]-targetColor[2])**2);
-                o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                if(dist < threshold - soft) o[i+3] = 0;
-                else if(dist < threshold) o[i+3] = ((dist - (threshold - soft)) / soft) * d[i+3];
-                else o[i+3] = d[i+3];
+                const r=d[i], g=d[i+1], b=d[i+2];
+                const dist = Math.sqrt((r-255)**2 + (g-255)**2 + (b-255)**2);
+                o[i]=r; o[i+1]=g; o[i+2]=b;
+                o[i+3] = dist < fuzz ? 0 : 255;
             }
             canvas.width = oCanvas.width; canvas.height = oCanvas.height;
             ctx.putImageData(out, 0, 0);
         }
 
-        // --- RECORTE AJUSTABLE ---
-        document.getElementById('btn-init-crop').onclick = () => {
-            if(!oCanvas.width) return;
-            cropBox.style.display = 'block';
-            cropBox.style.width = '200px'; cropBox.style.height = '200px';
-            cropBox.style.top = '10%'; cropBox.style.left = '10%';
-            document.getElementById('btn-apply-crop').classList.remove('hidden');
-        };
-
-        cropBox.onmousedown = (e) => { if(!e.target.classList.contains('resizer')) isDragging = true; };
-        document.querySelector('.resizer').onmousedown = (e) => { isResizing = true; e.preventDefault(); };
-        window.onmousemove = (e) => {
-            if(!oCanvas.width) return;
-            const rect = document.getElementById('canvas-container').getBoundingClientRect();
-            if(isResizing) {
-                cropBox.style.width = (e.clientX - cropBox.getBoundingClientRect().left) + 'px';
-                cropBox.style.height = (e.clientY - cropBox.getBoundingClientRect().top) + 'px';
-            } else if(isDragging) {
-                cropBox.style.left = (e.clientX - rect.left - cropBox.offsetWidth/2) + 'px';
-                cropBox.style.top = (e.clientY - rect.top - cropBox.offsetHeight/2) + 'px';
-            }
-        };
-        window.onmouseup = () => { isResizing = false; isDragging = false; };
-
-        document.getElementById('btn-apply-crop').onclick = () => {
-            const canvRect = canvas.getBoundingClientRect();
-            const boxRect = cropBox.getBoundingClientRect();
-            const scale = oCanvas.width / canvRect.width;
-            const x = (boxRect.left - canvRect.left) * scale, y = (boxRect.top - canvRect.top) * scale;
-            const w = boxRect.width * scale, h = boxRect.height * scale;
-            const temp = document.createElement('canvas'); temp.width = w; temp.height = h;
-            temp.getContext('2d').drawImage(oCanvas, x, y, w, h, 0, 0, w, h);
-            oCanvas.width = w; oCanvas.height = h; aspectRatio = w/h;
-            oCtx.clearRect(0,0,w,h); oCtx.drawImage(temp, 0, 0);
-            cropBox.style.display = 'none'; document.getElementById('btn-apply-crop').classList.add('hidden');
-            process();
-        };
-
-        // --- COLOR LIENZO ---
-        const cpSV = document.getElementById('cpSV'), cpH = document.getElementById('cpH');
-        const svCtx = cpSV.getContext('2d'), hCtx = cpH.getContext('2d');
-        let hue = 0;
-        function drawCP() {
-            hCtx.clearRect(0,0,20,140); const gH = hCtx.createLinearGradient(0,0,0,140);
-            for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`);
-            hCtx.fillStyle = gH; hCtx.fillRect(0,0,20,140);
-            svCtx.fillStyle = `hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,220,140);
-            const gW = svCtx.createLinearGradient(0,0,220,0); gW.addColorStop(0, '#fff'); gW.addColorStop(1, 'transparent');
-            svCtx.fillStyle = gW; svCtx.fillRect(0,0,220,140);
-            const gB = svCtx.createLinearGradient(0,0,0,140); gB.addColorStop(0, 'transparent'); gB.addColorStop(1, '#000');
-            svCtx.fillStyle = gB; svCtx.fillRect(0,0,220,140);
-        }
-        drawCP();
-        cpH.onclick = (e) => { hue = (e.offsetY / 140) * 360; drawCP(); };
-        cpSV.onclick = (e) => {
-            const id = svCtx.getImageData(e.offsetX, e.offsetY, 1, 1).data;
-            document.getElementById('stage').style.background = `rgb(${id[0]},${id[1]},${id[2]})`;
-        };
-
-        // --- EXPORTAR ---
+        // LÓGICA DEL RECUADRO DE EXPORTACIÓN (Basado en 406779.jpg)
         const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect'), rzUnit = document.getElementById('rzUnit'), rzDPI = document.getElementById('rzDPI');
+
+        function convertPxToUnit(px, unit, dpi) {
+            if(unit === 'cm') return (px / dpi * 2.54).toFixed(3);
+            if(unit === 'in') return (px / dpi).toFixed(3);
+            return px;
+        }
+
         document.getElementById('openExport').onclick = () => {
             if(!oCanvas.width) return;
-            rzW.value = oCanvas.width; rzH.value = oCanvas.height;
+            const dpi = parseInt(rzDPI.value);
+            rzW.value = convertPxToUnit(oCanvas.width, rzUnit.value, dpi);
+            rzH.value = convertPxToUnit(oCanvas.height, rzUnit.value, dpi);
             document.getElementById('modalExport').classList.remove('hidden');
         };
-        rzW.oninput = () => { if(lock.checked) rzH.value = Math.round(rzW.value / aspectRatio); };
-        rzH.oninput = () => { if(lock.checked) rzW.value = Math.round(rzH.value * aspectRatio); };
+
+        rzW.oninput = () => { if(lock.checked) rzH.value = (rzW.value / aspectRatio).toFixed(3); };
+        rzH.oninput = () => { if(lock.checked) rzW.value = (rzH.value * aspectRatio).toFixed(3); };
+        rzUnit.onchange = () => {
+            const unit = rzUnit.value;
+            document.getElementById('utW').innerText = unit;
+            document.getElementById('utH').innerText = unit;
+        };
+
         function closeModal() { document.getElementById('modalExport').classList.add('hidden'); }
+        function useCurrent() { rzW.value = oCanvas.width; rzH.value = oCanvas.height; rzUnit.value = 'px'; }
+
         function finalDownload() {
             const dpi = parseInt(rzDPI.value);
             let fW = rzW.value;
             if(rzUnit.value === 'cm') fW = (rzW.value / 2.54 * dpi);
             else if(rzUnit.value === 'in') fW = (rzW.value * dpi);
             const temp = document.createElement('canvas'); temp.width = fW; temp.height = fW / aspectRatio;
-            temp.getContext('2d').drawImage(canvas, 0, 0, temp.width, temp.height);
+            const tCtx = temp.getContext('2d');
+            tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
+            tCtx.drawImage(canvas, 0, 0, temp.width, temp.height);
             const a = document.createElement('a'); a.download = 'jj_studio.png'; a.href = temp.toDataURL(); a.click();
             closeModal();
         }
 
         ['fuzz','feather','contract','mode'].forEach(id => document.getElementById(id).oninput = process);
-        canvas.onclick = (e) => {
-            if(document.getElementById('mode').value !== 'pick') return;
-            const rect = canvas.getBoundingClientRect();
-            const x = Math.round((e.clientX - rect.left) * (oCanvas.width / rect.width)), y = Math.round((e.clientY - rect.top) * (oCanvas.height / rect.height));
-            const p = oCtx.getImageData(x, y, 1, 1).data; targetColor = [p[0],p[1],p[2]]; process();
-        };
     </script>
 </body>
 </html>
