@@ -8,12 +8,12 @@
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eeeeee; --muted: #9ca3af;
             --accent: #00d2ff; --accent-2: #0ea5e9; --border: #1f1f1f;
-            --success: #10b981; --overlay: rgba(0,0,0,.7);
+            --success: #10b981; --overlay: rgba(0,0,0,.85);
         }
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+        body { margin: 0; font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
 
-        /* --- LOGIN SYSTEM --- */
+        /* --- SISTEMA DE BLOQUEO --- */
         #login-overlay {
             position: fixed; inset: 0; background: var(--bg); z-index: 9999;
             display: flex; align-items: center; justify-content: center;
@@ -28,31 +28,24 @@
         }
         input[type="text"], input[type="password"] {
             width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px;
-            border: 1px solid var(--border); background: #000; color: #fff;
+            border: 1px solid var(--border); background: #000; color: #fff; outline: none;
         }
         .btn-login {
             width: 100%; padding: 12px; background: var(--accent); border: none;
-            color: #000; font-weight: bold; border-radius: 8px; cursor: pointer;
+            color: #000; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px;
         }
 
-        /* --- APP INTERFACE --- */
-        header { padding: 12px 16px; border-bottom: 1px solid var(--border); background: #0b0b0b; display: flex; align-items: center; justify-content: space-between; }
+        /* --- INTERFAZ --- */
+        header { padding: 12px 16px; border-bottom: 1px solid var(--border); background: #0b0b0b; display: flex; align-items: center; justify-content: space-between; height: 60px; }
         .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
         .panel { padding: 16px; background: var(--panel); border-right: 1px solid var(--border); overflow-y: auto; }
         .stage { position: relative; background: #0f0f0f; display: flex; align-items: center; justify-content: center; overflow: hidden; height: 100%; }
         canvas#canvas { display: block; transform-origin: top left; }
-        canvas#overlay { position: absolute; inset: 0; pointer-events: none; }
-        
-        /* HERRAMIENTAS */
         .row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; margin: 15px 0; }
-        .kbd { background: #222; padding: 2px 4px; border-radius: 4px; font-size: 10px; }
         .btn-tool { background: #1a1a1a; border: 1px solid var(--border); color: white; padding: 8px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold; }
         .btn-download { background: var(--success); color: #000; font-weight: 900; width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; }
         .hidden { display: none !important; }
-
-        /* MODALES */
-        .modal-back { position: fixed; inset: 0; background: var(--overlay); display: flex; align-items: center; justify-content: center; z-index: 100; }
-        .modal { background: #121212; padding: 20px; border-radius: 12px; width: 400px; border: 1px solid var(--border); }
+        .error { color: #ff4d4d; font-size: 12px; margin-top: 10px; display: none; }
     </style>
 </head>
 <body>
@@ -60,153 +53,141 @@
     <div id="login-overlay">
         <div class="login-card">
             <div class="logo-text">COMUNIDAD J&J</div>
-            <p style="color: var(--muted);">Panel de Diseño Avanzado</p>
-            <input type="text" id="user-id" placeholder="📱 Celular">
+            <p style="color: var(--muted);">Ingrese sus datos de suscriptor</p>
+            <input type="text" id="user-id" placeholder="📱 Número de Celular">
             <input type="password" id="access-key" placeholder="🔑 Contraseña (Celular)">
-            <button class="btn-login" onclick="validateAccess()">ENTRAR</button>
-            <p id="login-error" style="color: #ff4d4d; font-size: 12px; margin-top: 10px; display: none;"></p>
+            <button class="btn-login" id="login-btn" onclick="validateAccess()">ENTRAR AL PANEL</button>
+            <p id="login-error" class="error"></p>
         </div>
     </div>
 
     <header>
-        <div style="font-weight: 900; color: var(--accent);">J&J STUDIO PRO</div>
+        <div style="font-weight: 900; color: var(--accent); letter-spacing: 1px;">J&J STUDIO PRO</div>
         <button onclick="location.reload()" style="background:none; border:none; color:var(--muted); cursor:pointer;">Cerrar Sesión</button>
     </header>
 
     <main class="wrap">
         <section class="panel">
-            <h2>Cargar Imagen</h2>
+            <h2>1. Cargar Imagen</h2>
             <input type="file" id="file" accept="image/*" class="btn-tool">
-            
             <hr style="border:0; border-top:1px solid var(--border); margin: 20px 0;">
-
-            <h2>Configuración</h2>
+            <h2>2. Configuración</h2>
             <div class="row">
-                <label>Modo</label>
+                <label>Modo Limpieza</label>
                 <select id="mode" class="btn-tool" style="width: auto;">
                     <option value="white">Quitar Blanco</option>
                     <option value="black">Quitar Negro</option>
-                    <option value="pick">Elegir Color...</option>
-                    <option value="auto">Auto (Esquinas)</option>
+                    <option value="pick">Elegir Color</option>
                 </select>
             </div>
-
             <div class="row">
                 <label>Tolerancia</label>
                 <input type="range" id="fuzz" min="0" max="200" value="60">
             </div>
-
-            <div class="row">
-                <label>Suavizado (px)</label>
-                <input type="range" id="feather" min="0" max="10" step="0.1" value="0.8">
-            </div>
-
-            <div class="row">
-                <label>Contraer/Expandir</label>
-                <input type="range" id="contract" min="-10" max="10" step="1" value="1">
-            </div>
-
-            <div style="display: flex; gap: 5px;">
-                <button id="btnCrop" class="btn-tool">✂️ Recortar</button>
-                <button id="btnApplyCrop" class="btn-tool hidden" style="background: var(--success); color: #000;">Aplicar</button>
-                <button id="btnCancelCrop" class="btn-tool hidden" style="background: #3a1212;">X</button>
-            </div>
-
             <button id="download" class="btn-download">DESCARGAR PNG</button>
-            
-            <p style="font-size: 11px; color: var(--muted); margin-top: 20px;">
-                Atajos: <span class="kbd">Espacio</span> mover · <span class="kbd">Rueda</span> zoom · <span class="kbd">Ctrl+Z</span> deshacer.
-            </p>
         </section>
 
         <section class="stage" id="stage">
             <canvas id="canvas"></canvas>
-            <canvas id="overlay"></canvas>
         </section>
     </main>
 
-    <div id="resizeModal" class="modal-back hidden">
-        <div class="modal">
-            <h3>Exportar Diseño</h3>
-            <div class="row"><label>Ancho (px)</label><input type="number" id="rzWidth"></div>
-            <div class="row"><label>Alto (px)</label><input type="number" id="rzHeight"></div>
-            <div class="row"><label>DPI (DTF)</label><input type="number" id="rzDPI" value="300"></div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button onclick="closeResize()" class="btn-tool">Cancelar</button>
-                <button id="rzApply" class="btn-login">DESCARGAR</button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // --- CONEXIÓN BASE DE DATOS ---
+        // CONFIGURACIÓN DE CONEXIÓN
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec";
 
+        // FUNCIÓN DE ACCESO (Corregida)
         async function validateAccess() {
             const user = document.getElementById('user-id').value.trim();
             const pass = document.getElementById('access-key').value.trim();
+            const btn = document.getElementById('login-btn');
             const err = document.getElementById('login-error');
-            
-            if(!user || !pass) return;
-            err.innerText = "Verificando..."; err.style.display = "block";
+
+            if (!user || !pass) {
+                alert("Por favor rellena los campos");
+                return;
+            }
+
+            btn.innerText = "VERIFICANDO...";
+            btn.disabled = true;
+            err.style.display = "none";
 
             try {
-                const res = await fetch(`${WEB_APP_URL}?user=${user}&pass=${pass}`);
-                const data = await res.json();
-                if(data.access) {
+                const response = await fetch(`${WEB_APP_URL}?user=${user}&pass=${pass}`);
+                const data = await response.json();
+
+                if (data.access) {
                     document.getElementById('login-overlay').style.display = 'none';
                 } else {
                     err.innerText = data.message || "Acceso denegado.";
+                    err.style.display = "block";
                 }
-            } catch(e) { err.innerText = "Error de conexión."; }
+            } catch (e) {
+                console.error(e);
+                err.innerText = "Error de conexión. Revisa el Script.";
+                err.style.display = "block";
+            } finally {
+                btn.innerText = "ENTRAR AL PANEL";
+                btn.disabled = false;
+            }
         }
 
-        // --- LÓGICA DE IMAGEN AVANZADA ---
-        const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
-        const overlay = document.getElementById('overlay'), octx = overlay.getContext('2d');
-        let ocanvas = document.createElement('canvas'), octx_base = ocanvas.getContext('2d');
-        let scale = 1, offsetX = 0, offsetY = 0;
-        let lastOut = null;
+        // --- MOTOR DE IMAGEN ---
+        const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', { willReadFrequently: true });
+        let ocanvas = document.createElement('canvas'), octx = ocanvas.getContext('2d');
+        let scale = 1, offsetX = 0, offsetY = 0, lastOut = null;
 
-        // Cargar imagen
         document.getElementById('file').addEventListener('change', e => {
             const f = e.target.files[0];
-            if(!f) return;
-            const url = URL.createObjectURL(f);
+            if (!f) return;
             const img = new Image();
             img.onload = () => {
                 ocanvas.width = img.width; ocanvas.height = img.height;
-                octx_base.drawImage(img, 0, 0);
-                fitCanvas();
-                processNow();
+                octx.drawImage(img, 0, 0);
+                autoFit();
+                processImage();
             };
-            img.src = url;
+            img.src = URL.createObjectURL(f);
         });
 
-        function fitCanvas() {
+        function autoFit() {
             const stage = document.getElementById('stage');
-            scale = Math.min(stage.clientWidth / ocanvas.width, stage.clientHeight / ocanvas.height, 1);
-            offsetX = (stage.clientWidth - ocanvas.width * scale) / 2;
-            offsetY = (stage.clientHeight - ocanvas.height * scale) / 2;
+            scale = Math.min(stage.clientWidth / ocanvas.width, stage.clientHeight / ocanvas.height, 0.9);
             render();
         }
 
         function render() {
             canvas.width = ocanvas.width; canvas.height = ocanvas.height;
-            if(lastOut) ctx.putImageData(lastOut, 0, 0);
+            if (lastOut) ctx.putImageData(lastOut, 0, 0);
             else ctx.drawImage(ocanvas, 0, 0);
-            canvas.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+            canvas.style.transform = `scale(${scale})`;
         }
 
-        // Procesado de fondo (Algoritmo optimizado)
-        function processNow() {
-            if(!ocanvas.width) return;
+        function processImage() {
+            if (!ocanvas.width) return;
+            const id = octx.getImageData(0, 0, ocanvas.width, ocanvas.height);
+            const data = id.data, fuzz = document.getElementById('fuzz').value;
             const mode = document.getElementById('mode').value;
-            const fuzz = document.getElementById('fuzz').value;
-            const id = octx_base.getImageData(0, 0, ocanvas.width, ocanvas.height);
-            const data = id.data;
             const out = ctx.createImageData(ocanvas.width, ocanvas.height);
-            const o = out.data;
+            const o = out.data, target = mode === 'black' ? [0,0,0] : [255,255,255];
 
-            let target = [255, 255, 255]; // Por defecto blanco
-            if(mode === 'black') target
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i], g = data[i+1], b = data[i+2];
+                const dist = Math.sqrt((r-target[0])**2 + (g-target[1])**2 + (b-target[2])**2);
+                o[i]=r; o[i+1]=g; o[i+2]=b;
+                o[i+3] = dist < fuzz ? 0 : 255;
+            }
+            lastOut = out; render();
+        }
+
+        document.getElementById('fuzz').addEventListener('input', processImage);
+        document.getElementById('mode').addEventListener('change', processImage);
+        document.getElementById('download').addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = 'jj_studio_pro.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    </script>
+</body>
+</html>
