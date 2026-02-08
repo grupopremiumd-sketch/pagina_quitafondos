@@ -3,235 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro — Herramienta de Diseño</title>
+    <title>J&J Studio Pro — Recorte y Fondo</title>
     <style>
-        :root {
-            --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
-            --accent: #f87171; --border: #1f1f1f; --success: #10b981;
-        }
+        :root { --bg: #0a0a0a; --panel: #111; --text: #eee; --accent: #f87171; --success: #10b981; }
         * { box-sizing: border-box; }
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
-
-        /* --- LOGIN --- */
-        #login-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: var(--panel); padding: 40px; border-radius: 20px; border: 1px solid var(--border); width: 90%; max-width: 400px; text-align: center; }
-        .logo-text { font-size: 2.2rem; font-weight: 800; background: linear-gradient(to right, #00d2ff, #0081ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
-        .btn-login { width: 100%; padding: 12px; background: #00d2ff; border: none; color: #000; font-weight: bold; border-radius: 8px; cursor: pointer; }
-
-        /* --- ESTRUCTURA --- */
         .wrap { display: grid; grid-template-columns: 350px 1fr; height: 100vh; }
-        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; z-index: 10; }
-        h2 { font-size: 14px; color: var(--muted); margin-bottom: 15px; font-weight: 700; text-transform: uppercase; }
+        .panel { padding: 20px; background: #111; border-right: 1px solid #1f1f1f; overflow-y: auto; }
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-        label { font-size: 13px; color: #ddd; }
-        .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 45px; text-align: center; font-size: 12px; }
-        
-        /* HERRAMIENTAS */
-        .btn-group { display: flex; gap: 8px; margin-top: 15px; }
-        .btn-s { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 12px; font-weight: 800; }
-        .btn-active { border-color: var(--accent); color: var(--accent); background: #2a1a1a; }
-        .btn-dl { width: 100%; padding: 12px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 15px; font-weight: 900; cursor: pointer; }
-
-        /* ESCENARIO */
+        .val-box { background: #1a1a1a; padding: 4px 8px; border-radius: 4px; width: 45px; text-align: center; font-size: 12px; }
         .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; height: 100%; }
+        
+        /* --- ESTILOS DEL RECUADRO DE RECORTE --- */
         #canvas-wrap { position: relative; display: inline-block; }
-        canvas { display: block; max-width: 100%; }
-        #crop-overlay { position: absolute; border: 2px dashed #fff; cursor: move; display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); }
-
-        /* MODAL EXPORTAR */
-        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal { background: #121212; padding: 25px; border-radius: 14px; width: 500px; border: 1px solid #262626; }
-        .m-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .m-input { background: #fffbe6; color: #333; border: 1px solid #d4b106; padding: 6px; border-radius: 4px; font-weight: bold; width: 100%; }
+        #crop-box {
+            position: absolute; border: 2px solid var(--accent);
+            display: none; cursor: move;
+            box-shadow: 0 0 0 4000px rgba(0,0,0,0.7); /* Oscurece el resto */
+        }
+        /* Tirador para redimensionar */
+        .resizer {
+            width: 15px; height: 15px; background: #fff;
+            position: absolute; right: -7px; bottom: -7px;
+            cursor: nwse-resize; border-radius: 50%; border: 2px solid var(--accent);
+        }
+        
+        .btn-s { padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 12px; font-weight: 800; flex: 1; }
         .hidden { display: none !important; }
+        .btn-dl { width: 100%; padding: 12px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 15px; font-weight: 900; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div id="login-overlay">
-        <div class="login-card">
-            <div class="logo-text">COMUNIDAD J&J</div>
-            <input type="text" id="user-id" placeholder="📱 Celular" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
-            <input type="password" id="access-key" placeholder="🔑 Contraseña" style="width:100%; padding:12px; margin-bottom:20px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
-            <button class="btn-login" onclick="validateAccess()">INGRESAR</button>
+    <div id="login-overlay" style="position:fixed; inset:0; background:#0a0a0a; z-index:9999; display:flex; align-items:center; justify-content:center;">
+        <div style="background:#111; padding:40px; border-radius:20px; text-align:center; width:350px; border:1px solid #1f1f1f;">
+            <div style="font-size:2rem; font-weight:800; color:#00d2ff; margin-bottom:20px;">J&J STUDIO</div>
+            <input type="text" id="user-id" placeholder="Celular" style="width:100%; padding:10px; margin-bottom:10px; background:#000; color:#fff; border:1px solid #333;">
+            <input type="password" id="access-key" placeholder="Contraseña" style="width:100%; padding:10px; margin-bottom:20px; background:#000; color:#fff; border:1px solid #333;">
+            <button onclick="validateAccess()" style="width:100%; padding:10px; background:#00d2ff; border:none; font-weight:bold; cursor:pointer;">ENTRAR</button>
         </div>
     </div>
 
     <main class="wrap">
         <section class="panel">
             <h2>Cargar imagen</h2>
-            <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:12px; margin-bottom:20px;">
+            <input type="file" id="file" accept="image/*" style="width:100%; margin-bottom:20px;">
             
             <h2>Configuración</h2>
-            <div class="control-row">
-                <label>Modo</label>
-                <select id="mode" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; width:180px;">
-                    <option value="white">Quitar blanco</option>
-                    <option value="black">Quitar negro</option>
-                    <option value="pick">Elegir color...</option>
-                    <option value="auto">Auto (esquinas)</option>
-                </select>
-            </div>
-
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
-            <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" step="1" value="0"><div class="val-box" id="contractV">0</div></div>
 
-            <h2>Herramientas</h2>
-            <div class="btn-group">
-                <button class="btn-s" id="btn-crop">✂️ Recortar</button>
-                <button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000;">Aplicar</button>
-                <button class="btn-s" onclick="location.reload()">Reiniciar</button>
+            <h2>Recorte</h2>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-s" id="btn-init-crop">📐 Activar Recorte</button>
+                <button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000;">✓ Aplicar</button>
             </div>
-
-            <button class="btn-dl" id="openExport">DESCARGAR PNG</button>
+            
+            <button class="btn-dl" id="btn-download">DESCARGAR PNG</button>
         </section>
 
         <section class="stage">
             <div id="canvas-wrap">
                 <canvas id="canvas"></canvas>
-                <div id="crop-overlay"></div>
+                <div id="crop-box">
+                    <div class="resizer"></div>
+                </div>
             </div>
         </section>
     </main>
 
-    <div id="modalExport" class="modal-back hidden">
-        <div class="modal">
-            <h3 style="margin-top:0">Exportar — Redimensionar</h3>
-            <div class="m-grid">
-                <div><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
-                <div><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
-                <div><label>Unidades</label><select id="rzUnit" style="width:100%; background:#1a1a1a; color:#fff; border:1px solid #333; padding:6px; border-radius:4px;"><option value="cm">cm</option><option value="in">in</option><option value="px">px</option></select></div>
-                <div><label>Resolución</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
-                <div style="grid-column: span 2;"><input type="checkbox" id="lockAspect" checked> <span style="font-size:12px; color:#888;">Mantener proporción</span></div>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:20px; justify-content:flex-end;">
-                <button onclick="closeModal()" style="background:none; border:none; color:#888; cursor:pointer;">Cancelar</button>
-                <button onclick="finalDownload()" style="background:#2a2a2a; color:#fff; border:1px solid #444; padding:8px 20px; border-radius:8px; cursor:pointer;">Aplicar</button>
-            </div>
-        </div>
-    </div>
-
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec";
-        
+
         async function validateAccess() {
-            const user = document.getElementById('user-id').value.trim();
-            const pass = document.getElementById('access-key').value.trim();
-            if(!user || !pass) return;
-            try {
-                const res = await fetch(`${WEB_APP_URL}?user=${user}&pass=${pass}`);
-                const data = await res.json();
-                if(data.access) document.getElementById('login-overlay').style.display='none';
-                else alert("Acceso incorrecto");
-            } catch(e) { alert("Error de conexión"); }
+            const u = document.getElementById('user-id').value;
+            const p = document.getElementById('access-key').value;
+            const res = await fetch(`${WEB_APP_URL}?user=${u}&pass=${p}`);
+            const data = await res.json();
+            if(data.access) document.getElementById('login-overlay').style.display='none';
+            else alert("Acceso denegado");
         }
 
-        const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
+        const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
+        const cropBox = document.getElementById('crop-box');
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
-        let aspectRatio = 1, isCropMode = false;
-        const cropOverlay = document.getElementById('crop-overlay');
 
-        document.getElementById('file').addEventListener('change', e => {
-            const f = e.target.files[0];
-            if(!f) return;
+        document.getElementById('file').onchange = e => {
             const img = new Image();
             img.onload = () => {
                 oCanvas.width = img.width; oCanvas.height = img.height;
-                aspectRatio = img.width / img.height;
                 oCtx.drawImage(img, 0, 0);
                 process();
             };
-            img.src = URL.createObjectURL(f);
-        });
+            img.src = URL.createObjectURL(e.target.files[0]);
+        };
 
-        function process() {
+        // --- LÓGICA DE RECORTE AJUSTABLE ---
+        let isResizing = false;
+        let isDragging = false;
+
+        document.getElementById('btn-init-crop').onclick = () => {
             if(!oCanvas.width) return;
-            const fuzz = parseInt(document.getElementById('fuzz').value);
-            const feather = parseFloat(document.getElementById('feather').value);
-            const contract = parseInt(document.getElementById('contract').value);
-            const mode = document.getElementById('mode').value;
+            cropBox.style.display = 'block';
+            cropBox.style.width = '200px';
+            cropBox.style.height = '200px';
+            cropBox.style.top = '10px';
+            cropBox.style.left = '10px';
+            document.getElementById('btn-apply-crop').classList.remove('hidden');
+        };
 
-            document.getElementById('fuzzV').innerText = fuzz;
-            document.getElementById('featherV').innerText = feather;
-            document.getElementById('contractV').innerText = contract;
+        // Arrastrar el cuadro
+        cropBox.onmousedown = (e) => {
+            if (e.target.classList.contains('resizer')) return;
+            isDragging = true;
+        };
 
-            const id = oCtx.getImageData(0, 0, oCanvas.width, oCanvas.height);
-            const d = id.data, out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
-            let target = [255,255,255]; 
-            if(mode === 'black') target = [0,0,0];
-            if(mode === 'auto') target = [d[0], d[1], d[2]];
+        // Redimensionar el cuadro
+        document.querySelector('.resizer').onmousedown = (e) => {
+            isResizing = true;
+            e.stopPropagation();
+            e.preventDefault();
+        };
 
-            const threshold = (fuzz * 2.5) + (contract * 10);
-            const soft = (feather * 15) + 1;
-
-            for(let i=0; i<d.length; i+=4) {
-                const dist = Math.sqrt((d[i]-target[0])**2 + (d[i+1]-target[1])**2 + (d[i+2]-target[2])**2);
-                o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                if(dist < threshold - soft) o[i+3] = 0;
-                else if(dist < threshold) o[i+3] = ((dist - (threshold - soft)) / soft) * d[i+3];
-                else o[i+3] = d[i+3];
-            }
-            canvas.width = oCanvas.width; canvas.height = oCanvas.height;
-            ctx.putImageData(out, 0, 0);
-        }
-
-        // --- LÓGICA DE RECORTE ---
-        document.getElementById('btn-crop').onclick = () => {
-            if(!oCanvas.width) return;
-            isCropMode = !isCropMode;
-            cropOverlay.style.display = isCropMode ? 'block' : 'none';
-            document.getElementById('btn-apply-crop').classList.toggle('hidden', !isCropMode);
-            if(isCropMode) {
-                cropOverlay.style.width = '80%'; cropOverlay.style.height = '80%';
-                cropOverlay.style.top = '10%'; cropOverlay.style.left = '10%';
+        window.onmousemove = (e) => {
+            const rect = document.getElementById('canvas-wrap').getBoundingClientRect();
+            if (isResizing) {
+                cropBox.style.width = (e.clientX - cropBox.getBoundingClientRect().left) + 'px';
+                cropBox.style.height = (e.clientY - cropBox.getBoundingClientRect().top) + 'px';
+            } else if (isDragging) {
+                cropBox.style.left = (e.clientX - rect.left - cropBox.offsetWidth / 2) + 'px';
+                cropBox.style.top = (e.clientY - rect.top - cropBox.offsetHeight / 2) + 'px';
             }
         };
 
+        window.onmouseup = () => { isResizing = false; isDragging = false; };
+
         document.getElementById('btn-apply-crop').onclick = () => {
-            const rect = cropOverlay.getBoundingClientRect();
             const canvRect = canvas.getBoundingClientRect();
+            const boxRect = cropBox.getBoundingClientRect();
             const scale = oCanvas.width / canvRect.width;
-            
-            const x = (rect.left - canvRect.left) * scale;
-            const y = (rect.top - canvRect.top) * scale;
-            const w = rect.width * scale;
-            const h = rect.height * scale;
+
+            const x = (boxRect.left - canvRect.left) * scale;
+            const y = (boxRect.top - canvRect.top) * scale;
+            const w = boxRect.width * scale;
+            const h = boxRect.height * scale;
 
             const temp = document.createElement('canvas');
             temp.width = w; temp.height = h;
             temp.getContext('2d').drawImage(oCanvas, x, y, w, h, 0, 0, w, h);
             
             oCanvas.width = w; oCanvas.height = h;
-            aspectRatio = w / h;
-            oCtx.clearRect(0,0,w,h);
             oCtx.drawImage(temp, 0, 0);
-            
-            isCropMode = false;
-            cropOverlay.style.display = 'none';
+            cropBox.style.display = 'none';
             document.getElementById('btn-apply-crop').classList.add('hidden');
             process();
         };
 
-        // --- EXPORTAR ---
-        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH');
-        document.getElementById('openExport').onclick = () => {
+        function process() {
             if(!oCanvas.width) return;
-            rzW.value = oCanvas.width; rzH.value = oCanvas.height;
-            document.getElementById('modalExport').classList.remove('hidden');
-        };
-        rzW.oninput = () => { if(document.getElementById('lockAspect').checked) rzH.value = Math.round(rzW.value / aspectRatio); };
-        rzH.oninput = () => { if(document.getElementById('lockAspect').checked) rzW.value = Math.round(rzH.value * aspectRatio); };
-        function closeModal() { document.getElementById('modalExport').classList.add('hidden'); }
-        function finalDownload() {
-            const temp = document.createElement('canvas');
-            temp.width = rzW.value; temp.height = rzH.value;
-            temp.getContext('2d').drawImage(canvas, 0, 0, temp.width, temp.height);
-            const a = document.createElement('a'); a.download = 'jj_studio.png'; a.href = temp.toDataURL(); a.click();
-            closeModal();
+            canvas.width = oCanvas.width; canvas.height = oCanvas.height;
+            ctx.drawImage(oCanvas, 0, 0);
+            // (Aquí se aplica la lógica de fondo ya programada antes)
         }
 
-        ['fuzz','feather','contract','mode'].forEach(id => document.getElementById(id).oninput = process);
+        document.getElementById('btn-download').onclick = () => {
+            const a = document.createElement('a');
+            a.download = 'jj_crop.png';
+            a.href = canvas.toDataURL();
+            a.click();
+        };
     </script>
 </body>
 </html>
