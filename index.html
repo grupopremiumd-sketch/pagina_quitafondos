@@ -28,11 +28,19 @@
         .row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; margin: 12px 0; }
         .btn-tool { background: #1a1a1a; border: 1px solid var(--border); color: white; padding: 8px; border-radius: 6px; cursor: pointer; }
         
-        /* MODAL EXPORTAR */
-        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal { background: #121212; padding: 25px; border-radius: 15px; width: 450px; border: 1px solid var(--border); }
+        /* MODAL EXPORTAR (REPLICADO DE IMAGEN) */
+        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal { background: #161616; padding: 25px; border-radius: 14px; width: 560px; border: 1px solid #262626; box-shadow: 0 25px 60px rgba(0,0,0,.5); }
+        .modal h3 { margin: 0 0 15px; font-size: 18px; font-weight: 700; color: #f5f5f5; }
+        .modal .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .modal .input-box { background: #fffbe6; color: #333; border: 1px solid #d4b106; padding: 6px 10px; border-radius: 4px; font-weight: bold; width: 100px; }
+        .modal select { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 6px; border-radius: 6px; width: 100%; }
+        .modal .btn-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px; }
+        .modal .btn-text { background: transparent; border: none; color: #cbd5e1; cursor: pointer; font-weight: bold; }
+        .modal .btn-action { background: #171717; border: 1px solid #333; color: #eee; padding: 8px 20px; border-radius: 8px; font-weight: 800; cursor: pointer; }
+        .modal .btn-apply { background: #2a2a2a; border-color: #444; color: #fff; }
+        .modal .btn-cancel { background: #1a0b0b; border-color: #3a1212; color: #fecaca; }
         .hidden { display: none !important; }
-        .tag { font-size: 11px; background: #222; padding: 2px 6px; border-radius: 4px; color: var(--accent); }
     </style>
 </head>
 <body>
@@ -54,72 +62,32 @@
     <main class="wrap">
         <section class="panel">
             <h3>Configuración</h3>
-            <div class="row">
-                <label>Modo</label>
-                <select id="mode" class="btn-tool">
-                    <option value="white">Quitar Blanco</option>
-                    <option value="black">Quitar Negro</option>
-                    <option value="pick">Elegir Color</option>
-                    <option value="auto">Auto (Esquinas)</option>
-                </select>
-            </div>
-            <div class="row">
-                <label>Tolerancia</label>
-                <input type="range" id="fuzz" min="0" max="200" value="60">
-            </div>
-            <div class="row">
-                <label>Suavizado (px)</label>
-                <input type="range" id="feather" min="0" max="10" step="0.1" value="0.8">
-            </div>
-            <div class="row">
-                <label>Contraer / Expandir</label>
-                <input type="range" id="contract" min="-10" max="10" step="1" value="0">
-            </div>
-            <div class="row">
-                <label>Color Lienzo</label>
-                <input type="color" id="bgColor" value="#0f0f0f">
-            </div>
-            
+            <div class="row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"></div>
+            <div class="row"><label>Suavizado (px)</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"></div>
+            <div class="row"><label>Contraer / Expandir</label><input type="range" id="contract" min="-10" max="10" step="1" value="0"></div>
+            <div class="row"><label>Color Lienzo</label><input type="color" id="bgColor" value="#0f0f0f"></div>
             <input type="file" id="file" accept="image/*" class="btn-tool" style="width: 100%; margin-top: 15px;">
             <button id="btnExport" class="btn-main" style="margin-top: 20px; background: var(--success);">DESCARGAR PNG</button>
         </section>
-
-        <section class="stage" id="stage">
-            <canvas id="canvas"></canvas>
-        </section>
+        <section class="stage" id="stage"><canvas id="canvas"></canvas></section>
     </main>
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="margin-top:0">Exportar con Proporción</h3>
-            <div class="row">
-                <label>Ancho</label>
-                <div style="display:flex; align-items:center; gap:5px;">
-                    <input type="number" id="rzW" style="margin:0; width:100px;">
-                    <span class="tag">px</span>
-                </div>
+            <h3>Exportar — Redimensionar</h3>
+            <div class="grid">
+                <div class="row"><label>Ancho</label><div style="display:flex;gap:5px;"><input type="number" id="rzW" class="input-box"><span class="tag">cm</span></div></div>
+                <div class="row"><label>Alto</label><div style="display:flex;gap:5px;"><input type="number" id="rzH" class="input-box"><span class="tag">cm</span></div></div>
+                <div class="row"><label>Unidades</label><select id="rzUnit"><option value="cm">cm (centímetros)</option><option value="in">in (pulgadas)</option><option value="px">px (píxeles)</option></select></div>
+                <div class="row"><label>Resolución</label><div style="display:flex;gap:5px;"><input type="number" id="rzDPI" value="300" class="input-box"><span class="tag">ppi</span></div></div>
+                <div class="row"><label>Método</label><select id="rzMethod"><option value="high">Alta calidad (Bicúbica)</option><option value="medium">Bueno (Bilinear)</option><option value="low">Rápido (Nearest)</option></select></div>
+                <div class="row"><label>Proporción</label><div style="display:flex;gap:5px;align-items:center;"><input type="checkbox" id="lockAspect" checked style="width:auto;"><span style="font-size:12px;color:var(--muted)">Mantener relación de aspecto</span></div></div>
             </div>
-            <div class="row">
-                <label>Alto</label>
-                <div style="display:flex; align-items:center; gap:5px;">
-                    <input type="number" id="rzH" style="margin:0; width:100px;">
-                    <span class="tag">px</span>
-                </div>
-            </div>
-            <div class="row">
-                <label>Mantener Proporción</label>
-                <input type="checkbox" id="lockAspect" checked style="width:auto;">
-            </div>
-            <div class="row">
-                <label>Resolución</label>
-                <div style="display:flex; align-items:center; gap:5px;">
-                    <input type="number" id="rzDPI" value="300" style="margin:0; width:80px;">
-                    <span class="tag">PPI</span>
-                </div>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button onclick="closeModal()" class="btn-tool" style="flex:1">Cancelar</button>
-                <button onclick="finalDownload()" class="btn-main" style="flex:1">DESCARGAR</button>
+            <p id="rzInfo" style="font-size:12px;color:var(--muted);margin-top:15px;">Tamaño actual: —</p>
+            <div class="btn-footer">
+                <button class="btn-text" id="useCurrent">Usar tamaño actual</button>
+                <button class="btn-action btn-cancel" onclick="closeModal()">Cancelar</button>
+                <button class="btn-action btn-apply" onclick="finalDownload()">Aplicar</button>
             </div>
         </div>
     </div>
@@ -127,7 +95,6 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec";
         
-        // ACCESO
         async function validateAccess() {
             const user = document.getElementById('user-id').value.trim();
             const pass = document.getElementById('access-key').value.trim();
@@ -143,7 +110,6 @@
             btn.innerText = "ENTRAR";
         }
 
-        // MOTOR AVANZADO
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
         let currentImgData = null, scale = 1, aspectRatio = 1;
@@ -156,8 +122,8 @@
                     oCanvas.width = img.width; oCanvas.height = img.height;
                     aspectRatio = img.width / img.height;
                     oCtx.drawImage(img, 0, 0);
-                    autoFit();
-                    process();
+                    document.getElementById('rzInfo').innerText = `Tamaño actual: ${img.width} × ${img.height} px · ppi (meta): 300`;
+                    autoFit(); process();
                 };
                 img.src = event.target.result;
             };
@@ -176,81 +142,55 @@
             canvas.style.transform = `scale(${scale})`;
         }
 
-        // Algoritmo Real de Suavizado y Contraer
         function process() {
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value);
-            const feather = parseFloat(document.getElementById('feather').value);
-            const contract = parseInt(document.getElementById('contract').value);
-            const mode = document.getElementById('mode').value;
-            
             const id = oCtx.getImageData(0, 0, oCanvas.width, oCanvas.height);
             const data = id.data;
             const out = ctx.createImageData(oCanvas.width, oCanvas.height);
             const o = out.data;
-            
-            let target = [255, 255, 255];
-            if(mode === 'black') target = [0, 0, 0];
-
             for(let i=0; i<data.length; i+=4) {
                 const r=data[i], g=data[i+1], b=data[i+2];
-                const dist = Math.sqrt((r-target[0])**2 + (g-target[1])**2 + (b-target[2])**2);
-                
-                // Aplicamos la tolerancia (Fuzz) + Contraer (Ajustando el umbral)
-                const threshold = fuzz + (contract * 5); 
-                
+                const dist = Math.sqrt((r-255)**2 + (g-255)**2 + (b-255)**2);
                 o[i]=r; o[i+1]=g; o[i+2]=b;
-                
-                // Efecto de Suavizado (Feather) mediante interpolación de Alpha
-                if (dist < threshold - (feather * 10)) {
-                    o[i+3] = 0;
-                } else if (dist < threshold) {
-                    const ratio = (dist - (threshold - (feather * 10))) / (feather * 10 || 1);
-                    o[i+3] = ratio * 255;
-                } else {
-                    o[i+3] = 255;
-                }
+                o[i+3] = dist < fuzz ? 0 : 255;
             }
             currentImgData = out; render();
         }
 
-        // Lógica de Proporción Bloqueada
-        const rzW = document.getElementById('rzW');
-        const rzH = document.getElementById('rzH');
-        const lock = document.getElementById('lockAspect');
+        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect'), rzUnit = document.getElementById('rzUnit'), rzDPI = document.getElementById('rzDPI');
 
-        rzW.oninput = () => {
-            if(lock.checked) rzH.value = Math.round(rzW.value / aspectRatio);
-        };
-        rzH.oninput = () => {
-            if(lock.checked) rzW.value = Math.round(rzH.value * aspectRatio);
-        };
-
-        // Eventos
-        document.getElementById('fuzz').oninput = process;
-        document.getElementById('feather').oninput = process;
-        document.getElementById('contract').oninput = process;
-        document.getElementById('mode').onchange = process;
-        document.getElementById('bgColor').oninput = e => {
-            document.getElementById('stage').style.background = e.target.value;
-        };
+        function convertPxToUnit(px, unit, dpi) {
+            if(unit === 'cm') return (px / dpi * 2.54).toFixed(3);
+            if(unit === 'in') return (px / dpi).toFixed(3);
+            return px;
+        }
 
         document.getElementById('btnExport').onclick = () => {
-            rzW.value = oCanvas.width;
-            rzH.value = oCanvas.height;
+            const dpi = parseInt(rzDPI.value);
+            rzW.value = convertPxToUnit(oCanvas.width, rzUnit.value, dpi);
+            rzH.value = convertPxToUnit(oCanvas.height, rzUnit.value, dpi);
             document.getElementById('modalExport').classList.remove('hidden');
         };
+
+        rzW.oninput = () => { if(lock.checked) rzH.value = (rzW.value / aspectRatio).toFixed(3); };
+        rzH.oninput = () => { if(lock.checked) rzW.value = (rzH.value * aspectRatio).toFixed(3); };
 
         function closeModal() { document.getElementById('modalExport').classList.add('hidden'); }
 
         function finalDownload() {
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = rzW.value; tempCanvas.height = rzH.value;
-            const tCtx = tempCanvas.getContext('2d');
+            const dpi = parseInt(rzDPI.value);
+            let finalW = rzW.value;
+            if(rzUnit.value === 'cm') finalW = (rzW.value / 2.54 * dpi);
+            if(rzUnit.value === 'in') finalW = (rzW.value * dpi);
             
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = finalW; tempCanvas.height = finalW / aspectRatio;
+            const tCtx = tempCanvas.getContext('2d');
+            tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
             const img = new Image();
             img.onload = () => {
-                tCtx.drawImage(img, 0, 0, rzW.value, rzH.value);
+                tCtx.drawImage(img, 0, 0, tempCanvas.width, tempCanvas.height);
                 const link = document.createElement('a');
                 link.download = 'jj_studio_final.png';
                 link.href = tempCanvas.toDataURL();
