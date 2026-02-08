@@ -11,7 +11,7 @@
             --accent: #f87171; --border: #262626; --vip: #00d2ff; --success: #10b981;
         }
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
 
         .app-container { display: grid; grid-template-columns: 280px 1fr; height: 100vh; }
         aside.sidebar { background: var(--panel); border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; z-index: 100; }
@@ -22,70 +22,40 @@
             background-size: 30px 30px; position: relative;
         }
 
-        /* CONTENEDOR MAESTRO */
         .mockup-container { 
             position: relative; 
             width: 90%; 
             max-width: 500px; 
             aspect-ratio: 1/1; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: transparent;
         }
 
-        /* LA CAMISETA - Debe estar siempre visible */
-        #mockup-base { 
-            position: absolute;
-            width: 100%; 
-            height: 100%; 
-            object-fit: contain; 
-            z-index: 5;
-            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.5));
+        /* Lienzo donde se dibuja todo */
+        canvas#previewCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            filter: drop-shadow(0 15px 40px rgba(0,0,0,0.6));
         }
 
-        /* EL DISEÑO - Encima de la camiseta con efecto de fusión */
-        .design-overlay {
-            position: absolute; 
-            z-index: 10;
-            pointer-events: none; 
-            mix-blend-mode: multiply; 
-            opacity: 0.85; 
-            width: 160px;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        /* QR MOVIBLE - Encima de todo */
+        /* QR sobre el canvas */
         #qr-on-mockup { 
-            position: absolute; 
-            z-index: 20;
-            cursor: move; 
-            border: 1px dashed var(--vip); 
-            display: none; 
-            padding: 5px; 
-            background: white;
-            top: 10%;
-            right: 10%;
+            position: absolute; z-index: 50; cursor: move; 
+            border: 1px dashed var(--vip); display: none; padding: 5px; background: white;
+            top: 20px; right: 20px;
         }
 
         /* UI CONTROLES */
         .label-sm { font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 8px; display: block; letter-spacing: 1px; }
-        .view-selector { display: flex; background: #000; padding: 4px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #222; }
-        .view-btn { flex: 1; padding: 8px; border: none; background: transparent; color: #666; cursor: pointer; border-radius: 7px; font-weight: bold; font-size: 11px; }
-        .view-btn.active { background: #222; color: var(--vip); }
-
         .btn-main { width: 100%; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; border: none; margin-top: 10px; }
         .btn-upload { background: var(--vip); color: #000; }
         .btn-nav { background: #222; color: #fff; border: 1px solid #444; font-size: 10px; margin-bottom: 15px; }
-        
         .input-dark { background: #000; color: #fff; border: 1px solid #333; padding: 10px; width: 100%; border-radius: 8px; font-size: 12px; margin-bottom: 10px; }
+        .btn-download { position: fixed; bottom: 30px; right: 30px; padding: 15px 35px; background: #fff; color: #000; border-radius: 50px; font-weight: 900; border: none; cursor: pointer; box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 200; }
         
-        .btn-download {
-            position: fixed; bottom: 30px; right: 30px; padding: 15px 35px;
-            background: #fff; color: #000; border-radius: 50px; font-weight: 900;
-            border: none; cursor: pointer; box-shadow: 0 10px 40px rgba(0,0,0,0.8); z-index: 200;
-        }
+        /* Selectores de color */
+        .color-dot { width: 25px; height: 25px; border-radius: 50%; border: 1px solid #333; cursor: pointer; transition: 0.2s; }
+        .color-dot:hover { transform: scale(1.2); }
     </style>
 </head>
 <body>
@@ -99,133 +69,164 @@
             <hr style="border: 0; border-top: 1px solid #222; margin: 15px 0;">
 
             <label class="label-sm">Vista</label>
-            <div class="view-selector">
-                <button id="btn-front" class="view-btn active" onclick="setView('front')">FRENTE</button>
-                <button id="btn-back" class="view-btn" onclick="setView('back')">ESPALDA</button>
+            <div style="display: flex; gap: 5px; margin-bottom: 20px;">
+                <button id="vFront" class="btn-main" style="margin:0; background:#222; color:var(--vip);" onclick="setView('front')">FRENTE</button>
+                <button id="vBack" class="btn-main" style="margin:0; background:#111; color:#555;" onclick="setView('back')">ESPALDA</button>
             </div>
 
             <input type="file" id="fileInput" hidden>
             <button class="btn-main btn-upload" onclick="document.getElementById('fileInput').click()">☁️ SUBIR DISEÑO</button>
 
             <div style="margin-top:20px;">
-                <label class="label-sm">Escala</label>
-                <input type="range" id="sizeRange" style="width:100%; accent-color:var(--vip);" min="30" max="400" value="160">
-            </div>
-
-            <div style="margin-top:20px;">
-                <label class="label-sm">Posición Vertical</label>
-                <input type="range" id="yRange" style="width:100%; accent-color:var(--vip);" min="-150" max="150" value="0">
+                <label class="label-sm">Ajustes de Estampado</label>
+                <div style="font-size:9px; color:#666;">ESCALA</div>
+                <input type="range" id="pScale" style="width:100%;" min="0.1" max="1.5" step="0.01" value="0.5">
+                <div style="font-size:9px; color:#666; margin-top:10px;">POSICIÓN VERTICAL</div>
+                <input type="range" id="pY" style="width:100%;" min="-200" max="200" value="0">
             </div>
 
             <hr style="border: 0; border-top: 1px solid #222; margin: 20px 0;">
             
-            <label class="label-sm">QR de Contacto (WhatsApp)</label>
-            <input type="text" id="qrText" class="input-dark" placeholder="https://wa.me/51916689969">
-            <button class="btn-main" style="background:#171717; color:#fff; border:1px solid #333;" onclick="generateQR()">✨ CREAR QR</button>
+            <label class="label-sm">QR WhatsApp</label>
+            <input type="text" id="qrText" class="input-dark" placeholder="Link de WhatsApp">
+            <button class="btn-main" style="background:#171717; color:#fff; border:1px solid #333;" onclick="generateQR()">CREAR QR</button>
 
             <div style="margin-top:20px;">
                 <label class="label-sm">Color Camiseta</label>
                 <div style="display: flex; gap: 10px; margin-top:5px;">
-                    <button onclick="changeColor('white')" style="width:25px; height:25px; background:#fff; border-radius:50%; border:none; cursor:pointer;"></button>
-                    <button onclick="changeColor('black')" style="width:25px; height:25px; background:#000; border-radius:50%; border:1px solid #444; cursor:pointer;"></button>
-                    <button onclick="changeColor('gray')" style="width:25px; height:25px; background:#888; border-radius:50%; border:none; cursor:pointer;"></button>
+                    <div class="color-dot" style="background:#fff;" onclick="setColor('white')"></div>
+                    <div class="color-dot" style="background:#111;" onclick="setColor('black')"></div>
+                    <div class="color-dot" style="background:#777;" onclick="setColor('gray')"></div>
                 </div>
             </div>
         </aside>
 
         <main class="simulator-space">
             <div class="mockup-container" id="mockContainer">
-                <img id="mockup-base" src="https://i.imgur.com/2m65Ww1.png" crossorigin="anonymous">
-                
-                <img id="design-front" class="design-overlay" src="" style="display: block;">
-                <img id="design-back" class="design-overlay" src="" style="display: none;">
-                
+                <canvas id="previewCanvas"></canvas>
                 <div id="qr-on-mockup"></div>
             </div>
-            <button class="btn-download" id="dl-btn">DESCARGAR MOCKUP</button>
+            <button class="btn-download" onclick="handleDownload()">DESCARGAR MOCKUP</button>
         </main>
     </div>
 
     <script>
+        const canvas = document.getElementById('previewCanvas');
+        const ctx = canvas.getContext('2d');
+        const fileInput = document.getElementById('fileInput');
+        
         let isVip = localStorage.getItem('jj_session') === 'active';
-        if(isVip) {
-            document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO";
-            document.getElementById('status-tag').style.color = "#10b981";
-        }
-
         let currentView = 'front';
         let currentColor = 'white';
-        
-        // URLs directas y seguras
-        const mockups = {
-            white: { front: 'https://i.imgur.com/2m65Ww1.png', back: 'https://i.imgur.com/39lXU6f.png' },
-            black: { front: 'https://i.imgur.com/vE9C88R.png', back: 'https://i.imgur.com/XwE4M9T.png' },
-            gray:  { front: 'https://i.imgur.com/vH9jI8z.png', back: 'https://i.imgur.com/839FpM3.png' }
+        let userImg = new Image();
+        let mockupImg = new Image();
+
+        // URLs de respaldo (Directas de servidor de imágenes estable)
+        const assets = {
+            white_front: 'https://images.clothes2order.com/product_images/Front/70-White.png',
+            white_back:  'https://images.clothes2order.com/product_images/Back/70-White.png',
+            black_front: 'https://images.clothes2order.com/product_images/Front/70-Black.png',
+            black_back:  'https://images.clothes2order.com/product_images/Back/70-Black.png',
+            gray_front:  'https://images.clothes2order.com/product_images/Front/70-HeatherGrey.png',
+            gray_back:   'https://images.clothes2order.com/product_images/Back/70-HeatherGrey.png'
         };
 
-        function setView(view) {
-            currentView = view;
-            document.getElementById('btn-front').classList.toggle('active', view === 'front');
-            document.getElementById('btn-back').classList.toggle('active', view === 'back');
-            document.getElementById('mockup-base').src = mockups[currentColor][view];
-            
-            document.getElementById('design-front').style.display = view === 'front' ? 'block' : 'none';
-            document.getElementById('design-back').style.display = view === 'back' ? 'block' : 'none';
+        function init() {
+            if(isVip) {
+                document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO";
+                document.getElementById('status-tag').style.color = "#10b981";
+            }
+            loadMockup();
         }
 
-        function changeColor(color) {
-            currentColor = color;
-            document.getElementById('mockup-base').src = mockups[color][currentView];
+        function loadMockup() {
+            mockupImg.crossOrigin = "anonymous";
+            mockupImg.src = assets[`${currentColor}_${currentView}`];
+            mockupImg.onload = render;
         }
 
-        document.getElementById('fileInput').onchange = (e) => {
-            const file = e.target.files[0];
-            const url = URL.createObjectURL(file);
-            if (currentView === 'front') document.getElementById('design-front').src = url;
-            else document.getElementById('design-back').src = url;
+        function setView(v) {
+            currentView = v;
+            document.getElementById('vFront').style.color = v === 'front' ? '#00d2ff' : '#555';
+            document.getElementById('vBack').style.color = v === 'back' ? '#00d2ff' : '#555';
+            loadMockup();
+        }
+
+        function setColor(c) {
+            currentColor = c;
+            loadMockup();
+        }
+
+        fileInput.onchange = e => {
+            const reader = new FileReader();
+            reader.onload = event => {
+                userImg.onload = render;
+                userImg.src = event.target.result;
+            };
+            reader.readAsDataURL(e.target.files[0]);
         };
 
-        document.getElementById('sizeRange').oninput = (e) => {
-            const target = currentView === 'front' ? document.getElementById('design-front') : document.getElementById('design-back');
-            target.style.width = e.target.value + "px";
-        };
+        function render() {
+            canvas.width = 800;
+            canvas.height = 800;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        document.getElementById('yRange').oninput = (e) => {
-            const target = currentView === 'front' ? document.getElementById('design-front') : document.getElementById('design-back');
-            target.style.transform = `translate(-50%, calc(-50% + ${e.target.value}px))`;
-        };
+            // 1. Dibujar Camiseta
+            if (mockupImg.complete) {
+                ctx.drawImage(mockupImg, 0, 0, 800, 800);
+            }
 
-        // --- LÓGICA QR ---
-        let isDraggingQR = false;
+            // 2. Dibujar Estampado
+            if (userImg.complete && userImg.src) {
+                const scale = document.getElementById('pScale').value;
+                const moveY = parseInt(document.getElementById('pY').value);
+                
+                const w = userImg.width * scale;
+                const h = userImg.height * scale;
+                const x = (canvas.width - w) / 2;
+                const y = (canvas.height - h) / 2 + moveY;
+
+                ctx.save();
+                ctx.globalAlpha = 0.85; // Efecto de fusión
+                ctx.globalCompositeOperation = "multiply";
+                ctx.drawImage(userImg, x, y, w, h);
+                ctx.restore();
+            }
+        }
+
+        // --- QR ---
+        let isDragging = false;
         function generateQR() {
-            const link = document.getElementById('qrText').value;
-            if(!link) return alert("Ingresa un enlace.");
-            const qrDiv = document.getElementById('qr-on-mockup');
-            qrDiv.innerHTML = "";
-            qrDiv.style.display = "block";
-            new QRCode(qrDiv, { text: link, width: 60, height: 60 });
+            const val = document.getElementById('qrText').value;
+            if(!val) return alert("Escribe un enlace");
+            const qBox = document.getElementById('qr-on-mockup');
+            qBox.innerHTML = ""; qBox.style.display = "block";
+            new QRCode(qBox, { text: val, width: 60, height: 60 });
         }
 
-        const qrElement = document.getElementById('qr-on-mockup');
-        qrElement.onmousedown = () => isDraggingQR = true;
-        
-        window.addEventListener('mousemove', (e) => {
-            if(isDraggingQR) {
-                const rect = document.getElementById('mockContainer').getBoundingClientRect();
-                qrElement.style.left = (e.clientX - rect.left - 30) + 'px';
-                qrElement.style.top = (e.clientY - rect.top - 30) + 'px';
-            }
-        });
-        window.addEventListener('mouseup', () => isDraggingQR = false);
-
-        document.getElementById('dl-btn').onclick = () => {
-            if(!isVip) {
-                alert("Suscripción requerida.");
-                window.open("https://wa.me/51916689969?text=Hola,%20necesito%20mi%20diseño%20del%20simulador", "_blank");
-            } else {
-                alert("Preparando descarga de alta calidad...");
+        const qrEl = document.getElementById('qr-on-mockup');
+        qrEl.onmousedown = () => isDragging = true;
+        window.onmousemove = e => {
+            if(isDragging) {
+                const r = document.getElementById('mockContainer').getBoundingClientRect();
+                qrEl.style.left = (e.clientX - r.left - 35) + 'px';
+                qrEl.style.top = (e.clientY - r.top - 35) + 'px';
             }
         };
+        window.onmouseup = () => isDragging = false;
+
+        function handleDownload() {
+            if(!isVip) return window.open("https://wa.me/51916689969", "_blank");
+            const link = document.createElement('a');
+            link.download = 'jj_studio_mockup.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        document.getElementById('pScale').oninput = render;
+        document.getElementById('pY').oninput = render;
+
+        init();
     </script>
 </body>
 </html>
