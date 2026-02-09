@@ -1,147 +1,268 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio - Simulador</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <style>
-        :root { --bg: #050505; --panel: #111; --text: #eee; --vip: #00d2ff; --border: #262626; }
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
-        .app { display: grid; grid-template-columns: 280px 1fr; height: 100vh; }
-        aside { background: var(--panel); border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; }
-        main { display: flex; align-items: center; justify-content: center; background: radial-gradient(circle, #1a1a1a 1px, transparent 1px); background-size: 25px 25px; position: relative; }
-        .container { position: relative; width: 500px; height: 500px; background: #111; border-radius: 15px; border: 1px solid #333; }
-        canvas { width: 100%; height: 100%; }
-        .btn { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        .btn-vip { background: var(--vip); color: #000; }
-        .btn-nav { background: #222; color: #fff; font-size: 11px; }
-        input[type="range"] { width: 100%; accent-color: var(--vip); margin: 10px 0; }
-        #qr-box { position: absolute; z-index: 100; cursor: move; display: none; padding: 5px; background: #fff; top: 20px; right: 20px; border: 2px solid var(--vip); }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>J&J Studio Pro — Simulador Elite</title>
+  <style>
+    :root{
+      --bg:#0b0d12; --panel:#10131a; --panel-2:#0f1219; --text:#ecf1ff;
+      --muted:#aab3d1; --border:#1a2030; --accent:#6e7cff; --accent-2:#22d3ee;
+      --ring:#7c8bff; --shadow:0 10px 30px rgba(0,0,0,.35); --radius:14px; --vip:#00d2ff;
+    }
+    *{box-sizing:border-box}
+    body{ margin:0; font-family: ui-sans-serif, system-ui, sans-serif; background: var(--bg); color:var(--text); overflow-x: hidden; }
+    
+    header{ position:sticky; top:0; z-index:100; backdrop-filter:blur(10px); background: rgba(16,19,26,.8); border-bottom:1px solid var(--border); }
+    .container{ max-width:1400px; margin:0 auto; padding:10px 16px; display:flex; align-items:center; gap:12px; }
+    .logo-dot{width:12px;height:12px;border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent-2));}
+    h1{margin:0;font-size:16px; font-weight:800; color: var(--vip);}
+
+    main{ max-width:1400px; margin:20px auto; padding:0 16px; display:grid; gap:20px; grid-template-columns: 1.6fr .9fr; }
+    @media (max-width:1080px){ main{grid-template-columns:1fr} }
+
+    .card{ background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); padding: 16px; }
+    .stage-frame{ position:relative; width:100%; aspect-ratio: 1 / 1; overflow:hidden; background:#0d1117; border-radius:10px; isolation:isolate; }
+    canvas{ position:absolute; left:50%; top:50%; transform: translate(-50%, -50%); width:100%; height:auto; display:block; }
+
+    #artWrap{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); pointer-events:none; z-index: 20; }
+    #imgArt{ max-width:40%; transform-origin:center center; pointer-events:auto; user-select:none; display:none; mix-blend-mode: multiply; opacity: 0.9; }
+
+    .group{ background:var(--panel-2); border:1px solid var(--border); border-radius:12px; padding:12px; display:grid; gap:10px; margin-bottom: 10px; }
+    .row{ display:grid; grid-template-columns: 120px 1fr; gap:12px; align-items:center; }
+    label{ font-size:11px; color:var(--muted); text-transform: uppercase; font-weight: 700; }
+
+    select, button, input[type="color"], input[type="file"]{ height:38px; border-radius:8px; padding:0 10px; color:var(--text); background:var(--panel); border:1px solid var(--border); cursor:pointer; }
+    .btn-main{ width:100%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); border:none; color:#fff; font-weight:800; border-radius:10px; }
+    .btn-nav{ background:#1c2540; color:var(--vip); border:1px solid var(--vip); font-size: 11px; height: 32px; margin-bottom: 10px; }
+
+    /* Estilo para los controles de rango */
+    input[type="range"]{ -webkit-appearance:none; width:100%; height:4px; background:#1b2238; border-radius:999px; }
+    input[type="range"]::-webkit-slider-thumb{ -webkit-appearance:none; width:16px; height:16px; border-radius:50%; background: var(--vip); cursor:pointer; }
+
+    .toggle{ display:flex; background:#0c111b; border:1px solid var(--border); border-radius:10px; padding:2px; gap:2px; }
+    .pill{ flex:1; display:grid; place-items:center; font-size:12px; cursor:pointer; border-radius:8px; color:#c8d0ff; padding: 8px; }
+    .pill.active{ color:#fff; font-weight:700; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+    
+    #status-tag { margin-left: auto; font-size: 10px; font-weight: 800; color: #444; }
+    .status-active { color: #10b981 !important; }
+  </style>
 </head>
 <body>
-    <div class="app">
-        <aside>
-            <h2 style="color:var(--vip); text-align:center;">J&J STUDIO</h2>
-            <button class="btn btn-nav" onclick="location.href='index.html'">← VOLVER A INICIO</button>
-            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-            
-            <p style="font-size:11px; color:#888;">1. CARGAR DISEÑO PNG</p>
-            <input type="file" id="loader" accept="image/*" hidden>
-            <button class="btn btn-vip" onclick="document.getElementById('loader').click()">SUBIR ARCHIVO</button>
-
-            <div style="margin-top:20px;">
-                <p style="font-size:11px; color:#888;">2. AJUSTAR TAMAÑO</p>
-                <input type="range" id="size" min="0.1" max="1.5" step="0.01" value="0.6">
-                <p style="font-size:11px; color:#888;">3. POSICIÓN VERTICAL</p>
-                <input type="range" id="posY" min="-250" max="250" value="0">
-            </div>
-
-            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-            <p style="font-size:11px; color:#888;">4. QR DE VENTA</p>
-            <input type="text" id="qrInp" placeholder="Link de WhatsApp" style="width:100%; padding:8px; background:#000; color:#fff; border:1px solid #333; border-radius:5px;">
-            <button class="btn" style="background:#171717; color:#fff;" onclick="genQR()">GENERAR QR</button>
-            
-            <button class="btn" style="margin-top:40px; background:#fff; color:#000;" onclick="down()">DESCARGAR</button>
-        </aside>
-
-        <main>
-            <div class="container" id="dropzone">
-                <canvas id="cv"></canvas>
-                <div id="qr-box"></div>
-            </div>
-        </main>
+  <header>
+    <div class="container">
+      <div class="logo-dot"></div>
+      <h1>J&J STUDIO PRO</h1>
+      <div id="status-tag">MODO INVITADO</div>
     </div>
+  </header>
 
-    <script>
-        const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
-        let mock = new Image(), user = new Image();
+  <main>
+    <section class="card">
+      <div class="stage-frame" id="stage">
+        <canvas id="c" width="2048" height="2048"></canvas>
+        <div id="artWrap">
+          <img id="imgArt" alt="diseño" draggable="false">
+        </div>
+      </div>
+      <p style="font-size:11px; color:#555; margin-top:10px;">Arrestra el diseño para moverlo. Rueda del mouse para escala.</p>
+    </section>
 
-        // Camiseta blanca genérica de alta disponibilidad
-        mock.crossOrigin = "anonymous";
-        mock.src = "https://www.clothes2order.com/product_images/Front/70-White.png";
+    <aside class="controls">
+      <button class="btn-main btn-nav" onclick="location.href='index.html'">← QUITAR FONDOS</button>
+      
+      <div class="card">
+        <div class="group">
+          <label>Vista de Prenda</label>
+          <div class="toggle" id="viewToggle">
+            <div class="pill active" data-val="front">FRONTAL</div>
+            <div class="pill" data-val="back">ESPALDA</div>
+          </div>
+        </div>
 
-        // Si la imagen falla, dibujamos una silueta básica para que no se vea negro
-        mock.onerror = () => {
-            console.log("Error de carga de imagen, usando respaldo visual");
-            ctx.fillStyle = "#eee";
-            ctx.fillRect(200, 100, 600, 800); // Dibuja un rectángulo gris claro
-            draw();
-        };
+        <div class="group">
+          <div class="row">
+            <label>Color Prenda</label>
+            <input id="color" type="color" value="#ffffff" />
+          </div>
+          <div class="row">
+            <label>Textura</label>
+            <select id="texType">
+              <option value="none">LISA</option>
+              <option value="acid">ACID WASH</option>
+              <option value="full">FULL PRINT</option>
+            </select>
+          </div>
+          <div class="row">
+            <label>Opacidad</label>
+            <input id="texAlpha" type="range" min="0" max="100" value="100" />
+          </div>
+        </div>
 
-        mock.onload = draw;
+        <div class="group">
+          <label>Cargar Arte</label>
+          <input type="file" id="inpFile" accept="image/png,image/jpeg">
+          <div class="row" style="margin-top:10px">
+            <label>Opacidad Arte</label>
+            <input id="artAlpha" type="range" min="0" max="100" value="90" />
+          </div>
+        </div>
 
-        document.getElementById('loader').onchange = e => {
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = f => { 
-                user = new Image();
-                user.onload = draw;
-                user.src = f.target.result; 
-            };
-            reader.readAsDataURL(file);
-        };
+        <button id="savePNG" class="btn-main" style="padding:15px; margin-top:10px;">DESCARGAR MOCKUP</button>
+      </div>
+    </aside>
+  </main>
 
-        function draw() {
-            cv.width = 1000; cv.height = 1000;
-            ctx.clearRect(0, 0, 1000, 1000);
-            
-            // Dibujar camiseta
-            if (mock.complete && mock.naturalWidth > 0) {
-                ctx.drawImage(mock, 0, 0, 1000, 1000);
-            } else {
-                // Silueta de emergencia si falla internet
-                ctx.fillStyle = "#ffffff";
-                ctx.beginPath();
-                ctx.roundRect(250, 150, 500, 700, 20);
-                ctx.fill();
-            }
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script>
+  const C = document.getElementById('c');
+  const ctx = C.getContext('2d');
+  
+  // Sesión
+  let isVip = localStorage.getItem('jj_session') === 'active';
+  if(isVip) {
+      document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO";
+      document.getElementById('status-tag').classList.add('status-active');
+  }
 
-            // Dibujar diseño del usuario
-            if (user.src && user.complete) {
-                const s = document.getElementById('size').value;
-                const y = parseInt(document.getElementById('posY').value);
-                const w = user.width * s, h = user.height * s;
-                
-                ctx.save();
-                ctx.globalAlpha = 0.95;
-                ctx.drawImage(user, (1000-w)/2, (1000-h)/2 + y, w, h);
-                ctx.restore();
-            }
-        }
+  const ASSETS = {
+    front: {
+      base:   "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793740/1.BOXYFITDELANTERO_BASE_WHITE_1_oad518.png",
+      lights: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793738/3.LUCESDELANTERAS_1_onw0b8.png",
+      shadows:[ "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793743/4._SOMBRASDELANTERAS_1_mmw5n2.png" ],
+      textures: {
+        acid: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793861/ACID_WASH_DELANTERO_MOOD_TSHIRT_omnbjl.png",
+        full: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793865/FULL_PRINT_TEXTURA_DELANTERO_MOD_yjx7qn.png"
+      }
+    },
+    back: {
+      base:   "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793939/1._BOXYFITESPALDA_WHITE_yav9mn.png",
+      lights: null,
+      shadows:[ 
+        "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793937/2._SOMBRA_ESPALDA_1_nrxsoe.png",
+        "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793938/3._SOMBRA_ESPALDA_2_ljeabv.png"
+      ],
+      textures: {
+        acid: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762794027/ACID_WASH_ESPALDA_TSHIRT_s11l8a.png",
+        full: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762794025/FULL_PRINT_TEXTURA_ESPALDA_ljjzuo.png"
+      }
+    }
+  };
 
-        document.getElementById('size').oninput = draw;
-        document.getElementById('posY').oninput = draw;
+  let currentSide = 'front';
+  const cache = { front:{}, back:{} };
 
-        function genQR() {
-            const v = document.getElementById('qrInp').value;
-            if(!v) return;
-            const b = document.getElementById('qr-box');
-            b.innerHTML = ""; b.style.display = "block";
-            new QRCode(b, { text: v, width: 80, height: 80 });
-        }
+  async function load(src){
+    if (!src) return null;
+    const img = new Image(); img.crossOrigin="anonymous"; img.src = src;
+    await new Promise(r => img.onload = r);
+    return img;
+  }
 
-        // Lógica para mover el QR
-        let drag = false;
-        const qb = document.getElementById('qr-box');
-        qb.onmousedown = () => drag = true;
-        window.onmousemove = e => {
-            if(drag) {
-                const r = document.getElementById('dropzone').getBoundingClientRect();
-                qb.style.left = (e.clientX - r.left - 40) + 'px';
-                qb.style.top = (e.clientY - r.top - 40) + 'px';
-            }
-        };
-        window.onmouseup = () => drag = false;
+  async function render(){
+    const a = ASSETS[currentSide];
+    if (!cache[currentSide].base) cache[currentSide].base = await load(a.base);
+    if (a.lights && !cache[currentSide].lights) cache[currentSide].lights = await load(a.lights);
+    if (!cache[currentSide].shadows) cache[currentSide].shadows = await Promise.all(a.shadows.map(load));
+    
+    const tex = document.getElementById('texType').value;
+    if (tex !== "none" && !cache[currentSide][tex]) cache[currentSide][tex] = await load(a.textures[tex]);
 
-        function down() {
-            const link = document.createElement('a');
-            link.download = 'jj_mockup.png';
-            link.href = cv.toDataURL();
-            link.click();
-        }
-    </script>
+    ctx.clearRect(0,0,C.width,C.height);
+    const img = cache[currentSide].base;
+    const scale = Math.min(C.width/img.width, C.height/img.height);
+    const w = img.width*scale, h = img.height*scale;
+    const x = (C.width-w)/2, y = (C.height-h)/2;
+
+    // 1. Color
+    ctx.globalCompositeOperation = "source-over";
+    ctx.fillStyle = document.getElementById('color').value;
+    ctx.fillRect(x,y,w,h);
+
+    // 2. Crop Alpha
+    ctx.globalCompositeOperation = "destination-in";
+    ctx.drawImage(img, x, y, w, h);
+
+    // 3. Texture
+    if(tex !== "none"){
+      ctx.globalCompositeOperation = "multiply";
+      ctx.globalAlpha = document.getElementById('texAlpha').value / 100;
+      ctx.drawImage(cache[currentSide][tex], x, y, w, h);
+    }
+
+    // 4. Shadows
+    ctx.globalCompositeOperation = "multiply";
+    cache[currentSide].shadows.forEach(s => {
+      ctx.globalAlpha = 0.8;
+      ctx.drawImage(s, x, y, w, h);
+    });
+
+    // 5. Lights
+    if(currentSide==='front' && cache.front.lights && tex !== "acid"){
+      ctx.globalCompositeOperation = "screen";
+      ctx.globalAlpha = 0.5;
+      ctx.drawImage(cache.front.lights, x, y, w, h);
+    }
+
+    ctx.globalAlpha = 1.0;
+    ctx.globalCompositeOperation = "source-over";
+  }
+
+  // --- Arte / Diseño ---
+  const imgArt = document.getElementById('imgArt');
+  let artPos = {x:0, y:0, s:1};
+  let dragging = false;
+
+  document.getElementById('inpFile').onchange = e => {
+    const reader = new FileReader();
+    reader.onload = ev => { imgArt.src = ev.target.result; imgArt.style.display='block'; };
+    reader.readAsDataURL(e.target.files[0]);
+  };
+
+  imgArt.addEventListener('pointerdown', e => { dragging = true; imgArt.setPointerCapture(e.pointerId); });
+  window.addEventListener('pointermove', e => {
+    if(!dragging) return;
+    artPos.x += e.movementX; artPos.y += e.movementY;
+    updateArt();
+  });
+  window.addEventListener('pointerup', () => dragging = false);
+
+  document.getElementById('stage').onwheel = e => {
+    e.preventDefault();
+    artPos.s = Math.max(0.1, artPos.s + (e.deltaY < 0 ? 0.05 : -0.05));
+    updateArt();
+  };
+
+  function updateArt(){
+    imgArt.style.transform = `translate(${artPos.x}px, ${artPos.y}px) scale(${artPos.s})`;
+    imgArt.style.opacity = document.getElementById('artAlpha').value / 100;
+  }
+
+  // Toggle Vista
+  document.getElementById('viewToggle').onclick = e => {
+    const pill = e.target.closest('.pill'); if(!pill) return;
+    document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+    pill.classList.add('active');
+    currentSide = pill.dataset.val;
+    render();
+  };
+
+  document.getElementById('savePNG').onclick = () => {
+    if(!isVip) return window.open("https://wa.me/51916689969", "_blank");
+    html2canvas(document.getElementById('stage'), { backgroundColor:null, scale:2 }).then(canvas => {
+      const a = document.createElement('a');
+      a.download = `jj-mockup-${currentSide}.png`;
+      a.href = canvas.toDataURL();
+      a.click();
+    });
+  };
+
+  document.getElementById('color').oninput = render;
+  document.getElementById('texType').onchange = render;
+  document.getElementById('texAlpha').oninput = render;
+  document.getElementById('artAlpha').oninput = updateArt;
+
+  render();
+  </script>
 </body>
 </html>
