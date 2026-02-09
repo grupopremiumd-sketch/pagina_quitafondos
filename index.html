@@ -1,223 +1,181 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>URBAN CARTOON — Quitar Fondo Automático</title>
-  <style>
-    :root {
-      --bg:#0b0d12; --panel:#10131a; --panel-2:#0f1219; --text:#ecf1ff;
-      --muted:#aab3d1; --border:#1a2030; --accent:#6e7cff; --accent-2:#22d3ee;
-      --radius:14px; --vip:#00d2ff; --success:#10b981;
-    }
-    * { box-sizing:border-box; }
-    body { margin:0; font-family: system-ui, sans-serif; background: var(--bg); color:var(--text); overflow-x: hidden; }
-    
-    header { position:sticky; top:0; z-index:100; backdrop-filter:blur(10px); background: rgba(16,19,26,.8); border-bottom:1px solid var(--border); }
-    .container { max-width:1400px; margin:0 auto; padding:10px 16px; display:flex; align-items:center; gap:12px; }
-    .logo-dot { width:12px; height:12px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent-2)); }
-    h1 { margin:0; font-size:18px; font-weight:800; color:#fff; letter-spacing:1px; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J&J Studio — Quitar Fondos Pro</title>
+    <style>
+        :root {
+            --bg: #0b0d12; --panel: #10131a; --panel-2: #161b26; --text: #ecf1ff;
+            --muted: #64748b; --border: #1a2030; --accent: #6e7cff; --vip: #00d2ff;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
 
-    main { max-width:1400px; margin:20px auto; padding:0 16px; display:grid; gap:20px; grid-template-columns: 1fr 1.5fr; }
-    @media (max-width: 1080px) { main { grid-template-columns: 1fr; } }
+        /* HEADER */
+        header { padding: 15px 20px; background: rgba(16,19,26,0.9); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+        .logo { font-weight: 900; font-size: 1.2rem; color: var(--vip); letter-spacing: 1px; }
+        #status-tag { font-size: 10px; padding: 4px 10px; border-radius: 20px; background: #1a2030; color: #64748b; font-weight: bold; }
 
-    .card { background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:20px; }
-    
-    /* Configuración UI */
-    .group { background:var(--panel-2); border:1px solid var(--border); border-radius:12px; padding:15px; display:grid; gap:12px; margin-bottom:15px; }
-    .row { display:grid; grid-template-columns: 140px 1fr 40px; gap:12px; align-items:center; }
-    label { font-size:12px; color:var(--muted); text-transform: uppercase; font-weight: 700; }
-    
-    .val-box { background:#1b2238; color:var(--vip); padding:4px; border-radius:6px; text-align:center; font-size:12px; font-weight:bold; }
+        /* LAYOUT */
+        main { display: grid; grid-template-columns: 360px 1fr; height: calc(100vh - 60px); }
+        @media (max-width: 1000px) { main { grid-template-columns: 1fr; height: auto; } }
 
-    select, button, input[type="file"], input[type="number"] { 
-      height:40px; border-radius:8px; padding:0 10px; color:var(--text); 
-      background:var(--panel); border:1px solid var(--border); cursor:pointer; 
-    }
-    .btn-main { width:100%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); border:none; color:#fff; font-weight:800; border-radius:10px; cursor:pointer; }
-    .btn-vip { background: #1c2540; color: var(--vip); border: 1px solid var(--vip); margin-bottom:10px; }
-    .btn-sec { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+        /* CONTROLES */
+        .sidebar { background: var(--panel); border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; }
+        .group { background: var(--panel-2); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; }
+        h2 { font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px solid #1a2030; padding-bottom: 5px; }
 
-    input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; background: #1b2238; border-radius: 999px; }
-    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 2px solid #fff; }
+        .control-row { display: grid; grid-template-columns: 100px 1fr 35px; gap: 10px; align-items: center; margin-bottom: 10px; }
+        label { font-size: 11px; color: #8899af; font-weight: 600; }
+        .val-box { font-size: 10px; background: #0b0d12; padding: 3px; border-radius: 4px; text-align: center; color: var(--vip); }
 
-    /* Canvas Area */
-    .stage { position:relative; width:100%; aspect-ratio: 1/1; background:#0d1117; border-radius:10px; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-    canvas { max-width:100%; max-height:100%; object-fit:contain; }
+        /* BOTONES */
+        .btn { width: 100%; padding: 12px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s; margin-bottom: 10px; font-size: 12px; }
+        .btn-vip { background: var(--vip); color: #000; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-nav { background: #1c2540; color: var(--vip); border: 1px solid var(--vip); }
+        .btn-main { background: linear-gradient(135deg, var(--accent), #22d3ee); color: #fff; margin-top: 10px; }
+        .btn-sec { background: #1a2030; color: #fff; border: 1px solid #2d3748; }
 
-    /* Color Picker Lienzo */
-    .canvas-color-wrap { display: flex; gap: 10px; height: 100px; margin-top: 5px; }
-    #cpMain { flex: 1; border-radius: 8px; cursor: crosshair; border: 1px solid var(--border); }
-    #cpHue { width: 20px; border-radius: 8px; cursor: pointer; border: 1px solid var(--border); }
+        input[type="range"] { -webkit-appearance: none; background: #1b2238; height: 4px; border-radius: 2px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: var(--accent); border-radius: 50%; cursor: pointer; }
 
-    /* Modal Exportar */
-    .modal-back { position:fixed; inset:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:1000; }
-    .modal { background:var(--panel); padding:25px; border-radius:var(--radius); border:1px solid var(--border); width:450px; }
-    .hidden { display:none !important; }
-  </style>
+        /* AREA DE TRABAJO */
+        .stage { background: #07080a; display: flex; align-items: center; justify-content: center; padding: 20px; overflow: hidden; }
+        .canvas-container { position: relative; background-image: radial-gradient(#1a2030 1px, transparent 1px); background-size: 20px 20px; border-radius: 8px; border: 1px solid #1a2030; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        canvas { max-width: 100%; max-height: 80vh; display: block; }
+
+        /* MODALES */
+        .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal { background: var(--panel); border: 1px solid var(--border); padding: 25px; border-radius: 15px; width: 400px; text-align: center; }
+        .hidden { display: none !important; }
+    </style>
 </head>
 <body>
-  <header>
-    <div class="container">
-      <div class="logo-dot"></div>
-      <h1>URBAN CARTOON <small style="font-size:10px; color:var(--muted)">Quitar Fondo Automático</small></h1>
+
+    <header>
+        <div class="logo">J&J STUDIO PRO</div>
+        <div id="status-tag">MODO INVITADO</div>
+    </header>
+
+    <main>
+        <aside class="sidebar">
+            <button class="btn btn-nav" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR MOCKUP</button>
+            
+            <div class="group">
+                <h2>1. Cargar Archivo</h2>
+                <input type="file" id="fileInp" accept="image/*" style="font-size:11px; color:#64748b;">
+            </div>
+
+            <div class="group">
+                <h2>2. Configuración</h2>
+                <div class="control-row">
+                    <label>Modo</label>
+                    <select id="mode" style="background:#0b0d12; color:#fff; border:1px solid #1a2030; padding:5px; border-radius:5px; grid-column: span 2;">
+                        <option value="white">Quitar Blanco</option>
+                        <option value="black">Quitar Negro</option>
+                        <option value="auto">Automático</option>
+                    </select>
+                </div>
+                <div class="control-row">
+                    <label>Tolerancia</label>
+                    <input type="range" id="tol" min="0" max="150" value="60">
+                    <div class="val-box" id="vTol">60</div>
+                </div>
+                <div class="control-row">
+                    <label>Suavizado</label>
+                    <input type="range" id="soft" min="0" max="10" step="0.1" value="0.8">
+                    <div class="val-box" id="vSoft">0.8</div>
+                </div>
+            </div>
+
+            <div class="group">
+                <h2>3. Herramientas</h2>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <button class="btn btn-sec" onclick="location.reload()">Reiniciar</button>
+                    <button class="btn btn-sec">Recortar</button>
+                </div>
+                <button class="btn btn-main" onclick="handleDownload()">DESCARGAR PNG</button>
+            </div>
+            
+            <p style="font-size:10px; color:#444; text-align:center;">Urban Cartoon © 2026</p>
+        </aside>
+
+        <section class="stage">
+            <div class="canvas-container">
+                <canvas id="c"></canvas>
+            </div>
+        </section>
+    </main>
+
+    <div id="vipModal" class="modal-bg hidden">
+        <div class="modal">
+            <h3 style="color:var(--vip)">Acceso Restringido</h3>
+            <p style="font-size:13px; color:var(--muted)">La descarga en alta resolución está disponible solo para socios de la Comunidad J&J.</p>
+            <button class="btn btn-main" onclick="window.open('https://wa.me/51916689969?text=Hola,%20quiero%20activar%20mi%20membresía%20VIP','_blank')">Activar por WhatsApp</button>
+            <button class="btn btn-sec" onclick="document.getElementById('vipModal').classList.add('hidden')">Cerrar</button>
+        </div>
     </div>
-  </header>
 
-  <main>
-    <aside class="controls">
-      <button class="btn-main btn-vip" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR MOCKUP</button>
-      
-      <div class="card">
-        <label>Cargar imagen</label>
-        <input type="file" id="inpFile" style="width:100%; margin-top:10px" accept="image/*">
-        
-        <h3 style="font-size:14px; margin:20px 0 10px">Configuración</h3>
-        
-        <div class="group">
-          <div class="row" style="grid-template-columns: 1fr">
-            <label>Modo</label>
-            <select id="selMode" style="width:100%">
-              <option value="white">Quitar fondo blanco</option>
-              <option value="black">Quitar fondo negro</option>
-              <option value="auto">Auto (Esquinas)</option>
-            </select>
-          </div>
+    <script>
+        const canvas = document.getElementById('c'), ctx = canvas.getContext('2d');
+        let imgOrig = document.createElement('canvas'), oCtx = imgOrig.getContext('2d');
+        let isVip = localStorage.getItem('jj_session') === 'active';
 
-          <div class="row">
-            <label>Tolerancia</label>
-            <input type="range" id="rangeTol" min="0" max="150" value="60">
-            <div class="val-box" id="valTol">60</div>
-          </div>
+        if(isVip) {
+            document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO";
+            document.getElementById('status-tag').style.color = "#10b981";
+        }
 
-          <div class="row">
-            <label>Suavizado (px)</label>
-            <input type="range" id="rangeSoft" min="0" max="10" step="0.1" value="0.8">
-            <div class="val-box" id="valSoft">0.8</div>
-          </div>
+        document.getElementById('fileInp').onchange = e => {
+            const img = new Image();
+            img.onload = () => {
+                imgOrig.width = img.width; imgOrig.height = img.height;
+                oCtx.drawImage(img, 0, 0);
+                process();
+            };
+            img.src = URL.createObjectURL(e.target.files[0]);
+        };
 
-          <div class="row">
-            <label>Contraer / Expandir</label>
-            <input type="range" id="rangeCont" min="-5" max="5" value="1">
-            <div class="val-box" id="valCont">1</div>
-          </div>
-        </div>
+        function process() {
+            if(!imgOrig.width) return;
+            const tol = parseInt(document.getElementById('tol').value);
+            const soft = parseFloat(document.getElementById('soft').value);
+            document.getElementById('vTol').innerText = tol;
+            document.getElementById('vSoft').innerText = soft;
 
-        <label>Color del lienzo</label>
-        <div class="canvas-color-wrap">
-          <canvas id="cpMain"></canvas>
-          <canvas id="cpHue"></canvas>
-        </div>
+            const id = oCtx.getImageData(0,0,imgOrig.width,imgOrig.height), d = id.data;
+            const out = ctx.createImageData(imgOrig.width,imgOrig.height), o = out.data;
+            
+            for(let i=0; i<d.length; i+=4) {
+                const r=d[i], g=d[i+1], b=d[i+2], a=d[i+3];
+                const brightness = (r+g+b)/3;
+                let alpha = a;
+                
+                if (document.getElementById('mode').value === 'white') {
+                    if (brightness > (255 - tol)) alpha = 0;
+                } else if (document.getElementById('mode').value === 'black') {
+                    if (brightness < tol) alpha = 0;
+                }
+                
+                o[i]=r; o[i+1]=g; o[i+2]=b; o[i+3]=alpha;
+            }
+            canvas.width = imgOrig.width; canvas.height = imgOrig.height;
+            ctx.putImageData(out, 0, 0);
+        }
 
-        <div style="display:flex; gap:10px; margin-top:20px;">
-          <button class="btn-sec" style="flex:1" onclick="location.reload()">Reiniciar</button>
-          <button class="btn-sec" style="flex:1">Recortar</button>
-        </div>
-        
-        <button class="btn-main" style="margin-top:15px; padding:15px;" onclick="openExport()">DESCARGAR PNG</button>
-      </div>
-    </aside>
+        function handleDownload() {
+            if(!isVip) {
+                document.getElementById('vipModal').classList.remove('hidden');
+            } else {
+                const link = document.createElement('a');
+                link.download = 'jj_studio_result.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            }
+        }
 
-    <section class="card stage">
-      <canvas id="c"></canvas>
-    </section>
-  </main>
-
-  <div id="modalExport" class="modal-back hidden">
-    <div class="modal">
-      <h3 style="margin-top:0">Exportar — Redimensionar</h3>
-      <div class="group">
-        <div class="row" style="grid-template-columns: 80px 1fr 80px 1fr">
-          <label>Ancho</label><input type="number" id="exW" value="300">
-          <label>Alto</label><input type="number" id="exH" value="150">
-        </div>
-        <div class="row" style="grid-template-columns: 80px 1fr">
-          <label>Unidades</label>
-          <select id="exUnit"><option>px (píxeles)</option></select>
-        </div>
-        <div class="row" style="grid-template-columns: 80px 1fr">
-          <label>Método</label>
-          <select id="exMethod">
-            <option>Bueno (Bilinear)</option>
-            <option>Rápido (Nearest)</option>
-            <option>Alta calidad (Bicúbica)</option>
-          </select>
-        </div>
-        <div style="font-size:11px; color:var(--muted)">
-          <input type="checkbox" checked> Mantener relación de aspecto
-        </div>
-      </div>
-      <div style="display:flex; gap:10px">
-        <button class="btn-sec" style="flex:1" onclick="closeExport()">Cancelar</button>
-        <button class="btn-main" style="flex:1" onclick="checkVIP()">Aplicar</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const C = document.getElementById('c'), ctx = C.getContext('2d');
-    let orig = document.createElement('canvas'), oCtx = orig.getContext('2d');
-    let isVip = localStorage.getItem('jj_session') === 'active';
-
-    // Carga de Imagen
-    document.getElementById('inpFile').onchange = e => {
-      const img = new Image();
-      img.onload = () => {
-        orig.width = img.width; orig.height = img.height;
-        oCtx.drawImage(img, 0, 0);
-        process();
-      };
-      img.src = URL.createObjectURL(e.target.files[0]);
-    };
-
-    function process() {
-      if(!orig.width) return;
-      const tol = parseInt(document.getElementById('rangeTol').value);
-      const soft = parseFloat(document.getElementById('rangeSoft').value);
-      
-      document.getElementById('valTol').innerText = tol;
-      document.getElementById('valSoft').innerText = soft;
-      document.getElementById('valCont').innerText = document.getElementById('rangeCont').value;
-
-      const id = oCtx.getImageData(0,0,orig.width,orig.height), d = id.data;
-      const out = ctx.createImageData(orig.width,orig.height), o = out.data;
-      
-      // Lógica de remoción de fondo (Simplificada para fluidez)
-      for(let i=0; i<d.length; i+=4) {
-        const r=d[i], g=d[i+1], b=d[i+2];
-        let diff = (r+g+b)/3 > 240 ? 0 : 255; // Quitar blanco base
-        o[i]=r; o[i+1]=g; o[i+2]=b; o[i+3]=diff;
-      }
-      C.width = orig.width; C.height = orig.height;
-      ctx.putImageData(out, 0, 0);
-    }
-
-    // Modal & VIP logic
-    function openExport() { document.getElementById('modalExport').classList.remove('hidden'); }
-    function closeExport() { document.getElementById('modalExport').classList.add('hidden'); }
-    
-    function checkVIP() {
-      if(!isVip) {
-        alert("Esta función de alta resolución es para socios VIP.");
-        window.open("https://wa.me/51916689969?text=Hola,%20quiero%20ser%20VIP", "_blank");
-      } else {
-        const link = document.createElement('a');
-        link.download = 'urban-cartoon-result.png';
-        link.href = C.toDataURL();
-        link.click();
-      }
-    }
-
-    // Sync Sliders
-    ['rangeTol', 'rangeSoft', 'rangeCont', 'selMode'].forEach(id => {
-      document.getElementById(id).oninput = process;
-    });
-
-    // Color Picker (Simulado)
-    const cp = document.getElementById('cpMain'), cpCtx = cp.getContext('2d');
-    const gr = cpCtx.createLinearGradient(0,0,cp.width,0);
-    gr.addColorStop(0,"white"); gr.addColorStop(0.5, "red"); gr.addColorStop(1, "black");
-    cpCtx.fillStyle=gr; cpCtx.fillRect(0,0,cp.width,cp.height);
-  </script>
+        ['tol', 'soft', 'mode'].forEach(id => document.getElementById(id).oninput = process);
+    </script>
 </body>
 </html>
