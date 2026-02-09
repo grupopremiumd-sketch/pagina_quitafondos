@@ -3,123 +3,265 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>J&J STUDIO - MOCKUP PRO</title>
+  <title>J&J Studio — T-Shirt Mockup PRO</title>
   <style>
-    :root { --bg:#0b0d12; --panel:#10131a; --text:#ecf1ff; --accent:#6e7cff; --vip:#00d2ff; }
-    body { margin:0; font-family:sans-serif; background:var(--bg); color:var(--text); display:flex; flex-direction:column; height:100vh; }
-    header { padding:15px; border-bottom:1px solid #1a2030; display:flex; justify-content:space-between; align-items:center; }
-    main { display:grid; grid-template-columns: 1fr 350px; flex:1; overflow:hidden; }
-    .stage { background:#0d1117; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
-    #canvasContainer { position:relative; width:500px; height:500px; }
-    canvas { width:100%; height:100%; display:block; z-index:1; }
-    #userLogo { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:150px; cursor:move; z-index:10; pointer-events:auto; mix-blend-mode:multiply; }
-    .controls { background:var(--panel); padding:20px; border-left:1px solid #1a2030; overflow-y:auto; }
-    .group { background:#0f1219; border:1px solid #1a2030; border-radius:12px; padding:15px; margin-bottom:15px; }
-    label { font-size:11px; color:#aab3d1; text-transform:uppercase; font-weight:700; display:block; margin-bottom:8px; }
-    input, button, select { width:100%; padding:10px; border-radius:8px; border:1px solid #1a2030; background:#10131a; color:#fff; cursor:pointer; margin-bottom:10px; }
-    .btn-vip { background:linear-gradient(135deg,#6e7cff,#22d3ee); border:none; font-weight:800; }
+    /* ===== Tokens J&J STUDIO ===== */
+    :root{
+      --bg:#f8fafc; --panel:#ffffff; --panel-2:#ffffff; --text:#0b1220;
+      --muted:#64748b; --border:#e5e7eb; --accent:#2563eb; --accent-2:#22c1ee;
+      --ring:#94b0ff; --shadow:0 10px 30px rgba(0,0,0,.06); --radius:14px;
+      --vip: #00d2ff;
+    }
+    body.theme-dark{
+      --bg:#0b0d12; --panel:#10131a; --panel-2:#0f1219; --text:#ecf1ff;
+      --muted:#aab3d1; --border:#1a2030; --accent:#6e7cff; --accent-2:#22d3ee;
+      --ring:#7c8bff; --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box} html,body{height:100%}
+    body{ margin:0; font-family: ui-sans-serif, system-ui, sans-serif; background: var(--bg); color:var(--text); -webkit-font-smoothing:antialiased; }
+    
+    header{ position:sticky; top:0; z-index:5; backdrop-filter:blur(10px); background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.75)); border-bottom:1px solid var(--border); }
+    body.theme-dark header{ background: linear-gradient(180deg, rgba(16,19,26,.85), rgba(16,19,26,.55)); }
+    .container{ max-width:1400px; margin:0 auto; padding:14px 16px; display:flex; align-items:center; gap:12px; }
+    .logo-dot{width:10px;height:10px;border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent-2)); }
+    h1{margin:0;font-size:18px;letter-spacing:.4px;font-weight:700}
+    .badge{margin-left:auto; font-size:11px; padding:4px 8px; border-radius:999px; background:#eef2ff; border:1px solid #c7d2fe; color:#334155; font-weight:600;}
+    body.theme-dark .badge{background:rgba(124,139,255,.14); border:1px solid #2b3560; color:#cfd6ff}
+    
+    main{ max-width:1400px; margin:24px auto; padding:0 16px; display:grid; gap:20px; grid-template-columns:1.6fr .9fr; align-items:start; }
+    @media (max-width:1080px){ main{grid-template-columns:1fr} }
+    .card{ background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow); }
+    .stage{ padding:16px; display:grid; gap:12px; }
+    .canvas-wrap{ position:relative; border:1px solid var(--border); border-radius:12px; padding:12px; background:var(--panel-2); min-height:72vh; }
+    .stage-frame{ position:relative; width:100%; aspect-ratio: 1 / 1; overflow:hidden; background:#eef2ff; border-radius:10px; isolation:isolate; }
+    body.theme-dark .stage-frame{ background:#0d1117; }
+    canvas{ position:absolute; left:50%; top:50%; transform: translate(-50%, -50%); width:100%; height:auto; display:block; border-radius:10px; }
+    
+    #artWrap{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); pointer-events:none; }
+    #imgArt{ max-width:40%; transform-origin:center center; pointer-events:auto; user-select:none; display:none; }
+
+    .controls{ padding:16px; display:grid; gap:12px; }
+    .group{ background:var(--panel-2); border:1px solid var(--border); border-radius:12px; padding:12px; display:grid; gap:10px; }
+    .row{display:grid; grid-template-columns:140px 1fr; gap:12px; align-items:center}
+    label{opacity:.85;font-size:12px; letter-spacing:.3px}
+    
+    select, button, input[type="color"], input[type="file"]{ height:40px; border-radius:10px; padding:0 12px; color:var(--text); background:var(--panel); border:1px solid var(--border); outline:none; transition: .2s; }
+    .toggle{ display:flex; background:#f1f5f9; border:1px solid var(--border); border-radius:10px; padding:2px; gap:2px; height:40px; }
+    body.theme-dark .toggle{ background:#0c111b; border-color:#1c2540; }
+    .pill{ flex:1; display:grid; place-items:center; font-size:13px; cursor:pointer; border-radius:8px; color:#334155 }
+    body.theme-dark .toggle .pill{ color:#c8d0ff }
+    .pill.active{ color:#fff; font-weight:700; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+    
+    .btn{ width:100%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); border:none; color:#fff; font-weight:800; height:44px; border-radius:12px; cursor:pointer; }
+    .btn.secondary{ background:transparent; color:var(--text); border:1px solid var(--border); }
+    .btn-nav{ background:#1c2540; color:var(--vip); border:1px solid var(--vip); font-size: 11px; height: 32px; margin-bottom: 10px; padding: 0 15px; width: auto; }
   </style>
 </head>
-<body>
+<body class="theme-dark">
   <header>
-    <div style="font-weight:900; color:var(--vip)">J&J STUDIO PRO</div>
-    <button onclick="location.href='index.html'" style="width:auto; font-size:10px;">VOLVER</button>
+    <div class="container">
+      <div class="logo-dot"></div>
+      <div>
+        <h1>J&J STUDIO MOCKUP</h1>
+        <div style="font-size:10px; opacity:0.6">BY COMUNIDAD J&J</div>
+      </div>
+      <div class="badge" id="vip-status">INVITADO</div>
+    </div>
   </header>
+
   <main>
-    <section class="stage">
-      <div id="canvasContainer">
-        <canvas id="c"></canvas>
-        <img id="userLogo" src="" style="display:none" draggable="false">
+    <section class="card stage">
+      <div class="canvas-wrap">
+        <div class="stage-frame" id="stage">
+          <canvas id="c" width="2048" height="2048"></canvas>
+          <div id="artWrap">
+            <img id="imgArt" alt="diseño" draggable="false">
+          </div>
+        </div>
       </div>
+      <div style="font-size:11px; opacity:0.6">Arrastra el diseño para moverlo. Rueda del ratón para escalar.</div>
     </section>
+
     <aside class="controls">
-      <div class="group">
-        <label>1. Subir tu Logo</label>
-        <input type="file" id="fileInp" accept="image/*">
-        <label>Opacidad</label>
-        <input type="range" id="logoAlpha" min="0" max="100" value="90">
+      <button class="btn-nav" onclick="location.href='index.html'">← VOLVER A QUITAR FONDOS</button>
+      
+      <div class="card">
+        <div class="group">
+          <div class="row">
+            <label>Tema</label>
+            <select id="themeSel">
+              <option value="light">Claro</option>
+              <option value="dark" selected>Oscuro</option>
+            </select>
+          </div>
+          <div class="row">
+            <label>Vista</label>
+            <div class="toggle" id="viewToggle">
+              <div class="pill active" data-val="front">Frontal</div>
+              <div class="pill" data-val="back">Espalda</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <div class="row">
+            <label>Color Camiseta</label>
+            <input id="color" type="color" value="#ffffff" />
+          </div>
+          <div class="row">
+            <label>Textura</label>
+            <select id="texType">
+              <option value="none">Lisa</option>
+              <option value="acid">Acid Wash</option>
+              <option value="full">Full Print</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="group">
+          <label>Subir Arte (PNG)</label>
+          <input type="file" id="inpFile" accept="image/*">
+          <div class="row" style="margin-top:10px">
+            <label>Opacidad Arte</label>
+            <input id="artAlpha" type="range" min="0" max="100" value="100" />
+          </div>
+        </div>
+
+        <div class="group">
+          <button id="savePNG" class="btn">DESCARGAR MOCKUP VIP</button>
+        </div>
       </div>
-      <div class="group">
-        <label>2. Color Camiseta</label>
-        <input type="color" id="tColor" value="#ffffff">
-      </div>
-      <div class="group">
-        <label>3. Vista</label>
-        <select id="tView">
-          <option value="front">Frente</option>
-          <option value="back">Espalda</option>
-        </select>
-      </div>
-      <button class="btn-vip" id="btnDl">DESCARGAR MOCKUP</button>
     </aside>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script>
-    const canvas = document.getElementById('c'), ctx = canvas.getContext('2d');
-    const userLogo = document.getElementById('userLogo');
-    let baseImg = new Image();
+    // --- LÓGICA DE MEMBRESÍA J&J ---
+    let isVip = localStorage.getItem('jj_session') === 'active';
+    if(isVip) {
+      document.getElementById('vip-status').innerText = "SOCIO VIP ACTIVO";
+      document.getElementById('vip-status').style.color = "#00d2ff";
+      document.getElementById('vip-status').style.borderColor = "#00d2ff";
+    }
+
+    const C = document.getElementById('c'), ctx = C.getContext('2d');
+    const imgArt = document.getElementById('imgArt');
+    const inpFile = document.getElementById('inpFile');
+    const colorInp = document.getElementById('color');
+    const texType = document.getElementById('texType');
+    const themeSel = document.getElementById('themeSel');
+    const artAlpha = document.getElementById('artAlpha');
 
     const ASSETS = {
-      front: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793740/1.BOXYFITDELANTERO_BASE_WHITE_1_oad518.png",
-      back: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793939/1._BOXYFITESPALDA_WHITE_yav9mn.png"
+      front: {
+        base: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793740/1.BOXYFITDELANTERO_BASE_WHITE_1_oad518.png",
+        lights: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793738/3.LUCESDELANTERAS_1_onw0b8.png",
+        shadows: ["https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793743/4._SOMBRASDELANTERAS_1_mmw5n2.png"],
+        textures: {
+          acid: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793861/ACID_WASH_DELANTERO_MOOD_TSHIRT_omnbjl.png",
+          full: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793865/FULL_PRINT_TEXTURA_DELANTERO_MOD_yjx7qn.png"
+        }
+      },
+      back: {
+        base: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793939/1._BOXYFITESPALDA_WHITE_yav9mn.png",
+        shadows: ["https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793937/2._SOMBRA_ESPALDA_1_nrxsoe.png", "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793938/3._SOMBRA_ESPALDA_2_ljeabv.png"],
+        textures: {
+          acid: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762794027/ACID_WASH_ESPALDA_TSHIRT_s11l8a.png",
+          full: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762794025/FULL_PRINT_TEXTURA_ESPALDA_ljjzuo.png"
+        }
+      }
     };
 
-    function loadBase(view) {
-      baseImg = new Image();
-      baseImg.crossOrigin = "anonymous";
-      baseImg.src = ASSETS[view];
-      baseImg.onload = render;
-      baseImg.onerror = () => alert("Error cargando imagen base. Revisa tu internet.");
+    let currentSide = 'front';
+    const cache = { front:{}, back:{} };
+
+    async function load(src){
+      if(!src) return null;
+      const img = new Image(); img.crossOrigin="anonymous"; img.src = src;
+      await new Promise(r => img.onload = r);
+      return img;
     }
 
-    function render() {
-      canvas.width = 1000; canvas.height = 1000;
-      ctx.clearRect(0,0,1000,1000);
+    async function render(){
+      const a = ASSETS[currentSide];
+      if(!cache[currentSide].base) cache[currentSide].base = await load(a.base);
+      if(!cache[currentSide].shadows) cache[currentSide].shadows = await Promise.all(a.shadows.map(load));
+      if(a.lights && !cache[currentSide].lights) cache[currentSide].lights = await load(a.lights);
       
-      // 1. Color
-      ctx.fillStyle = document.getElementById('tColor').value;
-      ctx.fillRect(0,0,1000,1000);
+      const tex = texType.value;
+      if(tex !== 'none' && !cache[currentSide][tex]) cache[currentSide][tex] = await load(a.textures[tex]);
 
-      // 2. Máscara de camiseta
-      ctx.globalCompositeOperation = "destination-in";
-      ctx.drawImage(baseImg, 0, 0, 1000, 1000);
+      ctx.clearRect(0,0,C.width,C.height);
+      const base = cache[currentSide].base;
+      const scale = Math.min(C.width/base.width, C.height/base.height);
+      const w = base.width*scale, h = base.height*scale;
+      const x = (C.width-w)/2, y = (C.height-h)/2;
+
       ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = colorInp.value;
+      ctx.fillRect(x,y,w,h);
+      ctx.globalCompositeOperation = "destination-in";
+      ctx.drawImage(base, x, y, w, h);
+
+      if(tex !== 'none'){
+        ctx.globalCompositeOperation = "multiply";
+        ctx.drawImage(cache[currentSide][tex], x, y, w, h);
+      }
+
+      ctx.globalCompositeOperation = "multiply";
+      cache[currentSide].shadows.forEach(s => ctx.drawImage(s, x, y, w, h));
+
+      if(currentSide === 'front' && cache.front.lights && tex !== 'acid'){
+        ctx.globalCompositeOperation = "screen";
+        ctx.drawImage(cache.front.lights, x, y, w, h);
+      }
     }
 
-    document.getElementById('fileInp').onchange = e => {
-      const file = e.target.files[0];
-      const reader = new FileReader();
-      reader.onload = ev => {
-        userLogo.src = ev.target.result;
-        userLogo.style.display = "block";
-      };
-      reader.readAsDataURL(file);
+    // --- Arte Drag/Scale ---
+    let artPos = {x:0, y:0, s:1}, dragging = false;
+    inpFile.onchange = e => {
+      const r = new FileReader();
+      r.onload = ev => { imgArt.src = ev.target.result; imgArt.style.display='block'; artPos={x:0,y:0,s:1}; updateArt(); };
+      r.readAsDataURL(e.target.files[0]);
     };
-
-    // Mover Logo (Drag and Drop)
-    let isDrag = false;
-    userLogo.onmousedown = () => isDrag = true;
-    window.onmousemove = e => {
-      if(!isDrag) return;
-      const rect = document.getElementById('canvasContainer').getBoundingClientRect();
-      userLogo.style.left = (e.clientX - rect.left) + 'px';
-      userLogo.style.top = (e.clientY - rect.top) + 'px';
-    };
-    window.onmouseup = () => isDrag = false;
-
-    // Escala con Rueda
-    document.getElementById('canvasContainer').onwheel = e => {
+    imgArt.onpointerdown = e => { dragging = true; imgArt.setPointerCapture(e.pointerId); };
+    window.onpointermove = e => { if(dragging){ artPos.x += e.movementX; artPos.y += e.movementY; updateArt(); }};
+    window.onpointerup = () => dragging = false;
+    document.getElementById('stage').onwheel = e => {
       e.preventDefault();
-      let scale = userLogo.offsetWidth;
-      if(e.deltaY < 0) scale += 10; else scale -= 10;
-      userLogo.style.width = scale + "px";
+      artPos.s = Math.max(0.1, artPos.s + (e.deltaY < 0 ? 0.05 : -0.05));
+      updateArt();
+    };
+    function updateArt(){
+      imgArt.style.transform = `translate(${artPos.x}px, ${artPos.y}px) scale(${artPos.s})`;
+      imgArt.style.opacity = artAlpha.value / 100;
+    }
+
+    document.getElementById('viewToggle').onclick = e => {
+      const pill = e.target.closest('.pill'); if(!pill) return;
+      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      currentSide = pill.dataset.val;
+      render();
     };
 
-    document.getElementById('tColor').oninput = render;
-    document.getElementById('tView').onchange = e => loadBase(e.target.value);
-    document.getElementById('logoAlpha').oninput = e => userLogo.style.opacity = e.target.value/100;
+    themeSel.onchange = () => document.body.className = themeSel.value === 'dark' ? 'theme-dark' : '';
 
-    loadBase('front');
+    document.getElementById('savePNG').onclick = () => {
+      if(!isVip) {
+        alert("Esta función requiere membresía VIP de Comunidad J&J.");
+        return window.open("https://wa.me/51916689969?text=Hola,%20quiero%20activar%20mi%20suscripción", "_blank");
+      }
+      html2canvas(document.getElementById('stage'), { backgroundColor:null, scale:2 }).then(canvas => {
+        const a = document.createElement('a'); a.download = `jj-mockup.png`;
+        a.href = canvas.toDataURL(); a.click();
+      });
+    };
+
+    colorInp.oninput = render;
+    texType.onchange = render;
+    artAlpha.oninput = updateArt;
+    render();
   </script>
 </body>
 </html>
