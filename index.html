@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro — Herramienta Definitiva</title>
+    <title>J&J Studio Pro — Herramienta Élite</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
@@ -42,8 +42,7 @@
         .modal { background: #121212; padding: 25px; border-radius: 18px; width: 480px; border: 1px solid #262626; text-align: center; }
         .hidden { display: none !important; }
         
-        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; transition: 0.2s; }
-        .choice-card:hover { border-color: var(--vip); background: #222; }
+        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
     </style>
 </head>
 <body>
@@ -51,14 +50,14 @@
     <div id="choice-modal" class="modal-back hidden">
         <div class="modal">
             <h3 style="color:var(--vip)">¡Casi listo!</h3>
-            <p style="color:var(--muted); font-size:14px;">Elige una opción para descargar en ALTA CALIDAD:</p>
+            <p style="color:var(--muted); font-size:14px;">Elige una opción para descargar:</p>
             <div class="choice-card" onclick="openLogin()">
                 <div style="font-size:24px;">💎</div>
-                <div><div style="font-weight:bold; color:white;">Soy Suscriptor VIP</div><div style="font-size:11px; color:var(--muted)">Inicia sesión para descargar.</div></div>
+                <div><div style="font-weight:bold; color:white;">Soy Suscriptor VIP</div><div style="font-size:11px; color:var(--muted)">Acceso completo para esta sesión.</div></div>
             </div>
             <div class="choice-card" onclick="window.open('https://wa.me/51916689969')">
                 <div style="font-size:24px;">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">No tengo suscripción</div><div style="font-size:11px; color:var(--muted)">Adquiere tu membresía.</div></div>
+                <div><div style="font-weight:bold; color:var(--wa);">No tengo suscripción</div><div style="font-size:11px; color:var(--muted)">Adquiere tu membresía aquí.</div></div>
             </div>
             <button onclick="closeChoice()" style="background:none; border:none; color:var(--muted); cursor:pointer; margin-top:10px;">Cerrar</button>
         </div>
@@ -76,25 +75,25 @@
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="margin-top:0">Configurar Descarga PNG</h3>
+            <h3 style="margin-top:0">Exportar — Redimensionar</h3>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; text-align:left; margin-top:20px;">
-                <div class="control-row"><label>Ancho</label><input type="number" id="rzW" class="m-input" style="width:80px"></div>
-                <div class="control-row"><label>Alto</label><input type="number" id="rzH" class="m-input" style="width:80px"></div>
+                <div class="control-row"><label>Ancho (px)</label><input type="number" id="rzW" class="m-input" style="width:100px"></div>
+                <div class="control-row"><label>Alto (px)</label><input type="number" id="rzH" class="m-input" style="width:100px"></div>
                 <div class="control-row" style="grid-column: span 2;">
-                    <label>Método escala</label>
+                    <label>Método de escala</label>
                     <select id="rzMethod" style="flex:1">
                         <option value="high">Alta calidad (Bicúbica)</option>
                         <option value="medium" selected>Estándar (Bilinear)</option>
-                        <option value="low">Rápido (Nearest Neighbor)</option>
+                        <option value="low">Rápido (Pixel Art)</option>
                     </select>
                 </div>
                 <div style="grid-column: span 2; font-size:11px; color:var(--muted);">
-                    <input type="checkbox" id="lockAspect" checked> Mantener proporción de aspecto
+                    <input type="checkbox" id="lockAspect" checked> Mantener proporción original
                 </div>
             </div>
             <div style="display:flex; gap:10px; margin-top:20px;">
                 <button class="btn-s" style="margin:0" onclick="closeExport()">Cancelar</button>
-                <button class="btn-dl" style="margin:0" onclick="finalDownload()">DESCARGAR AHORA</button>
+                <button class="btn-dl" style="margin:0" onclick="finalDownload()">APLICAR Y DESCARGAR</button>
             </div>
         </div>
     </div>
@@ -109,19 +108,19 @@
             <button class="btn-s" style="background: var(--vip); color: #000;" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR</button>
             
             <h2>1. Cargar imagen</h2>
-            <input type="file" id="file" accept="image/*" style="margin-bottom:15px;">
+            <input type="file" id="file" accept="image/*">
             
-            <h2>2. Limpieza de Fondo</h2>
+            <h2>2. Limpieza Técnica</h2>
             <div class="control-row">
                 <select id="mode" style="width:100%;" onchange="process()">
                     <option value="white">Quitar blanco</option>
                     <option value="black">Quitar negro</option>
-                    <option value="pick">Elegir color (Cuentagotas)</option>
+                    <option value="pick">Elegir color (Click en imagen)</option>
                 </select>
             </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60" oninput="process()"><div class="val-box" id="fuzzV">60</div></div>
-            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8" oninput="process()"><div class="val-box" id="featherV">0.8</div></div>
-            <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" step="1" value="0" oninput="process()"><div class="val-box" id="contractV">0</div></div>
+            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="20" step="1" value="0" oninput="process()"><div class="val-box" id="featherV">0</div></div>
+            <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="0" max="10" step="1" value="0" oninput="process()"><div class="val-box" id="contractV">0</div></div>
 
             <h2>3. Color Lienzo</h2>
             <div class="cp-container">
@@ -143,7 +142,7 @@
         let isVip = false;
         let targetColor = [255,255,255];
 
-        const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
+        const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
 
         function handleDownloadClick() { if (isVip) { openExport(); } else { document.getElementById('choice-modal').classList.remove('hidden'); } }
@@ -163,7 +162,7 @@
                     isVip = true; 
                     document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO"; 
                     document.getElementById('status-tag').classList.add('status-vip'); 
-                    closeLogin(); alert("¡Validado para esta sesión!"); 
+                    closeLogin(); alert("¡Validado!"); 
                 } else { alert("Datos incorrectos."); }
             } catch(e) { alert("Error de conexión"); }
         }
@@ -181,25 +180,50 @@
         function process() {
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value);
+            const feather = parseInt(document.getElementById('feather').value);
+            const contract = parseInt(document.getElementById('contract').value);
             const mode = document.getElementById('mode').value;
+
             document.getElementById('fuzzV').innerText = fuzz;
-            document.getElementById('featherV').innerText = document.getElementById('feather').value;
-            document.getElementById('contractV').innerText = document.getElementById('contract').value;
+            document.getElementById('featherV').innerText = feather;
+            document.getElementById('contractV').innerText = contract;
+
+            if(mode === 'white') targetColor = [255,255,255];
+            else if(mode === 'black') targetColor = [0,0,0];
             
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
             const out = ctx.createImageData(oCanvas.width,oCanvas.height), o = out.data;
-            
-            if(mode === 'white') targetColor = [255,255,255];
-            else if(mode === 'black') targetColor = [0,0,0];
+            const threshold = fuzz * 2.2;
 
-            const threshold = fuzz * 2.5;
+            // Algoritmo de limpieza de color
             for(let i=0; i<d.length; i+=4) {
                 const diff = Math.sqrt((d[i]-targetColor[0])**2 + (d[i+1]-targetColor[1])**2 + (d[i+2]-targetColor[2])**2);
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
                 o[i+3] = (diff < threshold) ? 0 : d[i+3];
             }
+
             canvas.width = oCanvas.width; canvas.height = oCanvas.height;
             ctx.putImageData(out,0,0);
+
+            // Aplicar CONTRAER (Erosión rápida)
+            if(contract > 0) {
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.filter = `blur(${contract}px)`;
+                ctx.drawImage(canvas, 0, 0);
+                ctx.filter = 'none';
+                ctx.globalCompositeOperation = 'source-over';
+            }
+
+            // Aplicar SUAVIZADO (Feather)
+            if(feather > 0) {
+                ctx.filter = `blur(${feather/2}px)`;
+                const temp = document.createElement('canvas');
+                temp.width = canvas.width; temp.height = canvas.height;
+                temp.getContext('2d').drawImage(canvas,0,0);
+                ctx.clearRect(0,0,canvas.width,canvas.height);
+                ctx.drawImage(temp,0,0);
+                ctx.filter = 'none';
+            }
         }
 
         canvas.onclick = (e) => {
@@ -212,7 +236,7 @@
             process();
         };
 
-        // EXPORT LOGIC
+        // EXPORT LOGIC CON MEDIDAS REALES
         function updateUnits() {
             document.getElementById('rzW').value = oCanvas.width;
             document.getElementById('rzH').value = oCanvas.height;
@@ -225,18 +249,23 @@
 
         function finalDownload() {
             const method = document.getElementById('rzMethod').value;
+            const finalW = parseInt(document.getElementById('rzW').value);
+            const finalH = parseInt(document.getElementById('rzH').value);
             const temp = document.createElement('canvas');
-            temp.width = document.getElementById('rzW').value;
-            temp.height = document.getElementById('rzH').value;
+            temp.width = finalW; temp.height = finalH;
             const tCtx = temp.getContext('2d');
             
-            if(method === 'high') tCtx.imageSmoothingQuality = 'high';
-            else if(method === 'low') tCtx.imageSmoothingEnabled = false;
+            if(method === 'high') {
+                tCtx.imageSmoothingEnabled = true;
+                tCtx.imageSmoothingQuality = 'high';
+            } else if(method === 'low') {
+                tCtx.imageSmoothingEnabled = false;
+            }
 
-            tCtx.drawImage(canvas, 0, 0, temp.width, temp.height);
+            tCtx.drawImage(canvas, 0, 0, finalW, finalH);
             const a = document.createElement('a');
-            a.download = 'jj_studio_pro.png';
-            a.href = temp.toDataURL();
+            a.download = `jj_studio_${finalW}x${finalH}.png`;
+            a.href = temp.toDataURL('image/png');
             a.click();
             closeExport();
         }
