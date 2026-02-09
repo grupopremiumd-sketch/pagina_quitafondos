@@ -1,177 +1,166 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>J&J STUDIO — Frente/Espalda + QR</title>
-<style>  /* ===== Tokens (tema claro por defecto) ===== */  :root{    --bg:#f8fafc;    --panel:#ffffff;    --panel-2:#ffffff;    --text:#0b1220;    --muted:#64748b;    --border:#e5e7eb;    --accent:#2563eb;    --accent-2:#22c1ee;    --ring:#94b0ff;    --shadow:0 10px 30px rgba(0,0,0,.06);    --radius:14px;  }  /* ===== Overrides tema oscuro ===== */  body.theme-dark{    --bg:#0b0d12;    --panel:#10131a;    --panel-2:#0f1219;    --text:#ecf1ff;    --muted:#aab3d1;    --border:#1a2030;    --accent:#6e7cff;    --accent-2:#22d3ee;    --ring:#7c8bff;    --shadow:0 10px 30px rgba(0,0,0,.35);  }
-  *{box-sizing:border-box}  html,body{height:100%}  body{    margin:0;    font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial;    background: var(--bg);    color:var(--text);    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;  }
-  /* ===== Header ===== */  header{    position:sticky; top:0; z-index:5;    backdrop-filter:saturate(130%) blur(10px);    background: linear-gradient(180deg, rgba(255,255,255,.9), rgba(255,255,255,.75));    border-bottom:1px solid var(--border);  }  body.theme-dark header{    background: linear-gradient(180deg, rgba(16,19,26,.85), rgba(16,19,26,.55));  }  .container{    max-width:1400px; margin:0 auto; padding:14px 16px;    display:flex; align-items:center; gap:12px;  }  .logo-dot{width:10px;height:10px;border-radius:50%;    background:linear-gradient(135deg,var(--accent),var(--accent-2));  }  h1{margin:0;font-size:18px;letter-spacing:.4px;font-weight:700}  .sub{opacity:.7;font-size:12px}  .badge{margin-left:auto; font-size:11px; padding:4px 8px; border-radius:999px;    background:#eef2ff; border:1px solid #c7d2fe; color:#334155; font-weight:600;}  body.theme-dark .badge{background:rgba(124,139,255,.14); border:1px solid #2b3560; color:#cfd6ff}
-  /* ===== Layout ===== */  main{    max-width:1400px; margin:24px auto; padding:0 16px;    display:grid; gap:20px; grid-template-columns:1.6fr .9fr; align-items:start;  }  @media (max-width:1080px){ main{grid-template-columns:1fr} }
-  .card{    background:var(--panel); border:1px solid var(--border);    border-radius:var(--radius); box-shadow:var(--shadow);  }
-  /* ===== Stage (grande) ===== */  .stage{ padding:16px; display:grid; gap:12px; }  .canvas-wrap{    position:relative; border:1px solid var(--border); border-radius:12px;    padding:12px; background:var(--panel-2); min-height:72vh;  }
-  /* Contenedor escalable con proporción fija */  .stage-frame{    position:relative;    width:100%;    aspect-ratio: 1 / 1;           /* mantiene 1:1 siempre */    overflow:hidden;    background:#eef2ff;    border-radius:10px;    transform-origin:center center;    isolation:isolate;  }  body.theme-dark .stage-frame{ background:#0d1117; }
-  /* Canvas centrado, sin estirar */  canvas{    position:absolute;    left:50%; top:50%;    transform: translate(-50%, -50%);    width:100%;    height:auto;                   /* evita deformación */    display:block;    border-radius:10px;  }
-  /* Overlay del arte */  #artWrap{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); pointer-events:none; }  #imgArt{    max-width:40%; transform-origin:center center; pointer-events:auto; user-select:none; display:none;  }
-  /* QR Overlay */
-  #qrWrap { position: absolute; top: 20px; right: 20px; cursor: move; z-index: 10; padding: 5px; background: white; border: 1px dashed #ccc; display: none; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J&J Studio Pro — Simulador 3D Movimiento</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
+            --accent: #00d2ff; --border: #1f1f1f; --vip: #00d2ff;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
 
-  .hint{opacity:.7;font-size:12px}
-  /* ===== Controls ===== */  .controls{ padding:16px; display:grid; gap:12px; }  .group{ background:var(--panel-2); border:1px solid var(--border);    border-radius:12px; padding:12px; display:grid; gap:10px; }  .row{display:grid; grid-template-columns:140px 1fr; gap:12px; align-items:center}  @media (max-width:520px){ .row{grid-template-columns:1fr} }
-  label{opacity:.85;font-size:12px; letter-spacing:.3px}
-  select, button, input[type="color"], input[type="file"], input[type="text"]{    height:40px; border-radius:10px; padding:0 12px; color:var(--text);    background:var(--panel); border:1px solid var(--border); outline:none;    transition: box-shadow .2s, border-color .2s, transform .06s;  }  select:focus, button:focus, input[type="color"]:focus, input[type="file"]:focus{    box-shadow:0 0 0 3px color-mix(in oklab,var(--accent) 35%, transparent); border-color:var(--ring)  }  button:active{ transform:translateY(1px) }  input[type="color"]{padding:0; width:48px; border-radius:8px; background:#0000; cursor:pointer;}
-  /* Range */  input[type="range"]{ -webkit-appearance:none; width:100%; height:6px; background:#e5e7eb; border-radius:999px; outline:none; }  body.theme-dark input[type="range"]{ background:#1b2238; }  input[type="range"]::-webkit-slider-thumb{    -webkit-appearance:none; width:18px;height:18px;border-radius:50%;    background: linear-gradient(135deg, var(--accent), var(--accent-2));    border:2px solid #ffffff40; box-shadow:0 0 0 4px color-mix(in oklab,var(--accent) 30%, transparent);    cursor:pointer;  }
-  /* Toggle */  .toggle{ display:flex; background:#f1f5f9; border:1px solid var(--border); border-radius:10px; padding:2px; gap:2px; height:40px; }  body.theme-dark .toggle{ background:#0c111b; border-color:#1c2540; }  .toggle .pill{ flex:1; display:grid; place-items:center; font-size:13px; cursor:pointer; border-radius:8px; color:#334155 }  body.theme-dark .toggle .pill{ color:#c8d0ff }  .toggle .pill.active{ color:#fff; font-weight:700; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
-  .cta{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }  .btn{    width:100%; background: linear-gradient(135deg, var(--accent), var(--accent-2));    border:1px solid color-mix(in oklab,var(--accent) 40%, #fff 60%);    color:#fff; font-weight:800; letter-spacing:.3px; height:44px; border-radius:12px; cursor:pointer;  }  .btn.secondary{ background:transparent; color:var(--text); border:1px solid var(--border); }
-  .bg-row{ display:grid; grid-template-columns:140px auto auto; gap:12px; align-items:center; }  @media (max-width:520px){ .bg-row{grid-template-columns:1fr} }  #bgPick{ display:none; }
-  .file-row{ display:grid; grid-template-columns:1fr 48px; gap:8px; align-items:center; }  .trash{    display:grid; place-items:center; height:40px; border-radius:10px; cursor:pointer;    background:var(--panel); border:1px solid var(--border);  }</style></head>
-<body>  <header>    <div class="container">      <div class="logo-dot"></div>      <div>        <h1>J&J STUDIO MOCKUP</h1>        <div class="sub">COMUNIDAD J&J</div>      </div>      <div class="badge">Beta</div>    </div>  </header>
-  <main>    <section class="card stage">      <div class="canvas-wrap">        <div class="stage-frame" id="stage">          <canvas id="c" width="2048" height="2048"></canvas>
-          <div id="artWrap">            <img id="imgArt" alt="diseño" draggable="false">          </div>
+        /* --- LOGIN / PAYWALL --- */
+        #login-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 9999; display: flex; align-items: center; justify-content: center; display: none; }
+        .login-card { background: var(--panel); padding: 30px; border-radius: 20px; border: 1px solid var(--border); width: 90%; max-width: 450px; text-align: center; }
 
-          <div id="qrWrap"></div>
-        </div>      </div>      <div class="hint">Arrastra el diseño para moverlo. Rueda del ratón para escalar el arte. Arrastra el QR para posicionarlo.</div>    </section>
-    <aside class="card controls">
-      <div class="group">        <div class="row">          <label>Tema</label>          <select id="themeSel">            <option value="light">Claro</option>            <option value="dark" selected>Oscuro</option>          </select>        </div>
-        <div class="row">          <label>Vista</label>          <div class="toggle" id="viewToggle" role="tablist" aria-label="Vista">            <div class="pill active" data-val="front">Frontal</div>            <div class="pill" data-val="back">Espalda</div>          </div>          <select id="view" aria-hidden="true" style="display:none">            <option value="front" selected>Frente</option>            <option value="back">Espalda</option>          </select>        </div>      </div>
-      <div class="group">        <div class="row">          <label>Color de camiseta</label>          <input id="color" type="color" value="#ffffff" />        </div>        <div class="row">          <label>Textura</label>          <select id="texType">            <option value="none">Ninguna</option>            <option value="acid">Acid Wash</option>            <option value="full">Full Print</option>          </select>        </div>      </div>
+        /* --- INTERFAZ --- */
+        .wrap { display: grid; grid-template-columns: 350px 1fr; height: 100vh; }
+        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; z-index: 10; }
+        h2 { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 5px; }
 
-      <div class="group">
-        <div class="row">
-          <label>Enlace QR (WhatsApp)</label>
-          <input type="text" id="qrText" placeholder="https://wa.me/..." />
+        .stage { position: relative; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        #canvas-3d { width: 100%; height: 100%; cursor: grab; }
+        #canvas-3d:active { cursor: grabbing; }
+
+        .control-group { background: #161616; border: 1px solid #222; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+        label { font-size: 11px; color: #888; display: block; margin-bottom: 8px; }
+        input[type="range"] { width: 100%; accent-color: var(--vip); }
+        
+        .btn-dl { width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-top: 10px; }
+        .btn-nav { width: 100%; padding: 10px; background: #1c2540; color: var(--vip); border: 1px solid var(--vip); border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
+
+        .m-input { width: 100%; padding: 10px; background: #000; color: #fff; border: 1px solid #333; border-radius: 8px; margin-bottom: 10px; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay">
+        <div class="login-card">
+            <h2 style="color:var(--vip); font-size:24px;">J&J MOCKUP 3D</h2>
+            <p style="color:#fff;">Prueba Gratuita Agotada</p>
+            <button class="btn-dl" onclick="window.open('https://wa.me/51916689969')">ADQUIRIR ACCESO VIP</button>
         </div>
-        <button id="btnGenQR" class="btn secondary">Generar QR Movible</button>
-      </div>
-      
-      <div class="group">        <div class="bg-row">          <label>Fondo</label>          <select id="bg">            <option value="transparent">Transparente</option>            <option value="white">Blanco</option>            <option value="checker">Cuadriculado</option>            <option value="dark" selected>Oscuro</option>            <option value="custom">Color</option>          </select>          <input type="color" id="bgPick" value="#0b0d12">        </div>
-        <div class="file-row">          <input type="file" id="inpFile" accept="image/png,image/jpeg">          <button id="btnTrash" class="trash">🗑️</button>        </div>
-        <div class="cta">          <button id="savePNG" class="btn">Guardar PNG</button>          <button id="saveJPG" class="btn secondary">Guardar JPG</button>        </div>
-      </div>
-    </aside>  </main>
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script>
-  const C = document.getElementById('c');
-  const ctx = C.getContext('2d');
-  const viewSel = document.getElementById('view');
-  const colorInp = document.getElementById('color');
-  const bgSel   = document.getElementById('bg');
-  const texType = document.getElementById('texType');
-  const themeSel = document.getElementById('themeSel');
-  const inpFile  = document.getElementById('inpFile');
-  const imgArt   = document.getElementById('imgArt');
-  const stage    = document.getElementById('stage');
-  const bgPick   = document.getElementById('bgPick');
-  const qrWrap   = document.getElementById('qrWrap');
+    </div>
 
-  // Inicializar modo oscuro
-  document.body.classList.add('theme-dark');
+    <main class="wrap">
+        <aside class="panel">
+            <button class="btn-nav" onclick="location.href='index.html'">← VOLVER AL QUITAFONDOS</button>
+            
+            <h2>1. Textura / Diseño (PNG)</h2>
+            <div class="control-group">
+                <input type="file" id="design-file" accept="image/*" style="font-size:11px; color:#666;">
+            </div>
 
-  // Toggle Vista
-  document.getElementById('viewToggle').addEventListener('click', (e)=>{
-    const pill = e.target.closest('.pill'); if(!pill) return;
-    [...e.currentTarget.children].forEach(p=>p.classList.remove('active'));
-    pill.classList.add('active');
-    viewSel.value = pill.dataset.val;
-    render();
-  });
+            <h2>2. Ajustes de Movimiento</h2>
+            <div class="control-group">
+                <label>Velocidad de Rotación</label>
+                <input type="range" id="speed-range" min="0" max="0.05" step="0.001" value="0.01">
+                <label style="margin-top:10px;">Escala del Logo</label>
+                <input type="range" id="logo-scale" min="0.5" max="5" step="0.1" value="1.5">
+            </div>
 
-  const ASSETS = {
-    front: {
-      base:   "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793740/1.BOXYFITDELANTERO_BASE_WHITE_1_oad518.png",
-      lights: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793738/3.LUCESDELANTERAS_1_onw0b8.png",
-      shadows:[ "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793743/4._SOMBRASDELANTERAS_1_mmw5n2.png" ],
-      textures: {
-        acid: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793861/ACID_WASH_DELANTERO_MOOD_TSHIRT_omnbjl.png",
-        full: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793865/FULL_PRINT_TEXTURA_DELANTERO_MOD_yjx7qn.png"
-      }
-    },
-    back: {
-      base:   "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793939/1._BOXYFITESPALDA_WHITE_yav9mn.png",
-      lights: null,
-      shadows:[ 
-        "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793937/2._SOMBRA_ESPALDA_1_nrxsoe.png",
-        "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793938/3._SOMBRA_ESPALDA_2_ljeabv.png"
-      ],
-      textures: {
-        acid: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762794027/ACID_WASH_ESPALDA_TSHIRT_s11l8a.png",
-        full: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762794025/FULL_PRINT_TEXTURA_ESPALDA_ljjzuo.png"
-      }
+            <h2>3. Color de la Prenda</h2>
+            <div class="control-group">
+                <input type="color" id="shirt-color" value="#ffffff" style="width:100%; height:40px; border:none; background:none; cursor:pointer;">
+            </div>
+
+            <button class="btn-dl" onclick="handleDownload()">DESCARGAR CAPTURA 3D</button>
+        </aside>
+
+        <section class="stage">
+            <div id="container-3d" style="width:100%; height:100%;"></div>
+        </section>
+    </main>
+
+<script>
+    let scene, camera, renderer, shirt, textureLoader;
+    let downloadsUsed = localStorage.getItem('jj_3d_done') || 0;
+
+    function init3D() {
+        const container = document.getElementById('container-3d');
+        scene = new THREE.Scene();
+        camera = new THREE.Camera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
+
+        // Luces para realismo
+        const light = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(light);
+        const pointLight = new THREE.PointLight(0xffffff, 0.5);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
+
+        // Crear una "Camiseta" simplificada (Plano con curvatura)
+        const geometry = new THREE.PlaneGeometry(3, 4, 32, 32);
+        const material = new THREE.MeshStandardMaterial({ 
+            color: 0xffffff, 
+            side: THREE.DoubleSide,
+            roughness: 0.7
+        });
+        shirt = new THREE.Mesh(geometry, material);
+        scene.add(shirt);
+
+        textureLoader = new THREE.TextureLoader();
+        animate();
     }
-  };
 
-  const cache = { front:{}, back:{} };
-  function load(src){
-    if (!src) return Promise.resolve(null);
-    const img = new Image(); img.crossOrigin="anonymous"; img.src = src;
-    return new Promise(r => img.onload = () => r(img));
-  }
-  async function ensureLoaded(side){
-    const a = ASSETS[side];
-    if (!cache[side].base) cache[side].base = await load(a.base);
-    if (a.lights && !cache[side].lights) cache[side].lights = await load(a.lights);
-    if (!cache[side].shadows) cache[side].shadows = await Promise.all(a.shadows.map(load));
-    if (!cache[side].textures) cache[side].textures = {};
-    for (const k of Object.keys(a.textures)){
-      if (!cache[side].textures[k]) cache[side].textures[k] = await load(a.textures[k]);
+    function animate() {
+        requestAnimationFrame(animate);
+        const speed = parseFloat(document.getElementById('speed-range').value);
+        shirt.rotation.y += speed;
+        renderer.render(scene, camera);
     }
-  }
 
-  function drawBackground() {
-    const bg = bgSel.value;
-    ctx.clearRect(0,0,C.width,C.height);
-    if (bg === "white") { ctx.fillStyle="#fff"; ctx.fillRect(0,0,C.width,C.height); stage.style.backgroundColor="#ffffff"; }
-    else if (bg === "dark") { ctx.fillStyle="#0f1424"; ctx.fillRect(0,0,C.width,C.height); stage.style.backgroundColor="#0f1424"; }
-    else if (bg === "custom") { const col = bgPick.value; ctx.fillStyle=col; ctx.fillRect(0,0,C.width,C.height); stage.style.backgroundColor=col; }
-  }
+    // Cargar Diseño
+    document.getElementById('design-file').onchange = e => {
+        const file = e.target.files[0];
+        const url = URL.createObjectURL(file);
+        textureLoader.load(url, (texture) => {
+            const scale = document.getElementById('logo-scale').value;
+            texture.repeat.set(scale, scale);
+            texture.offset.set(0.5 - scale/2, 0.5 - scale/2);
+            shirt.material.map = texture;
+            shirt.material.needsUpdate = true;
+        });
+    };
 
-  async function render(){
-    const side = viewSel.value;
-    await ensureLoaded(side);
-    drawBackground();
-    const R = {x:0, y:0, w:C.width, h:C.height};
-    ctx.globalCompositeOperation = "source-over";
-    ctx.fillStyle = colorInp.value;
-    ctx.fillRect(R.x, R.y, R.w, R.h);
-    ctx.globalCompositeOperation = "destination-in";
-    ctx.drawImage(cache[side].base, R.x, R.y, R.w, R.h);
-    const tex = texType.value;
-    if (tex !== "none"){ ctx.globalCompositeOperation = "multiply"; ctx.drawImage(cache[side].textures[tex], R.x, R.y, R.w, R.h); }
-    ctx.globalCompositeOperation = "multiply";
-    cache[side].shadows.forEach(img => ctx.drawImage(img, R.x, R.y, R.w, R.h));
-    if (side === 'front' && cache[side].lights && tex !== "acid"){ ctx.globalCompositeOperation = "screen"; ctx.drawImage(cache[side].lights, R.x, R.y, R.w, R.h); }
-    ctx.globalCompositeOperation = "source-over";
-  }
+    // Color de prenda
+    document.getElementById('shirt-color').oninput = e => {
+        shirt.material.color.set(e.target.value);
+    };
 
-  // Lógica de Movimiento Arte
-  let art={x:0,y:0,s:1}, dragging=false, startX, startY;
-  imgArt.addEventListener('pointerdown', e=>{ dragging=true; imgArt.setPointerCapture(e.pointerId); startX=e.clientX; startY=e.clientY; });
-  window.addEventListener('pointermove', e=>{ if(!dragging) return; const dx=e.clientX-startX, dy=e.clientY-startY; startX=e.clientX; startY=e.clientY; art.x+=dx; art.y+=dy; applyArt(); });
-  window.addEventListener('pointerup', ()=> dragging=false);
-  stage.addEventListener('wheel', e=>{ if(imgArt.style.display==='none') return; e.preventDefault(); art.s = Math.max(0.1, art.s + (e.deltaY<0?0.05:-0.05)); applyArt(); }, {passive:false});
-  function applyArt(){ imgArt.style.transform = `translate(${art.x}px, ${art.y}px) scale(${art.s})`; }
+    // Lógica de descarga y Paywall
+    function handleDownload() {
+        if(downloadsUsed >= 1) {
+            document.getElementById('login-overlay').style.display = 'flex';
+        } else {
+            const link = document.createElement('a');
+            renderer.render(scene, camera); // Captura frame actual
+            link.download = 'jj_studio_3d.png';
+            link.href = renderer.domElement.toDataURL();
+            link.click();
+            downloadsUsed++;
+            localStorage.setItem('jj_3d_done', 1);
+        }
+    }
 
-  // Lógica QR
-  document.getElementById('btnGenQR').onclick = ()=>{
-    const val = document.getElementById('qrText').value; if(!val) return;
-    qrWrap.innerHTML = ""; qrWrap.style.display="block";
-    new QRCode(qrWrap, { text: val, width: 80, height: 80 });
-  };
-  let qrDrag=false, qX, qY;
-  qrWrap.onmousedown = e=>{ qrDrag=true; qX=e.clientX-qrWrap.offsetLeft; qY=e.clientY-qrWrap.offsetTop; };
-  window.onmousemove = e=>{ if(!qrDrag) return; qrWrap.style.left=(e.clientX-qX)+'px'; qrWrap.style.top=(e.clientY-qY)+'px'; };
-  window.onmouseup = ()=> qrDrag=false;
+    window.addEventListener('resize', () => {
+        const container = document.getElementById('container-3d');
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(container.clientWidth, container.clientHeight);
+    });
 
-  inpFile.onchange = e=>{ const r=new FileReader(); r.onload=ev=>{imgArt.src=ev.target.result; imgArt.style.display='block';}; r.readAsDataURL(e.target.files[0]); };
-  themeSel.onchange = ()=>{ document.body.classList.toggle('theme-dark', themeSel.value==='dark'); };
-  colorInp.oninput = render;
-  texType.onchange = render;
-  bgSel.onchange = render;
-
-  document.getElementById('savePNG').onclick = ()=> html2canvas(stage,{useCORS:true, backgroundColor:null}).then(c=>{ const a=document.createElement('a'); a.download='mockup.png'; a.href=c.toDataURL(); a.click(); });
-
-  render();
-  </script>
+    init3D();
+</script>
 </body>
 </html>
