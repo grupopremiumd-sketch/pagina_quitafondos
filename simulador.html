@@ -1,156 +1,85 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio — Simulador 3D Real</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <style>
-        :root { --bg: #000; --accent: #00d2ff; --panel: #0a0a0a; }
-        body { margin: 0; background: var(--bg); color: white; font-family: sans-serif; overflow: hidden; }
-        .layout { display: grid; grid-template-columns: 320px 1fr; height: 100vh; }
-        .sidebar { background: var(--panel); border-right: 1px solid #1a1a1a; padding: 25px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; }
-        .logo { font-weight: 800; font-size: 22px; margin-bottom: 20px; text-align: center; }
-        .logo span { color: var(--accent); }
-        .control-box { background: #111; border: 1px solid #222; padding: 15px; border-radius: 12px; }
-        label { font-size: 10px; color: #666; text-transform: uppercase; display: block; margin-bottom: 8px; font-weight: bold; }
-        input[type="range"] { width: 100%; accent-color: var(--accent); }
-        .btn-dl { width: 100%; padding: 15px; background: var(--accent); color: #000; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; }
-        #canvas-container { width: 100%; height: 100%; background: radial-gradient(circle, #151515 0%, #000 100%); }
-    </style>
-</head>
-<body>
+function init() {
+    scene = new THREE.Scene();
+    const container = document.getElementById('canvas-container');
+    
+    camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 10000);
+    camera.position.set(0, 0, 10); 
 
-<div class="layout">
-    <aside class="sidebar">
-        <div class="logo">J&J <span>STUDIO</span></div>
-        <div class="control-box">
-            <label>1. Diseño PNG</label>
-            <input type="file" id="upload-png" accept="image/png">
-        </div>
-        <div class="control-box">
-            <label>2. Color Prenda</label>
-            <input type="color" id="shirt-color" value="#ffffff" style="width:100%; height:35px; border:none; background:none; cursor:pointer;">
-        </div>
-        <div class="control-box">
-            <label>3. Ajuste Logo</label>
-            <label>Tamaño</label>
-            <input type="range" id="logo-scale" min="0.1" max="5" step="0.1" value="1">
-            <label style="margin-top:10px;">Posición (Y)</label>
-            <input type="range" id="logo-y" min="-1" max="1" step="0.01" value="0.5">
-        </div>
-        <button class="btn-dl" onclick="download()">DESCARGAR MOCKUP</button>
-    </aside>
-    <main id="canvas-container"></main>
-</div>
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    // Mejora el color para que no se vea lavado
+    renderer.outputEncoding = THREE.sRGBEncoding; 
+    container.appendChild(renderer.domElement);
 
-<script>
-    let scene, camera, renderer, shirt, designTex, controls;
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
 
-    function init() {
-        scene = new THREE.Scene();
-        const container = document.getElementById('canvas-container');
+    // Iluminación optimizada
+    scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+    const light1 = new THREE.DirectionalLight(0xffffff, 0.8);
+    light1.position.set(5, 10, 7);
+    scene.add(light1);
+
+    const loader = new THREE.GLTFLoader();
+    // Cargamos el modelo con un bypass de caché
+    loader.load('tshirt.glb?v=' + Date.now(), (gltf) => {
+        shirtModel = gltf.scene;
         
-        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 20000);
-        camera.position.set(0, 0, 10);
+        const box = new THREE.Box3().setFromObject(shirtModel);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
 
-        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
-        renderer.setSize(container.clientWidth, container.clientHeight);
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.outputEncoding = THREE.sRGBEncoding;
-        container.appendChild(renderer.domElement);
-
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
-        controls.enableDamping = true;
-
-        // Luces Pro
-        scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-        const sun = new THREE.DirectionalLight(0xffffff, 1);
-        sun.position.set(5, 10, 7);
-        scene.add(sun);
-
-        // Cargador GLB
-        const loader = new THREE.GLTFLoader();
-        // Agregamos un timestamp para evitar la caché vieja del navegador
-        const modelUrl = 'tshirt.glb?v=' + Date.now();
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const scale = 5 / maxDim; 
+        shirtModel.scale.set(scale, scale, scale);
+        // Centrar el modelo en el origen (0,0,0)
+        shirtModel.position.sub(center.multiplyScalar(scale));
         
-        loader.load(modelUrl, (gltf) => {
-            shirt = gltf.scene;
-            
-            // ESCALADO AUTOMÁTICO PARA TU MODELO ESPECÍFICO
-            const box = new THREE.Box3().setFromObject(shirt);
-            const size = box.getSize(new THREE.Vector3());
-            const center = box.getCenter(new THREE.Vector3());
-            
-            const maxDim = Math.max(size.x, size.y, size.z);
-            const scale = 6 / maxDim; // Forzamos escala visible
-            shirt.scale.set(scale, scale, scale);
-            shirt.position.sub(center.multiplyScalar(scale));
-            
-            scene.add(shirt);
-            updateMaterial();
-        }, undefined, (err) => {
-            console.error("No se encontró el archivo. Verifica que esté al lado del HTML.");
-        });
-
-        animate();
-    }
-
-    function animate() {
-        requestAnimationFrame(animate);
-        if(controls) controls.update();
-        renderer.render(scene, camera);
-    }
-
-    document.getElementById('upload-png').onchange = e => {
-        const file = e.target.files[0];
-        new THREE.TextureLoader().load(URL.createObjectURL(file), (tex) => {
-            designTex = tex;
-            designTex.wrapS = designTex.wrapT = THREE.ClampToEdgeWrapping;
-            updateMaterial();
-        });
-    };
-
-    function updateMaterial() {
-        if (!shirt) return;
-        const color = document.getElementById('shirt-color').value;
-        const scale = 1 / parseFloat(document.getElementById('logo-scale').value);
-        const posY = parseFloat(document.getElementById('logo-y').value);
-
-        shirt.traverse((child) => {
-            if (child.isMesh) {
-                child.material.color.set(color);
-                if (designTex) {
-                    child.material.map = designTex;
-                    child.material.map.repeat.set(scale, scale);
-                    child.material.map.offset.set(0.5 - (0.5 * scale), posY);
-                }
-                child.material.needsUpdate = true;
-            }
-        });
-    }
-
-    document.getElementById('shirt-color').oninput = updateMaterial;
-    document.getElementById('logo-scale').oninput = updateMaterial;
-    document.getElementById('logo-y').oninput = updateMaterial;
-
-    function download() {
-        const link = document.createElement('a');
-        link.download = 'jj-mockup.png';
-        link.href = renderer.domElement.toDataURL();
-        link.click();
-    }
-
-    window.addEventListener('resize', () => {
-        const container = document.getElementById('canvas-container');
-        camera.aspect = container.clientWidth / container.clientHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(container.clientWidth, container.clientHeight);
+        scene.add(shirtModel);
+        updateMaterial(); // Aplicar estado inicial
+        console.log("Camiseta J&J cargada correctamente");
+    }, undefined, (error) => {
+        console.error("Error al cargar el archivo GLB:", error);
     });
 
-    init();
-</script>
-</body>
-</html>
+    animate(); // Asegúrate de que la función se llame animate y no animar
+}
+
+function updateMaterial() {
+    if (!shirtModel) return;
+
+    const colorValue = document.getElementById('shirt-color').value;
+    const scaleFactor = parseFloat(document.getElementById('logo-scale').value);
+    const posY = parseFloat(document.getElementById('logo-y').value);
+
+    // Invertimos la escala para que al subir el slider el logo crezca
+    const s = 1 / scaleFactor;
+
+    shirtModel.traverse((child) => {
+        if (child.isMesh) {
+            // Clonamos el material para no afectar a otras partes si el modelo es complejo
+            if (!child.userData.originalMaterial) {
+                child.userData.originalMaterial = child.material.clone();
+                child.material = child.userData.originalMaterial;
+            }
+
+            child.material.color.set(colorValue);
+
+            if (designTexture) {
+                child.material.map = designTexture;
+                designTexture.wrapS = designTexture.wrapT = THREE.ClampToEdgeWrapping;
+                
+                // Ajuste de repetición
+                child.material.map.repeat.set(s, s);
+                
+                // AJUSTE CRÍTICO DE POSICIÓN
+                // 0.5 es el centro de la textura. Ajustamos según la escala y el slider Y
+                child.material.map.offset.set(0.5 - (s / 2), posY);
+                
+                child.material.map.needsUpdate = true;
+            }
+            child.material.needsUpdate = true;
+        }
+    });
+}
