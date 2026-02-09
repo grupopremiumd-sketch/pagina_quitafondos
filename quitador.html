@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>J&J Studio — Quitar Fondo Pro</title>
+    <style>
+        :root { --bg:#0a0a0a; --panel:#111; --text:#eee; --vip:#00d2ff; --accent:#f87171; --border:#1f1f1f; }
+        * { box-sizing: border-box; }
+        body { margin:0; font-family:sans-serif; background:var(--bg); color:var(--text); overflow:hidden; display:grid; grid-template-columns:350px 1fr; height:100vh; }
+        
+        .sidebar { background:var(--panel); padding:20px; border-right:1px solid var(--border); overflow-y:auto; }
+        .group { background:#161616; padding:15px; border-radius:10px; margin-bottom:15px; border:1px solid var(--border); }
+        h2 { font-size:11px; color:#666; text-transform:uppercase; margin-bottom:10px; border-bottom:1px solid #222; padding-bottom:5px; }
+        
+        .row { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; gap:10px; }
+        label { font-size:11px; color:#bbb; width:100px; }
+        input[type="range"] { flex:1; accent-color:var(--accent); cursor:pointer; }
+        .val { background:#000; color:var(--vip); padding:3px 6px; border-radius:4px; font-size:11px; width:55px; text-align:center; }
+        
+        .stage { display:flex; align-items:center; justify-content:center; background:#070707; position:relative; }
+        canvas { max-width:95%; max-height:85vh; border:1px solid #333; box-shadow:0 0 40px #000; }
+        .btn-dl { width:100%; padding:15px; background:linear-gradient(135deg,#10b981,#22c55e); border:none; border-radius:8px; color:#052e1a; font-weight:900; cursor:pointer; font-size:14px; }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <h2 style="color:var(--vip); margin-top:0;">J&J STUDIO PRO</h2>
+        
+        <div class="group">
+            <label>1. CARGAR IMAGEN</label>
+            <input type="file" id="file" accept="image/*" style="font-size:11px;">
+        </div>
+
+        <div class="group">
+            <label>2. MODO LIMPIEZA</label>
+            <select id="mode" onchange="process()" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:8px; border-radius:8px;">
+                <option value="white">Fondo Blanco</option>
+                <option value="black">Fondo Negro</option>
+                <option value="pick">Elegir Color...</option>
+            </select>
+        </div>
+
+        <div class="group">
+            <div class="row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="150" value="60" oninput="process()"><div class="val" id="fV">60</div></div>
+            <div class="row"><label>Contraer</label><input type="range" id="contract" min="0" max="10" value="0" oninput="process()"><div class="val" id="cV">0 px</div></div>
+            <div class="row"><label>Suavizado</label><input type="range" id="feather" min="0" max="15" value="0" oninput="process()"><div class="val" id="sV">0 px</div></div>
+        </div>
+
+        <button class="btn-dl" onclick="download()">DESCARGAR PNG</button>
+    </aside>
+
+    <main class="stage">
+        <canvas id="canvas"></canvas>
+    </main>
+
+    <script>
+        const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
+        let imgOrig = new Image(), targetColor = [255,255,255];
+
+        document.getElementById('file').onchange = e => {
+            const reader = new FileReader();
+            reader.onload = ev => {
+                imgOrig.onload = () => {
+                    canvas.width = imgOrig.width;
+                    canvas.height = imgOrig.height;
+                    process();
+                };
+                imgOrig.src = ev.target.result;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        };
+
+        function process() {
+            if (!imgOrig.src) return;
+            const fuzz = parseInt(document.getElementById('fuzz').value);
+            const contract = parseInt(document.getElementById('contract').value);
+            const feather = parseInt(document.getElementById('feather').value);
+            const mode = document.getElementById('mode').value;
+
+            document.getElementById('fV').innerText = fuzz;
+            document.getElementById('cV').innerText = contract + "px";
+            document.getElementById('sV').innerText = feather + "px";
+
+            // Capa de máscara (Urban Style)
+            const temp = document.createElement('canvas');
+            temp.width = canvas.width; temp.height = canvas.height;
+            const tCtx = temp.getContext('2d');
+            tCtx.drawImage(imgOrig, 0, 0);
+
+            const imgData = tCtx.getImageData(0, 0, canvas.width, canvas.height);
+            const d = imgData.data;
+            if(mode === 'white') targetColor = [255,255,255];
+            else if(mode === 'black') targetColor = [0,0,0];
+
+            const threshold = fuzz * 2.2;
+            for (let i = 0; i < d.length; i += 4) {
+                const diff = Math.sqrt((d[i]-targetColor[0])**2 + (d[i+1]-targetColor[1])**2 + (d[i+2]-targetColor[2])**2);
+                if (diff < threshold) d[i+3] = 0;
+            }
+            tCtx.putImageData(imgData, 0, 0);
+
+            // Render final con limpieza de bordes por máscara
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.save();
+            if (contract > 0) {
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.filter = `blur(${contract}px)`;
+                ctx.drawImage(temp, 0, 0);
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.filter = 'none';
+            } else {
+                ctx.drawImage(temp, 0, 0);
+            }
+            ctx.restore();
+
+            if (feather > 0) {
+                const bCanvas = document.createElement('canvas');
+                bCanvas.width = canvas.width; bCanvas.height = canvas.height;
+                const bCtx = bCanvas.getContext('2d');
+                bCtx.filter = `blur(${feather / 1.5}px)`;
+                bCtx.drawImage(canvas, 0, 0);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(bCanvas, 0, 0);
+            }
+        }
+
+        canvas.onclick = (e) => {
+            if(document.getElementById('mode').value !== 'pick') return;
+            const r = canvas.getBoundingClientRect();
+            const x = (e.clientX - r.left) * (imgOrig.width / r.width);
+            const y = (e.clientY - r.top) * (imgOrig.height / r.height);
+            const p = ctx.getImageData(x, y, 1, 1).data;
+            targetColor = [p[0], p[1], p[2]]; process();
+        };
+
+        function download() {
+            const a = document.createElement('a');
+            a.download = 'jj_studio_pro.png';
+            a.href = canvas.toDataURL();
+            a.click();
+        }
+    </script>
+</body>
+</html>
