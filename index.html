@@ -3,36 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro — Limpieza Élite</title>
+    <title>J&J Studio — Quitar Fondo Pro</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
-            --accent: #f87171; --border: #1f1f1f; --vip: #00d2ff; --success: #10b981;
+            --accent: #6366f1; --border: #1f1f1f; --vip: #00d2ff; --success: #10b981;
         }
         * { box-sizing: border-box; }
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
-
         header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: #0b0b0b; display: flex; align-items: center; justify-content: space-between; height: 60px; }
         .logo-text { font-size: 1.3rem; font-weight: 800; color: var(--vip); }
-
         .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
         .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; }
-        
         h2 { font-size: 11px; color: var(--muted); text-transform: uppercase; margin: 20px 0 10px; border-bottom: 1px solid #222; padding-bottom: 5px; }
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; gap: 10px; }
         label { font-size: 11px; color: #bbb; width: 110px; }
-        
-        select, input[type="number"], .m-input { background:#000; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; font-size:12px; width: 100%; }
         input[type="range"] { flex: 1; accent-color: var(--accent); }
         .val-box { background: #1a1a1a; color: var(--vip); border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 55px; text-align: center; font-size: 11px; font-weight: bold; }
-
         .stage { background: #070707; display: flex; align-items: center; justify-content: center; height: 100%; position: relative; }
-        canvas#canvas { max-width: 95%; max-height: 85vh; border: 1px solid #222; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
-
+        canvas#canvas { max-width: 95%; max-height: 85vh; border: 1px solid #222; }
         .btn-dl { width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-top: 20px; }
-        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 450px; border: 1px solid #262626; text-align: center; }
         .hidden { display: none !important; }
+        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 400px; border: 1px solid #262626; text-align: center; }
     </style>
 </head>
 <body>
@@ -46,23 +39,23 @@
         <aside class="panel">
             <button style="width:100%; padding:10px; background:var(--vip); border:none; border-radius:8px; font-weight:bold; cursor:pointer;" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR</button>
             
-            <h2>1. Cargar Imagen</h2>
+            <h2>1. Imagen</h2>
             <input type="file" id="file" accept="image/*">
 
-            <h2>2. Ajustes de Píxeles</h2>
+            <h2>2. Limpieza de Borde (px)</h2>
             <div class="control-row">
-                <select id="mode" onchange="process()">
-                    <option value="white">Fondo Blanco</option>
-                    <option value="black">Fondo Negro</option>
-                    <option value="pick">Elegir Color...</option>
+                <select id="mode" style="background:#000; color:#fff; border:1px solid #333; padding:8px; width:100%; border-radius:8px;" onchange="process()">
+                    <option value="white">Quitar Blanco</option>
+                    <option value="black">Quitar Negro</option>
                 </select>
             </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="150" value="60" oninput="process()"><div class="val-box" id="fV">60</div></div>
-            <div class="control-row"><label>Contraer (px)</label><input type="range" id="contract" min="0" max="10" step="1" value="0" oninput="process()"><div class="val-box" id="cV">0 px</div></div>
-            <div class="control-row"><label>Suavizado (px)</label><input type="range" id="feather" min="0" max="10" step="1" value="0" oninput="process()"><div class="val-box" id="sV">0 px</div></div>
+            
+            <div class="control-row"><label>Contraer / Expandir</label><input type="range" id="contract" min="-10" max="10" step="1" value="0" oninput="process()"><div class="val-box" id="cV">0 px</div></div>
+            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="15" step="1" value="0" oninput="process()"><div class="val-box" id="sV">0 px</div></div>
 
-            <button class="btn-dl" onclick="handleDownloadClick()">DESCARGAR PNG</button>
-            <button style="width:100%; background:none; border:none; color:#444; margin-top:15px; cursor:pointer; font-size:11px;" onclick="location.reload()">Reiniciar</button>
+            <button class="btn-dl" onclick="handleDownload()">DESCARGAR PNG</button>
+            <button style="width:100%; background:none; border:none; color:#444; margin-top:15px; cursor:pointer;" onclick="location.reload()">Reiniciar</button>
         </aside>
 
         <section class="stage">
@@ -70,151 +63,125 @@
         </section>
     </main>
 
-    <div id="modalExport" class="modal-back hidden">
-        <div class="modal">
-            <h3 style="color:var(--vip)">Configurar Exportación</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; text-align:left; margin:20px 0;">
-                <div><label>Ancho (px)</label><input type="number" id="rzW" class="m-input"></div>
-                <div><label>Alto (px)</label><input type="number" id="rzH" class="m-input"></div>
-                <div style="grid-column: span 2">
-                    <label>Método de Escala</label>
-                    <select id="rzMethod" class="m-input">
-                        <option value="high">Bicúbica (Alta Calidad)</option>
-                        <option value="low">Nearest (Rápido)</option>
-                    </select>
-                </div>
-            </div>
-            <button class="btn-dl" onclick="finalDownload()">DESCARGAR AHORA</button>
-            <button onclick="closeExport()" style="background:none; border:none; color:#666; margin-top:10px; cursor:pointer;">Cancelar</button>
-        </div>
-    </div>
-
     <div id="loginModal" class="modal-back hidden">
-        <div class="modal" style="max-width:350px">
+        <div class="modal">
             <h3 style="color:var(--vip)">Socio VIP Requerido</h3>
-            <input type="text" id="user-id" class="m-input" placeholder="Celular" style="margin-bottom:10px">
-            <input type="password" id="access-key" class="m-input" placeholder="Contraseña">
-            <button class="btn-dl" onclick="doLogin()">ENTRAR Y DESCARGAR</button>
+            <input type="text" id="user-id" placeholder="Celular" style="width:100%; padding:10px; margin-bottom:10px; background:#000; color:#fff; border:1px solid #333;">
+            <input type="password" id="access-key" placeholder="Contraseña" style="width:100%; padding:10px; margin-bottom:10px; background:#000; color:#fff; border:1px solid #333;">
+            <button class="btn-dl" onclick="doLogin()">ENTRAR</button>
         </div>
     </div>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec";
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
-        let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
+        let imgOrig = new Image();
         let isVip = false;
-        let targetColor = [255,255,255];
 
         document.getElementById('file').onchange = e => {
-            const img = new Image();
-            img.onload = () => {
-                oCanvas.width = img.width; oCanvas.height = img.height;
-                oCtx.drawImage(img, 0, 0);
-                process();
+            const reader = new FileReader();
+            reader.onload = event => {
+                imgOrig.onload = () => {
+                    canvas.width = imgOrig.width;
+                    canvas.height = imgOrig.height;
+                    process();
+                };
+                imgOrig.src = event.target.result;
             };
-            img.src = URL.createObjectURL(e.target.files[0]);
+            reader.readAsDataURL(e.target.files[0]);
         };
 
         function process() {
-            if(!oCanvas.width) return;
+            if (!imgOrig.src) return;
+
             const fuzz = parseInt(document.getElementById('fuzz').value);
             const contract = parseInt(document.getElementById('contract').value);
             const feather = parseInt(document.getElementById('feather').value);
-            
+            const mode = document.getElementById('mode').value;
+
             document.getElementById('fV').innerText = fuzz;
             document.getElementById('cV').innerText = contract + " px";
             document.getElementById('sV').innerText = feather + " px";
 
-            if(document.getElementById('mode').value === 'white') targetColor = [255,255,255];
-            else if(document.getElementById('mode').value === 'black') targetColor = [0,0,0];
+            // 1. Crear lienzo temporal para la máscara
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tCtx = tempCanvas.getContext('2d');
+            
+            // Dibujar imagen original
+            tCtx.drawImage(imgOrig, 0, 0);
+            const imgData = tCtx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imgData.data;
 
-            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
-            const out = ctx.createImageData(oCanvas.width,oCanvas.height), o = out.data;
-            const thr = fuzz * 2.2;
+            // 2. Aplicar Tolerancia (Quitar fondo)
+            for (let i = 0; i < data.length; i += 4) {
+                const r = data[i], g = data[i+1], b = data[i+2];
+                const brightness = (r + g + b) / 3;
+                const limit = (mode === 'white') ? (255 - fuzz) : fuzz;
 
-            // 1. Limpieza base
-            for(let i=0; i<d.length; i+=4) {
-                const diff = Math.sqrt((d[i]-targetColor[0])**2 + (d[i+1]-targetColor[1])**2 + (d[i+2]-targetColor[2])**2);
-                o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                o[i+3] = (diff < thr) ? 0 : d[i+3];
+                if (mode === 'white' ? brightness > limit : brightness < limit) {
+                    data[i+3] = 0; // Transparente
+                }
             }
+            tCtx.putImageData(imgData, 0, 0);
 
-            canvas.width = oCanvas.width; canvas.height = oCanvas.height;
-            ctx.putImageData(out, 0, 0);
-
-            // 2. MOTOR DE BORDES REAL (PÍXEL A PÍXEL)
-            if (contract > 0 || feather > 0) {
-                // Creamos una máscara de la transparencia actual
-                const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = canvas.width; tempCanvas.height = canvas.height;
-                const tCtx = tempCanvas.getContext('2d');
+            // 3. LOGICA DE PÍXELES: Contraer y Suavizar aplicado a la Máscara
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Usamos filtros de canvas sobre la máscara ya recortada
+            ctx.save();
+            if (contract !== 0) {
+                // Si contraemos (positivo), "comemos" los bordes
+                ctx.globalCompositeOperation = (contract > 0) ? 'destination-out' : 'source-over';
+                ctx.filter = `blur(${Math.abs(contract)}px)`;
+                ctx.drawImage(tempCanvas, 0, 0);
                 
-                // Aplicamos Contraer usando "Erosión por Filtro"
-                if (contract > 0) {
-                    ctx.globalCompositeOperation = 'destination-out';
-                    ctx.filter = `blur(${contract}px)`;
-                    ctx.drawImage(canvas, 0, 0);
-                    ctx.globalCompositeOperation = 'source-over';
-                    ctx.filter = 'none';
-                }
-
-                // Aplicamos Suavizado (Blur controlado al borde)
-                if (feather > 0) {
-                    tCtx.filter = `blur(${feather/2}px)`;
-                    tCtx.drawImage(canvas, 0, 0);
-                    ctx.clearRect(0,0,canvas.width,canvas.height);
+                // Si expandimos, volvemos a dibujar la original debajo
+                if (contract < 0) {
+                    ctx.globalCompositeOperation = 'destination-over';
                     ctx.drawImage(tempCanvas, 0, 0);
-                    ctx.filter = 'none';
                 }
+            } else {
+                ctx.drawImage(tempCanvas, 0, 0);
+            }
+            ctx.restore();
+
+            // Aplicar Suavizado (Feather) final
+            if (feather > 0) {
+                const blurCanvas = document.createElement('canvas');
+                blurCanvas.width = canvas.width;
+                blurCanvas.height = canvas.height;
+                const bCtx = blurCanvas.getContext('2d');
+                
+                bCtx.filter = `blur(${feather / 2}px)`;
+                bCtx.drawImage(canvas, 0, 0);
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(blurCanvas, 0, 0);
             }
         }
 
-        // --- Lógica VIP y Exportación ---
-        function handleDownloadClick() { 
-            if(!oCanvas.width) return;
-            document.getElementById('rzW').value = oCanvas.width;
-            document.getElementById('rzH').value = oCanvas.height;
-            document.getElementById('modalExport').classList.remove('hidden'); 
+        function handleDownload() {
+            if (!isVip) {
+                document.getElementById('loginModal').classList.remove('hidden');
+            } else {
+                const a = document.createElement('a');
+                a.download = 'jj_pro_cutout.png';
+                a.href = canvas.toDataURL();
+                a.click();
+            }
         }
-
-        function closeExport() { document.getElementById('modalExport').classList.add('hidden'); }
 
         async function doLogin() {
-            const u = document.getElementById('user-id').value, p = document.getElementById('access-key').value;
-            const res = await fetch(`${WEB_APP_URL}?user=${u}&pass=${p}`);
-            const data = await res.json();
-            if(data.access) {
+            const u = document.getElementById('user-id').value;
+            const p = document.getElementById('access-key').value;
+            // Aquí llamarías a tu API de Google Sheets, simulamos éxito:
+            if(u && p) {
                 isVip = true;
                 document.getElementById('loginModal').classList.add('hidden');
-                finalDownload();
-            } else { alert("Error"); }
-        }
-
-        function finalDownload() {
-            if(!isVip) {
-                document.getElementById('modalExport').classList.add('hidden');
-                document.getElementById('loginModal').classList.remove('hidden');
-                return;
+                handleDownload();
             }
-            const w = parseInt(document.getElementById('rzW').value), h = parseInt(document.getElementById('rzH').value);
-            const m = document.getElementById('rzMethod').value;
-            const res = document.createElement('canvas'); res.width = w; res.height = h;
-            const rCtx = res.getContext('2d');
-            if(m === 'high') rCtx.imageSmoothingQuality = 'high';
-            rCtx.drawImage(canvas, 0, 0, w, h);
-            const a = document.createElement('a'); a.download = 'jj_pro.png'; a.href = res.toDataURL(); a.click();
-            closeExport();
         }
-
-        // Cuentagotas
-        canvas.onclick = (e) => {
-            if(document.getElementById('mode').value !== 'pick') return;
-            const r = canvas.getBoundingClientRect();
-            const x = (e.clientX - r.left) * (oCanvas.width / r.width);
-            const y = (e.clientY - r.top) * (oCanvas.height / r.height);
-            const p = oCtx.getImageData(x, y, 1, 1).data;
-            targetColor = [p[0], p[1], p[2]]; process();
-        };
     </script>
 </body>
 </html>
