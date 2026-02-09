@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro — Herramienta de Diseño</title>
+    <title>J&J Studio Pro — Herramienta Definitiva</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
@@ -13,34 +13,34 @@
         * { box-sizing: border-box; }
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
 
-        /* --- PAYWALL / SUSCRIPCIÓN --- */
-        #paywall-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 9999; display: flex; align-items: center; justify-content: center; display: none; }
+        /* --- LOGIN / PAYWALL INTUITIVO --- */
+        #login-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 9999; display: flex; align-items: center; justify-content: center; display: none; }
         .login-card { background: var(--panel); padding: 30px; border-radius: 20px; border: 1px solid var(--border); width: 90%; max-width: 450px; text-align: center; }
         .logo-text { font-size: 2.2rem; font-weight: 800; background: linear-gradient(to right, #00d2ff, #0081ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; }
         
         .sub-options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
         .opt-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; text-align: left; }
-        .opt-card:hover { border-color: var(--vip); background: #222; }
+        .opt-card:hover { border-color: var(--vip); background: #222; transform: translateY(-3px); }
         .opt-card h4 { margin: 0; color: #fff; font-size: 14px; }
-        .opt-card p { margin: 5px 0 0; font-size: 11px; color: var(--muted); }
+        .opt-card p { margin: 5px 0 0; font-size: 10px; color: var(--muted); }
         
         .login-form { border-top: 1px solid #222; padding-top: 20px; display: none; }
         .m-input-main { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; color: #fff; border: 1px solid #333; border-radius: 8px; outline: none; }
+        .btn-login-action { width: 100%; padding: 12px; background: var(--vip); border: none; color: #000; font-weight: bold; border-radius: 8px; cursor: pointer; }
 
-        /* --- INTERFAZ --- */
+        /* --- PANEL LATERAL --- */
         .wrap { display: grid; grid-template-columns: 350px 1fr; height: 100vh; }
-        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; }
+        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; z-index: 100; }
         h2 { font-size: 13px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
         label { font-size: 12px; color: #ddd; width: 120px; }
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
         .val-box { background: #1a1a1a; color: var(--vip); border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 50px; text-align: center; font-size: 12px; font-weight: bold; }
         
+        /* --- ESCENARIO --- */
         .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; height: 100%; }
         #canvas-container { position: relative; display: inline-block; background-image: radial-gradient(#1a1a1a 1px, transparent 1px); background-size: 20px 20px; }
         canvas#canvas { display: block; max-height: 85vh; max-width: 90%; }
-        #crop-box { position: absolute; border: 2px dashed #fff; cursor: move; display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); z-index: 50; }
-        .resizer { width: 12px; height: 12px; background: #fff; border: 2px solid var(--accent); position: absolute; right: -6px; bottom: -6px; cursor: nwse-resize; border-radius: 50%; }
 
         /* --- MODAL EXPORTAR --- */
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
@@ -53,15 +53,15 @@
 </head>
 <body>
 
-    <div id="paywall-overlay">
+    <div id="login-overlay">
         <div class="login-card">
             <div class="logo-text">J&J STUDIO PRO</div>
-            <p id="paywall-msg" style="color:#fff; font-size:15px; margin-bottom:20px;">¡Prueba Gratuita Agotada!<br><span style="color:var(--muted); font-size:13px;">Suscríbete para descargas ilimitadas.</span></p>
+            <p id="paywall-msg" style="color:#fff; font-size:15px; margin-bottom:20px;">¡Prueba Gratuita Agotada!<br><span style="color:var(--muted); font-size:13px;">Inicia sesión para descargas ilimitadas.</span></p>
             
-            <div class="sub-options" id="sub-main-ui">
+            <div class="sub-options" id="main-sub-ui">
                 <div class="opt-card" onclick="showLoginForm()">
                     <h4>💎 Soy Socio VIP</h4>
-                    <p>Inicia sesión con tus datos de Comunidad J&J.</p>
+                    <p>Acceso total a todas las herramientas.</p>
                 </div>
                 <div class="opt-card" onclick="window.open('https://wa.me/51916689969?text=Hola,%20usé%20mi%20descarga%20gratis%20y%20quiero%20suscribirme','_blank')">
                     <h4 style="color:var(--wa)">📲 Nuevo Usuario</h4>
@@ -70,16 +70,18 @@
             </div>
 
             <div id="login-form" class="login-form">
-                <input type="text" id="user-id" class="m-input-main" placeholder="📱 Celular">
+                <input type="text" id="user-id" class="m-input-main" placeholder="📱 Número de Celular">
                 <input type="password" id="access-key" class="m-input-main" placeholder="🔑 Contraseña">
-                <button class="btn-dl" style="background:var(--vip); color:#000; margin-top:10px;" onclick="validateAccess()">INGRESAR AHORA</button>
-                <button onclick="hideLoginForm()" style="background:none; border:none; color:var(--muted); margin-top:10px; cursor:pointer; font-size:12px;">← Regresar</button>
+                <button class="btn-login-action" onclick="validateAccess()">VERIFICAR Y ENTRAR</button>
+                <button onclick="hideLoginForm()" style="background:none; border:none; color:var(--muted); margin-top:15px; cursor:pointer; font-size:12px;">← Regresar</button>
             </div>
         </div>
     </div>
 
     <main class="wrap">
         <aside class="panel">
+            <button class="btn-dl" style="background:#1c2540; color:var(--vip); border:1px solid var(--vip); margin-bottom:20px;" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR MOCKUP</button>
+            
             <h2>1. Cargar imagen</h2>
             <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:12px; margin-bottom:20px;">
             
@@ -97,26 +99,11 @@
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8" oninput="process()"><div class="val-box" id="featherV">0.8</div></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" step="1" value="0" oninput="process()"><div class="val-box" id="contractV">0</div></div>
 
-            <h2>3. Herramientas</h2>
-            <div style="display:flex; gap:8px; margin-bottom:20px;">
-                <button class="btn-dl" id="btn-init-crop" style="background:#1c2540; color:var(--vip); border:1px solid var(--vip); padding:10px; font-size:12px;">✂️ Recortar</button>
-                <button class="btn-dl hidden" id="btn-apply-crop" style="background:var(--success); color:#000; padding:10px; font-size:12px; margin:0;">Aplicar</button>
-            </div>
-
-            <label style="font-size:11px; color:var(--muted); font-weight:bold;">COLOR DEL LIENZO</label>
-            <div style="display:flex; gap:10px; height:120px; margin-top:10px;">
-                <canvas id="cpSV" width="220" height="120" style="border-radius:6px; cursor:crosshair;"></canvas>
-                <canvas id="cpH" width="20" height="120" style="border-radius:6px; cursor:ns-resize;"></canvas>
-            </div>
-
             <button class="btn-dl" onclick="handleDownloadRequest()">DESCARGAR PNG PRO</button>
         </aside>
 
-        <section class="stage" id="stage">
-            <div id="canvas-container">
-                <canvas id="canvas"></canvas>
-                <div id="crop-box"><div class="resizer"></div></div>
-            </div>
+        <section class="stage">
+            <div id="canvas-container"><canvas id="canvas"></canvas></div>
         </section>
     </main>
 
@@ -135,7 +122,7 @@
                 <div><label id="lblW" style="font-size:11px;">Ancho</label><input type="number" id="rzW" class="m-input"></div>
                 <div><label id="lblH" style="font-size:11px;">Alto</label><input type="number" id="rzH" class="m-input"></div>
                 <div style="grid-column: span 2">
-                    <label style="font-size:11px;">Método de Calidad</label>
+                    <label style="font-size:11px;">Remuestreo (Calidad)</label>
                     <select id="rzMethod" class="m-input">
                         <option value="bicubic">Bicúbica (Mejor para impresión)</option>
                         <option value="bilinear">Bilinear (Estándar)</option>
@@ -143,22 +130,20 @@
                     </select>
                 </div>
             </div>
-            <button class="btn-dl" style="margin-top:20px;" onclick="finalDownload()">DESCARGAR AHORA</button>
-            <button onclick="closeModal()" style="background:none; border:none; color:#666; width:100%; margin-top:10px; cursor:pointer; font-size:12px;">Cancelar</button>
+            <button class="btn-dl" style="margin-top:20px;" onclick="finalDownload()">APLICAR Y DESCARGAR</button>
+            <button onclick="closeModal()" style="background:none; border:none; color:#666; width:100%; margin-top:10px; cursor:pointer;">Cancelar</button>
         </div>
     </div>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec";
-        
         let isVip = false;
         let downloadsUsed = localStorage.getItem('jj_free_done') || 0;
 
-        // Si ya usó su descarga, bloquear al cargar
-        if(downloadsUsed >= 1) { document.getElementById('paywall-overlay').style.display = 'flex'; }
+        if(downloadsUsed >= 1) { document.getElementById('login-overlay').style.display = 'flex'; }
 
-        function showLoginForm() { document.getElementById('sub-main-ui').style.display='none'; document.getElementById('login-form').style.display='block'; }
-        function hideLoginForm() { document.getElementById('sub-main-ui').style.display='grid'; document.getElementById('login-form').style.display='none'; }
+        function showLoginForm() { document.getElementById('main-sub-ui').style.display='none'; document.getElementById('login-form').style.display='block'; }
+        function hideLoginForm() { document.getElementById('main-sub-ui').style.display='grid'; document.getElementById('login-form').style.display='none'; }
 
         async function validateAccess() {
             const u = document.getElementById('user-id').value, p = document.getElementById('access-key').value;
@@ -166,121 +151,61 @@
             try {
                 const res = await fetch(`${WEB_APP_URL}?user=${u}&pass=${p}`);
                 const data = await res.json();
-                if(data.access) {
-                    isVip = true;
-                    document.getElementById('paywall-overlay').style.display = 'none';
-                } else { alert("Acceso denegado"); }
-            } catch(e) { alert("Error"); }
+                if(data.access) { isVip = true; document.getElementById('login-overlay').style.display = 'none'; }
+                else alert("Acceso denegado");
+            } catch(e) { alert("Error de conexión"); }
         }
 
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
-        let aspectRatio = 1, isResizing = false, isDragging = false;
+        let aspectRatio = 1;
 
         document.getElementById('file').onchange = e => {
             const img = new Image();
-            img.onload = () => {
-                oCanvas.width = img.width; oCanvas.height = img.height;
-                aspectRatio = img.width / img.height;
-                oCtx.drawImage(img, 0, 0); process();
-            };
+            img.onload = () => { oCanvas.width = img.width; oCanvas.height = img.height; aspectRatio = img.width/img.height; oCtx.drawImage(img,0,0); process(); };
             img.src = URL.createObjectURL(e.target.files[0]);
         };
 
         function process() {
             if(!oCanvas.width) return;
-            const fuzz = parseInt(document.getElementById('fuzz').value);
-            const soft = (parseFloat(document.getElementById('feather').value) * 15) + 1;
-            const threshold = (fuzz * 2.5) + (parseInt(document.getElementById('contract').value) * 10);
-            
-            document.getElementById('fuzzV').innerText = fuzz;
-            document.getElementById('featherV').innerText = document.getElementById('feather').value;
-            document.getElementById('contractV').innerText = document.getElementById('contract').value;
-
-            const id = oCtx.getImageData(0, 0, oCanvas.width, oCanvas.height);
-            const d = id.data, out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
-            const target = (document.getElementById('mode').value === 'white') ? [255,255,255] : [0,0,0];
-
+            const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value), contract = parseInt(document.getElementById('contract').value);
+            document.getElementById('fuzzV').innerText = fuzz; document.getElementById('featherV').innerText = feather; document.getElementById('contractV').innerText = contract;
+            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data, out = ctx.createImageData(oCanvas.width,oCanvas.height), o = out.data;
+            const thr = (fuzz*2.5) + (contract*10), soft = (feather*15)+1;
+            const target = document.getElementById('mode').value === 'white' ? [255,255,255] : [0,0,0];
             for(let i=0; i<d.length; i+=4) {
                 const dist = Math.sqrt((d[i]-target[0])**2 + (d[i+1]-target[1])**2 + (d[i+2]-target[2])**2);
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                o[i+3] = (dist < threshold - soft) ? 0 : (dist < threshold ? ((dist - (threshold-soft))/soft)*255 : 255);
+                o[i+3] = dist < thr-soft ? 0 : (dist < thr ? ((dist-(thr-soft))/soft)*255 : 255);
             }
-            canvas.width = oCanvas.width; canvas.height = oCanvas.height;
-            ctx.putImageData(out, 0, 0);
+            canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out,0,0);
         }
 
-        // --- EXPORTAR ---
         function handleDownloadRequest() {
             if(!oCanvas.width) return;
-            if(isVip || downloadsUsed < 1) {
-                updateUnits();
-                document.getElementById('modalExport').classList.remove('hidden');
-            } else {
-                document.getElementById('paywall-overlay').style.display = 'flex';
-            }
+            if(isVip || downloadsUsed < 1) { updateUnits(); document.getElementById('modalExport').classList.remove('hidden'); }
+            else { document.getElementById('login-overlay').style.display = 'flex'; }
         }
 
         function updateUnits() {
-            const unit = document.getElementById('rzUnit').value;
-            const dpi = parseInt(document.getElementById('rzDPI').value);
-            if(unit === 'px') {
-                document.getElementById('rzW').value = oCanvas.width;
-                document.getElementById('rzH').value = oCanvas.height;
-            } else {
-                const factor = unit === 'cm' ? 2.54 : 1;
-                document.getElementById('rzW').value = ((oCanvas.width / dpi) * factor).toFixed(2);
-                document.getElementById('rzH').value = ((oCanvas.height / dpi) * factor).toFixed(2);
-            }
+            const unit = document.getElementById('rzUnit').value, dpi = parseInt(document.getElementById('rzDPI').value);
+            if(unit === 'px') { document.getElementById('rzW').value = oCanvas.width; document.getElementById('rzH').value = oCanvas.height; }
+            else { const f = unit === 'cm' ? 2.54 : 1; document.getElementById('rzW').value = ((oCanvas.width/dpi)*f).toFixed(2); document.getElementById('rzH').value = ((oCanvas.height/dpi)*f).toFixed(2); }
         }
 
         function finalDownload() {
-            const unit = document.getElementById('rzUnit').value;
-            const dpi = parseInt(document.getElementById('rzDPI').value);
-            const method = document.getElementById('rzMethod').value;
-            let finalW = parseFloat(document.getElementById('rzW').value);
-            
-            if(unit === 'cm') finalW = (finalW / 2.54) * dpi;
-            else if(unit === 'in') finalW = finalW * dpi;
-
-            const temp = document.createElement('canvas');
-            temp.width = finalW; temp.height = finalW / aspectRatio;
+            const unit = document.getElementById('rzUnit').value, dpi = parseInt(document.getElementById('rzDPI').value), method = document.getElementById('rzMethod').value;
+            let fW = parseFloat(document.getElementById('rzW').value);
+            if(unit === 'cm') fW = (fW/2.54)*dpi; else if(unit === 'in') fW = fW*dpi;
+            const temp = document.createElement('canvas'); temp.width = fW; temp.height = fW/aspectRatio;
             const tCtx = temp.getContext('2d');
-            if(method === 'bicubic') tCtx.imageSmoothingQuality = 'high';
-            else if(method === 'nearest') tCtx.imageSmoothingEnabled = false;
-
-            tCtx.drawImage(canvas, 0, 0, temp.width, temp.height);
-            const a = document.createElement('a');
-            a.download = `JJ_Studio_Pro_${temp.width}px.png`;
-            a.href = temp.toDataURL(); a.click();
-
-            if(!isVip) {
-                downloadsUsed++;
-                localStorage.setItem('jj_free_done', 1);
-                setTimeout(() => { location.reload(); }, 1000);
-            }
+            if(method === 'bicubic') tCtx.imageSmoothingQuality = 'high'; else if(method === 'nearest') tCtx.imageSmoothingEnabled = false;
+            tCtx.drawImage(canvas,0,0,temp.width,temp.height);
+            const a = document.createElement('a'); a.download = `JJ_Studio_${temp.width}px.png`; a.href = temp.toDataURL(); a.click();
+            if(!isVip) { downloadsUsed++; localStorage.setItem('jj_free_done', 1); setTimeout(() => location.reload(), 1000); }
             closeModal();
         }
-
         function closeModal() { document.getElementById('modalExport').classList.add('hidden'); }
-
-        // --- RECORTE Y COLOR (Lógica simplificada para funcionalidad) ---
-        document.getElementById('btn-init-crop').onclick = () => { document.getElementById('crop-box').style.display='block'; document.getElementById('btn-apply-crop').classList.remove('hidden'); };
-        document.getElementById('btn-apply-crop').onclick = () => { /* lógica de recorte similar a códigos anteriores */ };
-
-        // Selector Color Lienzo
-        const cpSV=document.getElementById('cpSV'), svCtx=cpSV.getContext('2d'), cpH=document.getElementById('cpH'), hCtx=cpH.getContext('2d');
-        let hue=0;
-        function drawCP() {
-            const gH=hCtx.createLinearGradient(0,0,0,120); for(let i=0;i<=360;i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`);
-            hCtx.fillStyle=gH; hCtx.fillRect(0,0,20,120);
-            svCtx.fillStyle=`hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,220,120);
-            const gW=svCtx.createLinearGradient(0,0,220,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent'); svCtx.fillStyle=gW; svCtx.fillRect(0,0,220,120);
-            const gB=svCtx.createLinearGradient(0,0,0,120); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000'); svCtx.fillStyle=gB; svCtx.fillRect(0,0,220,120);
-        }
-        drawCP();
-        cpH.onclick=(e)=>{ hue=(e.offsetY/120)*360; drawCP(); };
-        cpSV.onclick=(e)=>{ const id=svCtx.getImageData(e.offsetX,e.offsetY,1,1).data; document.getElementById('stage').style.background=`rgb(${id[0]},${id[1]},${id[2]})`; };
     </script>
 </body>
 </html>
