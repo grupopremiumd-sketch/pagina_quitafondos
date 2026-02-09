@@ -23,26 +23,18 @@
         h2 { font-size: 12px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
         
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 10px; }
-        label { font-size: 12px; color: #ddd; width: 110px; }
-        select, .m-input { background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; font-size:12px; }
+        label { font-size: 11px; color: #ddd; width: 110px; }
+        .m-input { background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; font-size:12px; }
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
         .val-box { background: #1a1a1a; color: var(--vip); border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 50px; text-align: center; font-size: 11px; font-weight: bold; }
         
-        .cp-container { display: flex; gap: 10px; height: 100px; margin-top: 10px; user-select: none; }
-        #cpSV { flex: 1; border-radius: 6px; border: 1px solid #2a2a2a; cursor: crosshair; }
-        #cpH { width: 20px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: ns-resize; }
-
-        .btn-s { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; margin-bottom: 8px; }
-        .btn-dl { width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 10px; font-weight: 900; cursor: pointer; font-size: 14px; }
-
         .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; height: 100%; }
-        canvas#canvas { display: block; max-width: 95%; max-height: 85vh; border: 1px solid #222; }
+        canvas#canvas { display: block; max-width: 95%; max-height: 85vh; image-rendering: -webkit-optimize-contrast; }
 
+        .btn-dl { width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 10px; font-weight: 900; cursor: pointer; font-size: 14px; }
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
         .modal { background: #121212; padding: 25px; border-radius: 18px; width: 480px; border: 1px solid #262626; text-align: center; }
         .hidden { display: none !important; }
-        
-        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
     </style>
 </head>
 <body>
@@ -50,15 +42,8 @@
     <div id="choice-modal" class="modal-back hidden">
         <div class="modal">
             <h3 style="color:var(--vip)">¡Casi listo!</h3>
-            <p style="color:var(--muted); font-size:14px;">Elige una opción para descargar:</p>
-            <div class="choice-card" onclick="openLogin()">
-                <div style="font-size:24px;">💎</div>
-                <div><div style="font-weight:bold; color:white;">Soy Suscriptor VIP</div><div style="font-size:11px; color:var(--muted)">Acceso completo para esta sesión.</div></div>
-            </div>
-            <div class="choice-card" onclick="window.open('https://wa.me/51916689969')">
-                <div style="font-size:24px;">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">No tengo suscripción</div><div style="font-size:11px; color:var(--muted)">Adquiere tu membresía aquí.</div></div>
-            </div>
+            <button onclick="openLogin()" style="width:100%; padding:20px; background:#1a1a1a; border:1px solid #333; color:white; border-radius:12px; cursor:pointer;">Soy Suscriptor VIP</button>
+            <button onclick="window.open('https://wa.me/51916689969')" style="width:100%; padding:20px; background:#1a1a1a; border:1px solid #333; color:var(--wa); border-radius:12px; cursor:pointer; margin-top:10px;">No tengo suscripción</button>
             <button onclick="closeChoice()" style="background:none; border:none; color:var(--muted); cursor:pointer; margin-top:10px;">Cerrar</button>
         </div>
     </div>
@@ -80,56 +65,44 @@
                 <div class="control-row"><label>Ancho (px)</label><input type="number" id="rzW" class="m-input" style="width:100px"></div>
                 <div class="control-row"><label>Alto (px)</label><input type="number" id="rzH" class="m-input" style="width:100px"></div>
                 <div class="control-row" style="grid-column: span 2;">
-                    <label>Método de escala</label>
+                    <label>Método</label>
                     <select id="rzMethod" style="flex:1">
-                        <option value="high">Alta calidad (Bicúbica)</option>
-                        <option value="medium" selected>Estándar (Bilinear)</option>
-                        <option value="low">Rápido (Pixel Art)</option>
+                        <option value="high">Bicúbica (Suave)</option>
+                        <option value="medium">Bilinear (Estándar)</option>
+                        <option value="low">Nearest (Pixelado)</option>
                     </select>
-                </div>
-                <div style="grid-column: span 2; font-size:11px; color:var(--muted);">
-                    <input type="checkbox" id="lockAspect" checked> Mantener proporción original
                 </div>
             </div>
             <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn-s" style="margin:0" onclick="closeExport()">Cancelar</button>
-                <button class="btn-dl" style="margin:0" onclick="finalDownload()">APLICAR Y DESCARGAR</button>
+                <button onclick="closeExport()">Cancelar</button>
+                <button class="btn-dl" style="margin:0" onclick="finalDownload()">DESCARGAR</button>
             </div>
         </div>
     </div>
 
-    <header>
-        <div class="logo-text">J&J STUDIO PRO</div>
-        <div id="status-tag">MODO INVITADO</div>
-    </header>
+    <header><div class="logo-text">J&J STUDIO PRO</div><div id="status-tag">MODO INVITADO</div></header>
 
     <main class="wrap">
         <aside class="panel">
-            <button class="btn-s" style="background: var(--vip); color: #000;" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR</button>
+            <button style="width:100%; padding:10px; background:var(--vip); border-radius:8px; border:none; font-weight:bold; cursor:pointer;" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR</button>
             
-            <h2>1. Cargar imagen</h2>
+            <h2>1. Imagen</h2>
             <input type="file" id="file" accept="image/*">
             
-            <h2>2. Limpieza Técnica</h2>
+            <h2>2. Limpieza (Píxeles)</h2>
             <div class="control-row">
                 <select id="mode" style="width:100%;" onchange="process()">
                     <option value="white">Quitar blanco</option>
                     <option value="black">Quitar negro</option>
-                    <option value="pick">Elegir color (Click en imagen)</option>
+                    <option value="pick">Cuentagotas (Click imagen)</option>
                 </select>
             </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60" oninput="process()"><div class="val-box" id="fuzzV">60</div></div>
-            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="20" step="1" value="0" oninput="process()"><div class="val-box" id="featherV">0</div></div>
-            <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="0" max="10" step="1" value="0" oninput="process()"><div class="val-box" id="contractV">0</div></div>
+            <div class="control-row"><label>Suavizado (px)</label><input type="range" id="feather" min="0" max="15" step="1" value="0" oninput="process()"><div class="val-box" id="featherV">0</div></div>
+            <div class="control-row"><label>Contraer (px)</label><input type="range" id="contract" min="0" max="10" step="1" value="0" oninput="process()"><div class="val-box" id="contractV">0</div></div>
 
-            <h2>3. Color Lienzo</h2>
-            <div class="cp-container">
-                <canvas id="cpSV" width="220" height="100"></canvas>
-                <canvas id="cpH" width="20" height="100"></canvas>
-            </div>
-
-            <button class="btn-dl" onclick="handleDownloadClick()">PROCESAR DESCARGA</button>
-            <button class="btn-s" style="margin-top:10px" onclick="location.reload()">Cerrar Sesión / Reiniciar</button>
+            <button class="btn-dl" onclick="handleDownloadClick()">DESCARGAR PNG</button>
+            <button style="width:100%; margin-top:10px; background:transparent; border:1px solid #333; color:#666; cursor:pointer; padding:5px; border-radius:5px;" onclick="location.reload()">Cerrar Sesión</button>
         </aside>
 
         <section class="stage" id="stage">
@@ -141,7 +114,6 @@
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec";
         let isVip = false;
         let targetColor = [255,255,255];
-
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
 
@@ -162,19 +134,18 @@
                     isVip = true; 
                     document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO"; 
                     document.getElementById('status-tag').classList.add('status-vip'); 
-                    closeLogin(); alert("¡Validado!"); 
+                    closeLogin();
                 } else { alert("Datos incorrectos."); }
-            } catch(e) { alert("Error de conexión"); }
+            } catch(e) { alert("Error"); }
         }
 
         document.getElementById('file').onchange = e => {
-            const f = e.target.files[0];
             const img = new Image();
             img.onload = () => {
                 oCanvas.width = img.width; oCanvas.height = img.height;
                 oCtx.drawImage(img,0,0); process();
             };
-            img.src = URL.createObjectURL(f);
+            img.src = URL.createObjectURL(e.target.files[0]);
         };
 
         function process() {
@@ -182,46 +153,43 @@
             const fuzz = parseInt(document.getElementById('fuzz').value);
             const feather = parseInt(document.getElementById('feather').value);
             const contract = parseInt(document.getElementById('contract').value);
-            const mode = document.getElementById('mode').value;
-
-            document.getElementById('fuzzV').innerText = fuzz;
-            document.getElementById('featherV').innerText = feather;
-            document.getElementById('contractV').innerText = contract;
-
-            if(mode === 'white') targetColor = [255,255,255];
-            else if(mode === 'black') targetColor = [0,0,0];
             
+            document.getElementById('fuzzV').innerText = fuzz;
+            document.getElementById('featherV').innerText = feather + "px";
+            document.getElementById('contractV').innerText = contract + "px";
+
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
             const out = ctx.createImageData(oCanvas.width,oCanvas.height), o = out.data;
-            const threshold = fuzz * 2.2;
+            const thr = fuzz * 2.1;
 
-            // Algoritmo de limpieza de color
+            if(document.getElementById('mode').value === 'white') targetColor = [255,255,255];
+            else if(document.getElementById('mode').value === 'black') targetColor = [0,0,0];
+
             for(let i=0; i<d.length; i+=4) {
                 const diff = Math.sqrt((d[i]-targetColor[0])**2 + (d[i+1]-targetColor[1])**2 + (d[i+2]-targetColor[2])**2);
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                o[i+3] = (diff < threshold) ? 0 : d[i+3];
+                o[i+3] = (diff < thr) ? 0 : d[i+3];
             }
 
             canvas.width = oCanvas.width; canvas.height = oCanvas.height;
             ctx.putImageData(out,0,0);
 
-            // Aplicar CONTRAER (Erosión rápida)
-            if(contract > 0) {
+            // LOGICA DE PÍXELES PARA CONTRAER Y SUAVIZAR
+            if(contract > 0 || feather > 0) {
                 ctx.globalCompositeOperation = 'destination-out';
-                ctx.filter = `blur(${contract}px)`;
-                ctx.drawImage(canvas, 0, 0);
-                ctx.filter = 'none';
+                if(contract > 0) {
+                    ctx.filter = `blur(${contract}px)`;
+                    ctx.drawImage(canvas, 0, 0);
+                }
                 ctx.globalCompositeOperation = 'source-over';
-            }
-
-            // Aplicar SUAVIZADO (Feather)
-            if(feather > 0) {
-                ctx.filter = `blur(${feather/2}px)`;
-                const temp = document.createElement('canvas');
-                temp.width = canvas.width; temp.height = canvas.height;
-                temp.getContext('2d').drawImage(canvas,0,0);
-                ctx.clearRect(0,0,canvas.width,canvas.height);
-                ctx.drawImage(temp,0,0);
+                if(feather > 0) {
+                    ctx.filter = `blur(${feather}px)`;
+                    let temp = document.createElement('canvas');
+                    temp.width = canvas.width; temp.height = canvas.height;
+                    temp.getContext('2d').drawImage(canvas, 0, 0);
+                    ctx.clearRect(0,0,canvas.width,canvas.height);
+                    ctx.drawImage(temp, 0, 0);
+                }
                 ctx.filter = 'none';
             }
         }
@@ -229,73 +197,35 @@
         canvas.onclick = (e) => {
             if(document.getElementById('mode').value !== 'pick') return;
             const rect = canvas.getBoundingClientRect();
-            const scaleX = oCanvas.width / rect.width, scaleY = oCanvas.height / rect.height;
-            const x = (e.clientX - rect.left) * scaleX, y = (e.clientY - rect.top) * scaleY;
+            const x = (e.clientX - rect.left) * (oCanvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (oCanvas.height / rect.height);
             const p = oCtx.getImageData(x, y, 1, 1).data;
-            targetColor = [p[0], p[1], p[2]];
-            process();
+            targetColor = [p[0], p[1], p[2]]; process();
         };
 
-        // EXPORT LOGIC CON MEDIDAS REALES
         function updateUnits() {
             document.getElementById('rzW').value = oCanvas.width;
             document.getElementById('rzH').value = oCanvas.height;
         }
 
-        document.getElementById('rzW').oninput = () => {
-            if(document.getElementById('lockAspect').checked)
-                document.getElementById('rzH').value = Math.round(document.getElementById('rzW').value / (oCanvas.width/oCanvas.height));
-        };
-
         function finalDownload() {
-            const method = document.getElementById('rzMethod').value;
             const finalW = parseInt(document.getElementById('rzW').value);
             const finalH = parseInt(document.getElementById('rzH').value);
+            const method = document.getElementById('rzMethod').value;
             const temp = document.createElement('canvas');
             temp.width = finalW; temp.height = finalH;
             const tCtx = temp.getContext('2d');
             
-            if(method === 'high') {
-                tCtx.imageSmoothingEnabled = true;
-                tCtx.imageSmoothingQuality = 'high';
-            } else if(method === 'low') {
-                tCtx.imageSmoothingEnabled = false;
-            }
+            if(method === 'high') tCtx.imageSmoothingQuality = 'high';
+            else if(method === 'low') tCtx.imageSmoothingEnabled = false;
 
             tCtx.drawImage(canvas, 0, 0, finalW, finalH);
             const a = document.createElement('a');
-            a.download = `jj_studio_${finalW}x${finalH}.png`;
+            a.download = `jj_studio_${finalW}px.png`;
             a.href = temp.toDataURL('image/png');
             a.click();
             closeExport();
         }
-
-        // Color Picker Lienzo
-        const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
-        let hue=0;
-        function drawCP() {
-            hCtx.clearRect(0,0,20,100); const gH=hCtx.createLinearGradient(0,0,0,100); for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`); hCtx.fillStyle=gH; hCtx.fillRect(0,0,20,100);
-            svCtx.fillStyle=`hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,220,100);
-            const gW=svCtx.createLinearGradient(0,0,220,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent'); svCtx.fillStyle=gW; svCtx.fillRect(0,0,220,100);
-            const gB=svCtx.createLinearGradient(0,0,0,100); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000'); svCtx.fillStyle=gB; svCtx.fillRect(0,0,220,100);
-        }
-        drawCP();
-        cpSV.onmousedown = (e) => {
-            const rect = cpSV.getBoundingClientRect();
-            const update = (evt) => {
-                const x = Math.max(0, Math.min(evt.clientX - rect.left, 219)), y = Math.max(0, Math.min(evt.clientY - rect.top, 99));
-                const data = svCtx.getImageData(x, y, 1, 1).data;
-                document.getElementById('stage').style.backgroundColor = `rgb(${data[0]},${data[1]},${data[2]})`;
-            };
-            update(e); window.onmousemove = update; window.onmouseup = () => window.onmousemove = null;
-        };
-        cpH.onmousedown = (e) => {
-            const rect = cpH.getBoundingClientRect();
-            const update = (evt) => {
-                const y = Math.max(0, Math.min(evt.clientY - rect.top, 99)); hue = (y / 100) * 360; drawCP();
-            };
-            update(e); window.onmousemove = update; window.onmouseup = () => window.onmousemove = null;
-        };
     </script>
 </body>
 </html>
