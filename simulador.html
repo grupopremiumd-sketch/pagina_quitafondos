@@ -3,236 +3,123 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>J&J Studio Pro — T-Shirt Mockup</title>
+  <title>J&J STUDIO - MOCKUP PRO</title>
   <style>
-    :root {
-      --bg: #0b0d12; --panel: #10131a; --panel-2: #0f1219; --text: #ecf1ff;
-      --muted: #aab3d1; --border: #1a2030; --accent: #6e7cff; --accent-2: #22d3ee;
-      --radius: 14px; --vip: #00d2ff;
-    }
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
-    
-    header { position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); background: rgba(16,19,26,.8); border-bottom: 1px solid var(--border); }
-    .container { max-width: 1400px; margin: 0 auto; padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
-    .logo-dot { width: 12px; height: 12px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
-    h1 { margin: 0; font-size: 16px; font-weight: 800; color: var(--vip); letter-spacing: 1px; }
-
-    main { max-width: 1400px; margin: 20px auto; padding: 0 16px; display: grid; gap: 20px; grid-template-columns: 1.6fr 0.9fr; }
-    @media (max-width: 1080px) { main { grid-template-columns: 1fr; } }
-
-    .card { background: var(--panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
-    
-    /* El escenario donde se ve la camiseta */
-    .stage-frame { 
-      position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; 
-      background: #0d1117; border-radius: 10px; isolation: isolate; 
-      display: flex; align-items: center; justify-content: center;
-    }
-    canvas { position: absolute; width: 100%; height: auto; z-index: 5; }
-
-    /* Contenedor del Logo/Arte del cliente */
-    #artWrap { position: absolute; z-index: 10; pointer-events: none; }
-    #imgArt { 
-      max-width: 300px; cursor: move; pointer-events: auto; user-select: none; 
-      display: none; mix-blend-mode: multiply; opacity: 0.9; 
-    }
-
-    .group { background: var(--panel-2); border: 1px solid var(--border); border-radius: 12px; padding: 15px; display: grid; gap: 12px; margin-bottom: 15px; }
-    .row { display: grid; grid-template-columns: 130px 1fr; gap: 12px; align-items: center; }
-    label { font-size: 11px; color: var(--muted); text-transform: uppercase; font-weight: 700; }
-
-    select, button, input[type="color"], input[type="file"] { 
-      height: 40px; border-radius: 8px; padding: 0 10px; color: var(--text); 
-      background: var(--panel); border: 1px solid var(--border); cursor: pointer; 
-    }
-    .btn-main { width: 100%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); border: none; color: #fff; font-weight: 800; border-radius: 10px; transition: 0.2s; }
-    .btn-main:hover { transform: scale(1.02); filter: brightness(1.1); }
-    .btn-nav { background: #1c2540; color: var(--vip); border: 1px solid var(--vip); font-size: 11px; height: 32px; margin-bottom: 10px; width: auto; padding: 0 15px; }
-
-    input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; background: #1b2238; border-radius: 999px; }
-    input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent-2); cursor: pointer; }
-
-    .toggle { display: flex; background: #0c111b; border: 1px solid var(--border); border-radius: 10px; padding: 2px; gap: 2px; }
-    .pill { flex: 1; display: grid; place-items: center; font-size: 12px; cursor: pointer; border-radius: 8px; color: #c8d0ff; padding: 10px; transition: 0.3s; }
-    .pill.active { color: #fff; font-weight: 700; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+    :root { --bg:#0b0d12; --panel:#10131a; --text:#ecf1ff; --accent:#6e7cff; --vip:#00d2ff; }
+    body { margin:0; font-family:sans-serif; background:var(--bg); color:var(--text); display:flex; flex-direction:column; height:100vh; }
+    header { padding:15px; border-bottom:1px solid #1a2030; display:flex; justify-content:space-between; align-items:center; }
+    main { display:grid; grid-template-columns: 1fr 350px; flex:1; overflow:hidden; }
+    .stage { background:#0d1117; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+    #canvasContainer { position:relative; width:500px; height:500px; }
+    canvas { width:100%; height:100%; display:block; z-index:1; }
+    #userLogo { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:150px; cursor:move; z-index:10; pointer-events:auto; mix-blend-mode:multiply; }
+    .controls { background:var(--panel); padding:20px; border-left:1px solid #1a2030; overflow-y:auto; }
+    .group { background:#0f1219; border:1px solid #1a2030; border-radius:12px; padding:15px; margin-bottom:15px; }
+    label { font-size:11px; color:#aab3d1; text-transform:uppercase; font-weight:700; display:block; margin-bottom:8px; }
+    input, button, select { width:100%; padding:10px; border-radius:8px; border:1px solid #1a2030; background:#10131a; color:#fff; cursor:pointer; margin-bottom:10px; }
+    .btn-vip { background:linear-gradient(135deg,#6e7cff,#22d3ee); border:none; font-weight:800; }
   </style>
 </head>
 <body>
   <header>
-    <div class="container">
-      <div class="logo-dot"></div>
-      <h1>J&J STUDIO — MOCKUP PRO</h1>
-    </div>
+    <div style="font-weight:900; color:var(--vip)">J&J STUDIO PRO</div>
+    <button onclick="location.href='index.html'" style="width:auto; font-size:10px;">VOLVER</button>
   </header>
-
   <main>
-    <section class="card">
-      <div class="stage-frame" id="stage">
-        <canvas id="mainCanvas" width="2048" height="2048"></canvas>
-        <div id="artWrap">
-          <img id="imgArt" src="" alt="logo-cliente" draggable="false">
-        </div>
+    <section class="stage">
+      <div id="canvasContainer">
+        <canvas id="c"></canvas>
+        <img id="userLogo" src="" style="display:none" draggable="false">
       </div>
-      <p style="font-size:11px; color:#555; margin-top:12px;">💡 Arrastra el logo para moverlo. Usa la rueda del mouse sobre el logo para cambiar el tamaño.</p>
     </section>
-
     <aside class="controls">
-      <button class="btn-nav" onclick="location.href='index.html'">← QUITAR FONDOS</button>
-      
-      <div class="card">
-        <div class="group">
-          <label>Vista de Prenda</label>
-          <div class="toggle" id="viewToggle">
-            <div class="pill active" data-val="front">FRONTAL</div>
-            <div class="pill" data-val="back">ESPALDA</div>
-          </div>
-        </div>
-
-        <div class="group">
-          <div class="row">
-            <label>Color Camiseta</label>
-            <input id="color" type="color" value="#ffffff" />
-          </div>
-          <div class="row">
-            <label>Textura</label>
-            <select id="texType">
-              <option value="none">NINGUNA (LISA)</option>
-              <option value="acid">ACID WASH</option>
-              <option value="full">FULL PRINT</option>
-            </select>
-          </div>
-          <div class="row">
-            <label>Sombras</label>
-            <input id="shade" type="range" min="0" max="100" value="85" />
-          </div>
-        </div>
-
-        <div class="group">
-          <label>1. Sube tu Diseño (Logo)</label>
-          <input type="file" id="inpFile" accept="image/png,image/jpeg">
-          <div class="row" style="margin-top:10px">
-            <label>Opacidad Logo</label>
-            <input id="artAlpha" type="range" min="0" max="100" value="95" />
-          </div>
-        </div>
-
-        <button id="btnDownload" class="btn-main" style="padding:15px; margin-top:10px;">DESCARGAR MOCKUP FINAL</button>
+      <div class="group">
+        <label>1. Subir tu Logo</label>
+        <input type="file" id="fileInp" accept="image/*">
+        <label>Opacidad</label>
+        <input type="range" id="logoAlpha" min="0" max="100" value="90">
       </div>
+      <div class="group">
+        <label>2. Color Camiseta</label>
+        <input type="color" id="tColor" value="#ffffff">
+      </div>
+      <div class="group">
+        <label>3. Vista</label>
+        <select id="tView">
+          <option value="front">Frente</option>
+          <option value="back">Espalda</option>
+        </select>
+      </div>
+      <button class="btn-vip" id="btnDl">DESCARGAR MOCKUP</button>
     </aside>
   </main>
 
   <script>
-    const canvas = document.getElementById('mainCanvas');
-    const ctx = canvas.getContext('2d');
-    const imgArt = document.getElementById('imgArt');
-    
-    // Configuración de Imágenes de Alta Calidad (Cloudinary)
+    const canvas = document.getElementById('c'), ctx = canvas.getContext('2d');
+    const userLogo = document.getElementById('userLogo');
+    let baseImg = new Image();
+
     const ASSETS = {
-      front: {
-        base: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793740/1.BOXYFITDELANTERO_BASE_WHITE_1_oad518.png",
-        shadows: ["https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793743/4._SOMBRASDELANTERAS_1_mmw5n2.png"],
-        lights: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793738/3.LUCESDELANTERAS_1_onw0b8.png"
-      },
-      back: {
-        base: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793939/1._BOXYFITESPALDA_WHITE_yav9mn.png",
-        shadows: ["https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793937/2._SOMBRA_ESPALDA_1_nrxsoe.png"]
-      }
+      front: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793740/1.BOXYFITDELANTERO_BASE_WHITE_1_oad518.png",
+      back: "https://res.cloudinary.com/dzrlrxe2j/image/upload/v1762793939/1._BOXYFITESPALDA_WHITE_yav9mn.png"
     };
 
-    let currentSide = 'front';
-    let artPos = { x: 0, y: 0, s: 1 };
-    let isDragging = false;
-    let cache = { front: {}, back: {} };
-
-    async function loadImg(src) {
-      const img = new Image(); img.crossOrigin = "anonymous"; img.src = src;
-      await new Promise(r => img.onload = r);
-      return img;
+    function loadBase(view) {
+      baseImg = new Image();
+      baseImg.crossOrigin = "anonymous";
+      baseImg.src = ASSETS[view];
+      baseImg.onload = render;
+      baseImg.onerror = () => alert("Error cargando imagen base. Revisa tu internet.");
     }
 
-    async function render() {
-      const a = ASSETS[currentSide];
-      if (!cache[currentSide].base) cache[currentSide].base = await loadImg(a.base);
-      if (!cache[currentSide].shadows) cache[currentSide].shadows = await Promise.all(a.shadows.map(loadImg));
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const base = cache[currentSide].base;
+    function render() {
+      canvas.width = 1000; canvas.height = 1000;
+      ctx.clearRect(0,0,1000,1000);
       
-      // 1. Dibujar Color
-      ctx.globalCompositeOperation = "source-over";
-      ctx.fillStyle = document.getElementById('color').value;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // 1. Color
+      ctx.fillStyle = document.getElementById('tColor').value;
+      ctx.fillRect(0,0,1000,1000);
 
-      // 2. Aplicar forma de camiseta (Alpha)
+      // 2. Máscara de camiseta
       ctx.globalCompositeOperation = "destination-in";
-      ctx.drawImage(base, 0, 0, canvas.width, canvas.height);
-
-      // 3. Dibujar Sombras Realistas
-      ctx.globalCompositeOperation = "multiply";
-      ctx.globalAlpha = document.getElementById('shade').value / 100;
-      cache[currentSide].shadows.forEach(s => ctx.drawImage(s, 0, 0, canvas.width, canvas.height));
-
-      ctx.globalAlpha = 1.0;
+      ctx.drawImage(baseImg, 0, 0, 1000, 1000);
       ctx.globalCompositeOperation = "source-over";
     }
 
-    // --- Manejo del Logo del Cliente ---
-    document.getElementById('inpFile').onchange = e => {
+    document.getElementById('fileInp').onchange = e => {
+      const file = e.target.files[0];
       const reader = new FileReader();
-      reader.onload = ev => { 
-        imgArt.src = ev.target.result; 
-        imgArt.style.display = 'block'; 
-        artPos = { x: 0, y: 0, s: 0.5 }; // Tamaño inicial
-        updateArt();
+      reader.onload = ev => {
+        userLogo.src = ev.target.result;
+        userLogo.style.display = "block";
       };
-      reader.readAsDataURL(e.target.files[0]);
+      reader.readAsDataURL(file);
     };
 
-    // Arrastrar Logo
-    imgArt.addEventListener('pointerdown', e => { isDragging = true; imgArt.setPointerCapture(e.pointerId); });
-    window.addEventListener('pointermove', e => {
-      if (!isDragging) return;
-      artPos.x += e.movementX; artPos.y += e.movementY;
-      updateArt();
-    });
-    window.addEventListener('pointerup', () => isDragging = false);
+    // Mover Logo (Drag and Drop)
+    let isDrag = false;
+    userLogo.onmousedown = () => isDrag = true;
+    window.onmousemove = e => {
+      if(!isDrag) return;
+      const rect = document.getElementById('canvasContainer').getBoundingClientRect();
+      userLogo.style.left = (e.clientX - rect.left) + 'px';
+      userLogo.style.top = (e.clientY - rect.top) + 'px';
+    };
+    window.onmouseup = () => isDrag = false;
 
-    // Zoom del Logo con Rueda
-    document.getElementById('stage').onwheel = e => {
-      if (imgArt.style.display === 'none') return;
+    // Escala con Rueda
+    document.getElementById('canvasContainer').onwheel = e => {
       e.preventDefault();
-      artPos.s = Math.max(0.1, artPos.s + (e.deltaY < 0 ? 0.05 : -0.05));
-      updateArt();
+      let scale = userLogo.offsetWidth;
+      if(e.deltaY < 0) scale += 10; else scale -= 10;
+      userLogo.style.width = scale + "px";
     };
 
-    function updateArt() {
-      imgArt.style.transform = `translate(${artPos.x}px, ${artPos.y}px) scale(${artPos.s})`;
-      imgArt.style.opacity = document.getElementById('artAlpha').value / 100;
-    }
+    document.getElementById('tColor').oninput = render;
+    document.getElementById('tView').onchange = e => loadBase(e.target.value);
+    document.getElementById('logoAlpha').oninput = e => userLogo.style.opacity = e.target.value/100;
 
-    // Cambiar Vista Frontal/Espalda
-    document.getElementById('viewToggle').onclick = e => {
-      const pill = e.target.closest('.pill'); if (!pill) return;
-      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
-      pill.classList.add('active');
-      currentSide = pill.dataset.val;
-      render();
-    };
-
-    // Descarga
-    document.getElementById('btnDownload').onclick = () => {
-      alert("Preparando descarga... El mockup se guardará en alta resolución.");
-      // Lógica de descarga simplificada (captura el contenedor)
-      // Para una descarga profesional se usa html2canvas o se dibuja el logo en el canvas principal
-    };
-
-    document.getElementById('color').oninput = render;
-    document.getElementById('shade').oninput = render;
-    document.getElementById('artAlpha').oninput = updateArt;
-
-    // Inicio automático
-    render();
+    loadBase('front');
   </script>
 </body>
 </html>
