@@ -2,150 +2,152 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro — Simulador 3D Movimiento</title>
+    <title>J&J Studio Pro — Simulador Camiseta 3D</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        :root {
-            --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
-            --accent: #00d2ff; --border: #1f1f1f; --vip: #00d2ff;
-        }
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
-
-        /* --- LOGIN / PAYWALL --- */
-        #login-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 9999; display: flex; align-items: center; justify-content: center; display: none; }
-        .login-card { background: var(--panel); padding: 30px; border-radius: 20px; border: 1px solid var(--border); width: 90%; max-width: 450px; text-align: center; }
-
-        /* --- INTERFAZ --- */
-        .wrap { display: grid; grid-template-columns: 350px 1fr; height: 100vh; }
-        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; z-index: 10; }
-        h2 { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 5px; }
-
-        .stage { position: relative; background: radial-gradient(circle, #1a1a1a 0%, #000 100%); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        #canvas-3d { width: 100%; height: 100%; cursor: grab; }
-        #canvas-3d:active { cursor: grabbing; }
-
-        .control-group { background: #161616; border: 1px solid #222; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-        label { font-size: 11px; color: #888; display: block; margin-bottom: 8px; }
-        input[type="range"] { width: 100%; accent-color: var(--vip); }
-        
-        .btn-dl { width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-top: 10px; }
-        .btn-nav { width: 100%; padding: 10px; background: #1c2540; color: var(--vip); border: 1px solid var(--vip); border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
-
-        .m-input { width: 100%; padding: 10px; background: #000; color: #fff; border: 1px solid #333; border-radius: 8px; margin-bottom: 10px; }
-        .hidden { display: none !important; }
+        :root { --bg:#0a0a0a; --panel:#111; --text:#eee; --vip:#00d2ff; }
+        body { margin:0; font-family:sans-serif; background:var(--bg); color:var(--text); overflow:hidden; }
+        .wrap { display:grid; grid-template-columns:350px 1fr; height:100vh; }
+        .panel { padding:20px; background:var(--panel); border-right:1px solid #222; overflow-y:auto; z-index:10; }
+        .stage { background:radial-gradient(circle, #222 0%, #000 100%); position:relative; }
+        h2 { font-size:11px; color:#666; text-transform:uppercase; border-bottom:1px solid #333; padding-bottom:5px; margin:20px 0 10px; }
+        .control-group { background:#161616; padding:15px; border-radius:12px; border:1px solid #222; margin-bottom:10px; }
+        label { font-size:11px; color:#888; display:block; margin-bottom:5px; }
+        input[type="range"] { width:100%; accent-color:var(--vip); }
+        .btn-dl { width:100%; padding:15px; background:linear-gradient(135deg,#10b981,#22c55e); border:none; border-radius:8px; color:#052e1a; font-weight:900; cursor:pointer; margin-top:10px; }
+        #login-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:1000; display:none; align-items:center; justify-content:center; text-align:center; }
     </style>
 </head>
 <body>
 
     <div id="login-overlay">
-        <div class="login-card">
-            <h2 style="color:var(--vip); font-size:24px;">J&J MOCKUP 3D</h2>
-            <p style="color:#fff;">Prueba Gratuita Agotada</p>
-            <button class="btn-dl" onclick="window.open('https://wa.me/51916689969')">ADQUIRIR ACCESO VIP</button>
+        <div style="background:#111; padding:40px; border-radius:20px; border:1px solid #333;">
+            <h2 style="color:var(--vip)">LÍMITE DE PRUEBA ALCANZADO</h2>
+            <p>Suscríbete a Comunidad J&J para usar el simulador 3D.</p>
+            <button class="btn-dl" onclick="window.open('https://wa.me/51916689969')">ACTIVAR VIP</button>
         </div>
     </div>
 
     <main class="wrap">
         <aside class="panel">
-            <button class="btn-nav" onclick="location.href='index.html'">← VOLVER AL QUITAFONDOS</button>
+            <button style="width:100%; padding:10px; background:#1c2540; color:var(--vip); border:1px solid var(--vip); border-radius:8px; cursor:pointer;" onclick="location.href='index.html'">← VOLVER AL QUITAFONDOS</button>
             
-            <h2>1. Textura / Diseño (PNG)</h2>
+            <h2>1. Tu Diseño (PNG)</h2>
             <div class="control-group">
-                <input type="file" id="design-file" accept="image/*" style="font-size:11px; color:#666;">
+                <input type="file" id="design-file" accept="image/*">
             </div>
 
-            <h2>2. Ajustes de Movimiento</h2>
+            <h2>2. Ajustes de Prenda</h2>
             <div class="control-group">
-                <label>Velocidad de Rotación</label>
-                <input type="range" id="speed-range" min="0" max="0.05" step="0.001" value="0.01">
-                <label style="margin-top:10px;">Escala del Logo</label>
-                <input type="range" id="logo-scale" min="0.5" max="5" step="0.1" value="1.5">
+                <label>Color de Camiseta</label>
+                <input type="color" id="shirt-color" value="#ffffff" style="width:100%; height:35px; border:none; background:none;">
+                <label style="margin-top:10px;">Tamaño del Estampado</label>
+                <input type="range" id="logo-scale" min="0.5" max="4" step="0.1" value="1.5">
+                <label style="margin-top:10px;">Posición Vertical</label>
+                <input type="range" id="logo-pos" min="-1" max="1" step="0.05" value="0">
             </div>
 
-            <h2>3. Color de la Prenda</h2>
+            <h2>3. Movimiento</h2>
             <div class="control-group">
-                <input type="color" id="shirt-color" value="#ffffff" style="width:100%; height:40px; border:none; background:none; cursor:pointer;">
+                <label>Giro Automático</label>
+                <input type="range" id="speed-range" min="0" max="0.03" step="0.001" value="0.01">
             </div>
 
-            <button class="btn-dl" onclick="handleDownload()">DESCARGAR CAPTURA 3D</button>
+            <button class="btn-dl" onclick="handleDownload()">DESCARGAR MOCKUP 3D</button>
         </aside>
 
-        <section class="stage">
-            <div id="container-3d" style="width:100%; height:100%;"></div>
-        </section>
+        <section class="stage" id="container-3d"></section>
     </main>
 
 <script>
-    let scene, camera, renderer, shirt, textureLoader;
+    let scene, camera, renderer, shirt, designTexture;
     let downloadsUsed = localStorage.getItem('jj_3d_done') || 0;
 
-    function init3D() {
+    function init() {
         const container = document.getElementById('container-3d');
         scene = new THREE.Scene();
-        camera = new THREE.Camera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.z = 5;
+        camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 1000);
+        camera.position.set(0, 0, 5);
 
-        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
         renderer.setSize(container.clientWidth, container.clientHeight);
         container.appendChild(renderer.domElement);
 
-        // Luces para realismo
-        const light = new THREE.AmbientLight(0xffffff, 0.7);
+        // Iluminación Pro
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+        const light = new THREE.DirectionalLight(0xffffff, 0.5);
+        light.position.set(2, 2, 5);
         scene.add(light);
-        const pointLight = new THREE.PointLight(0xffffff, 0.5);
-        pointLight.position.set(5, 5, 5);
-        scene.add(pointLight);
 
-        // Crear una "Camiseta" simplificada (Plano con curvatura)
-        const geometry = new THREE.PlaneGeometry(3, 4, 32, 32);
-        const material = new THREE.MeshStandardMaterial({ 
-            color: 0xffffff, 
-            side: THREE.DoubleSide,
-            roughness: 0.7
-        });
-        shirt = new THREE.Mesh(geometry, material);
+        // CREAR FORMA DE CAMISETA (Usando una silueta real)
+        const shape = new THREE.Shape();
+        // Dibujamos el contorno de una T-Shirt simplificada
+        shape.moveTo(-1.5, 2);
+        shape.lineTo(1.5, 2);   // Hombros
+        shape.lineTo(2.5, 1.2); // Manga Der
+        shape.lineTo(1.8, 0.5); // Axila Der
+        shape.lineTo(1.8, -2);  // Cintura Der
+        shape.lineTo(-1.8, -2); // Cintura Izq
+        shape.lineTo(-1.8, 0.5);// Axila Izq
+        shape.lineTo(-2.5, 1.2);// Manga Izq
+        shape.lineTo(-1.5, 2);  // Hombro Izq
+
+        const geometry = new THREE.ExtrudeGeometry(shape, { depth: 0.2, bevelEnabled: true, bevelThickness: 0.1 });
+        const material = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.8 });
+        
+        shirt = new THREE.Group();
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.rotation.x = Math.PI; // Corregir orientación
+        shirt.add(mesh);
         scene.add(shirt);
 
-        textureLoader = new THREE.TextureLoader();
         animate();
     }
 
     function animate() {
         requestAnimationFrame(animate);
-        const speed = parseFloat(document.getElementById('speed-range').value);
-        shirt.rotation.y += speed;
+        shirt.rotation.y += parseFloat(document.getElementById('speed-range').value);
         renderer.render(scene, camera);
     }
 
-    // Cargar Diseño
     document.getElementById('design-file').onchange = e => {
         const file = e.target.files[0];
-        const url = URL.createObjectURL(file);
-        textureLoader.load(url, (texture) => {
-            const scale = document.getElementById('logo-scale').value;
-            texture.repeat.set(scale, scale);
-            texture.offset.set(0.5 - scale/2, 0.5 - scale/2);
-            shirt.material.map = texture;
-            shirt.material.needsUpdate = true;
+        const loader = new THREE.TextureLoader();
+        loader.load(URL.createObjectURL(file), (tex) => {
+            designTexture = tex;
+            updateTexture();
         });
     };
 
-    // Color de prenda
-    document.getElementById('shirt-color').oninput = e => {
-        shirt.material.color.set(e.target.value);
+    function updateTexture() {
+        if(!designTexture) return;
+        const scale = document.getElementById('logo-scale').value;
+        const posY = document.getElementById('logo-pos').value;
+        
+        designTexture.repeat.set(scale, scale);
+        designTexture.offset.set(0.5 - scale/2, (0.5 - scale/2) + parseFloat(posY));
+        
+        // Aplicamos el diseño solo a la parte frontal
+        shirt.children[0].material = new THREE.MeshStandardMaterial({
+            color: document.getElementById('shirt-color').value,
+            map: designTexture,
+            roughness: 0.6
+        });
+    }
+
+    document.getElementById('shirt-color').oninput = (e) => {
+        shirt.children[0].material.color.set(e.target.value);
     };
 
-    // Lógica de descarga y Paywall
+    document.getElementById('logo-scale').oninput = updateTexture;
+    document.getElementById('logo-pos').oninput = updateTexture;
+
     function handleDownload() {
         if(downloadsUsed >= 1) {
             document.getElementById('login-overlay').style.display = 'flex';
         } else {
             const link = document.createElement('a');
-            renderer.render(scene, camera); // Captura frame actual
-            link.download = 'jj_studio_3d.png';
+            link.download = 'jj_mockup_3d.png';
             link.href = renderer.domElement.toDataURL();
             link.click();
             downloadsUsed++;
@@ -153,14 +155,7 @@
         }
     }
 
-    window.addEventListener('resize', () => {
-        const container = document.getElementById('container-3d');
-        camera.aspect = container.clientWidth / container.clientHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(container.clientWidth, container.clientHeight);
-    });
-
-    init3D();
+    init();
 </script>
 </body>
 </html>
