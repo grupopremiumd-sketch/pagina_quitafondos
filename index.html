@@ -8,160 +8,215 @@
     :root{
       --bg:#0a0a0a; --panel:#111; --text:#eeeeee; --muted:#9ca3af;
       --accent:#6366f1; --accent-2:#0ea5e9; --border:#1f1f1f;
-      --success-1:#10b981; --success-2:#22c55e; --overlay:rgba(0,0,0,.55); --vip:#00d2ff;
+      --success-1:#10b981; --success-2:#22c55e; --success-3:#34d399;
+      --overlay:rgba(0,0,0,.55); --vip:#00d2ff;
     }
     *{box-sizing:border-box}
-    body{margin:0;font-family:ui-sans-serif,system-ui,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;}
-    header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;background:#0b0b0b;position:sticky;top:0;z-index:10}
-    header h1{font-size:15px;margin:0;font-weight:900;letter-spacing:.5px;color:var(--vip)}
-    
-    .wrap{display:grid;grid-template-columns:350px 1fr;gap:16px;height:calc(100vh - 58px);padding:16px}
-    @media(max-width:900px){.wrap{grid-template-columns:1fr; overflow-y:auto;}}
-    
-    .panel{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:15px;overflow-y:auto}
-    .panel h2{font-size:13px;font-weight:800;margin:15px 0 8px;color:var(--muted);text-transform:uppercase}
-    
-    .row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin:10px 0}
-    label{font-size:13px;color:#e5e7eb}
-    
-    input[type="color"], select, input[type="number"], button, input[type="file"]{background:#1a1a1a;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px}
-    input[type="range"]{width:100%;accent-color:var(--vip)}
-    
-    .btn-nav{width:100%;background:#222;color:var(--vip);border:1px solid var(--vip);padding:10px;cursor:pointer;font-weight:800;margin-bottom:10px;border-radius:8px}
-    .btn-download{background:linear-gradient(135deg,var(--success-1),var(--success-2));border:none;color:#052e1a;padding:12px;border-radius:8px;cursor:pointer;font-weight:900;width:100%;margin-top:15px}
-    
-    .canvasWrap{position:relative;background:#0b0b0b;border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-    canvas#canvas{display:block;transform-origin:top left; cursor: crosshair;}
-    
-    .cp-wrap{display:flex;gap:10px;margin-top:5px}
-    #cpSV{border-radius:6px;border:1px solid #2a2a2a;cursor:crosshair; touch-action:none}
-    #cpH{border-radius:6px;border:1px solid #2a2a2a;cursor:ns-resize; touch-action:none}
-
+    body{margin:0;font-family:ui-sans-serif,system-ui,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);}
+    header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:#0b0b0b;position:sticky;top:0;z-index:10}
+    header h1{font-size:15px;margin:0;font-weight:900;color:var(--vip);letter-spacing:.5px}
+    .wrap{display:grid;grid-template-columns:350px 1fr;gap:16px;min-height:calc(100vh - 58px);padding:16px}
+    @media(max-width:900px){.wrap{grid-template-columns:1fr;}}
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:12px; height: fit-content;}
+    .panel h2{font-size:14px;font-weight:700;margin:0 0 8px;color:#e5e7eb}
+    .panel .body{padding:14px}
+    .panel .row{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin:10px 0}
+    .panel label{font-size:13px;color:#e5e7eb}
+    .panel input[type="color"], .panel select, .panel input[type="number"], .panel button, .panel input[type="file"]{background:#1a1a1a;border:1px solid var(--border);color:var(--text);border-radius:8px;padding:8px 10px}
+    .panel input[type="range"]{width:100%}
+    .panel button{cursor:pointer;font-weight:700;transition: 0.2s;}
+    .panel button:hover{background:#222}
+    .btn-nav{ background:#222; color:var(--vip); border:1px solid var(--vip)!important; width:100%; margin-bottom:15px; padding:10px; border-radius:8px; cursor:pointer; }
+    .canvasWrap{position:relative;padding:10px;background:#0b0b0b;border:1px solid var(--border);border-radius:12px}
+    .stage{position:relative;overflow:hidden;border-radius:10px;height:82vh;background:#0f0f0f}
+    canvas#canvas{display:block; image-rendering:auto; transition:transform .08s ease; transform-origin: top left;}
+    canvas#overlay{position:absolute;inset:0; pointer-events:none; cursor:default;}
+    .btn-download{ background: linear-gradient(135deg, var(--success-1), var(--success-2)); border:none!important; color:#052e1a!important; width:100%; padding:12px; margin-top:10px; font-weight:900; border-radius: 8px; cursor: pointer; }
+    .kbd{font:11px monospace;background:#161616;border:1px solid #262626;padding:3px 6px;border-radius:6px;color:#cbd5e1}
+    .cp-wrap{display:flex;gap:10px;align-items:flex-start}
+    #cpSV{border-radius:6px;border:1px solid #2a2a2a;cursor:crosshair;touch-action:none}
+    #cpH{border-radius:6px;border:1px solid #2a2a2a;cursor:ns-resize;touch-action:none}
+    .hidden{display:none!important}
     .modal-backdrop{position:fixed;inset:0;background:var(--overlay);display:flex;align-items:center;justify-content:center;z-index:1000}
     .modal{width:min(500px,92vw);background:#121212;border:1px solid #262626;border-radius:14px;padding:20px}
-    .hidden{display:none!important}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .choice-card{background:#1a1a1a; border:1px solid #333; padding:15px; border-radius:12px; cursor:pointer; margin-bottom:10px; display:flex; align-items:center; gap:12px; text-align:left;}
   </style>
 </head>
 <body>
-  <header><h1>J&J STUDIO PRO — QUITAFONDOS</h1></header>
+  <div id="vip-modal" class="modal-backdrop hidden">
+    <div class="modal" style="text-align:center">
+      <h3 style="color:var(--vip)">Suscripción Requerida</h3>
+      <p class="muted">Para descargar en alta calidad (DPI), elige una opción:</p>
+      <div class="choice-card" onclick="window.open('https://wa.me/51916689969','_blank')">
+        <span style="font-size:24px">📲</span>
+        <div><div style="font-weight:bold; color:var(--success-2)">Adquirir Membresía</div><div style="font-size:12px; color:#888">Acceso ilimitado a J&J Studio</div></div>
+      </div>
+      <button onclick="document.getElementById('vip-modal').classList.add('hidden')" style="background:none; border:none; color:#555; cursor:pointer">Cerrar</button>
+    </div>
+  </div>
+
+  <header>
+    <h1>J&J STUDIO PRO — QUITAFONDOS</h1>
+    <div style="margin-left:auto; font-size:10px; font-weight:bold; color:#666" id="vip-tag">INVITADO</div>
+  </header>
 
   <main class="wrap">
     <section class="panel">
-      <button class="btn-nav" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR</button>
-      <h2>1. Cargar imagen</h2>
-      <input id="file" type="file" accept="image/*">
-      <h2>2. Configuración</h2>
-      <div class="row">
-        <label>Modo</label>
-        <select id="mode">
-          <option value="white">Quitar fondo blanco</option>
-          <option value="black">Quitar fondo negro</option>
-          <option value="pick">Elegir color (clic imagen)</option>
-          <option value="auto">Auto (esquinas)</option>
-        </select>
-        <input id="color" type="color" value="#ffffff">
+      <div class="body">
+        <button class="btn-nav" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR</button>
+        <h2>1. Imagen</h2>
+        <input id="file" type="file" accept="image/*">
       </div>
-      <div class="row"><label>Tolerancia</label><input id="fuzz" type="range" min="0" max="200" value="60"></div>
-      <div class="row"><label>Suavizado</label><input id="feather" type="range" min="0" max="10" step="0.1" value="0.8"></div>
-      <div class="row"><label>Contraer</label><input id="contract" type="range" min="-10" max="10" step="1" value="1"></div>
-      <h2>3. Color del lienzo</h2>
-      <div class="cp-wrap"><canvas id="cpSV" width="220" height="100"></canvas><canvas id="cpH" width="20" height="100"></canvas></div>
-      <button id="reset" style="width:100%; margin-top:20px; background:transparent">Reiniciar</button>
-      <button id="btnOpenExport" class="btn-download">DESCARGAR PNG</button>
+      <hr style="border-color:var(--border);opacity:.2">
+      <div class="body">
+        <h2>2. Configuración</h2>
+        <div class="row">
+          <label>Modo</label>
+          <select id="mode">
+            <option value="white">Quitar blanco</option>
+            <option value="black">Quitar negro</option>
+            <option value="pick">Elegir color (clic imagen)</option>
+          </select>
+          <input id="colorPick" type="color" value="#ffffff">
+        </div>
+        <div class="row"><label>Tolerancia</label><input id="fuzz" type="range" min="0" max="200" value="60"></div>
+        <div class="row"><label>Suavizado</label><input id="feather" type="range" min="0" max="10" step="0.1" value="0.8"></div>
+        <div class="row"><label>Contraer</label><input id="contract" type="range" min="-10" max="10" step="1" value="1"></div>
+                
+        <h2 style="margin-top:15px">Color del lienzo</h2>
+        <div class="cp-wrap">
+          <canvas id="cpSV" width="220" height="120"></canvas>
+          <canvas id="cpH" width="20" height="120"></canvas>
+        </div>
+      </div>
+      <div class="body">
+        <div style="display:flex; gap:10px; margin-bottom:10px">
+          <button id="btnCrop" style="flex:1">Recortar</button>
+          <button id="reset" style="flex:1">Reiniciar</button>
+        </div>
+        <button id="download" class="btn-download">DESCARGAR PNG VIP</button>
+      </div>
     </section>
-    <section class="canvasWrap" id="stage"><canvas id="canvas"></canvas></section>
+
+    <section class="canvasWrap">
+      <div class="stage" id="stage">
+        <canvas id="canvas"></canvas>
+        <canvas id="overlay"></canvas>
+      </div>
+    </section>
   </main>
 
   <div id="resizeModal" class="modal-backdrop hidden">
     <div class="modal">
-      <h3>Configurar Exportación</h3>
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
-        <div class="row"><label>Ancho</label><input id="rzW" type="number"></div>
-        <div class="row"><label>Alto</label><input id="rzH" type="number"></div>
-        <div class="row"><label>Unidad</label><select id="rzU"><option value="px">px</option><option value="cm">cm</option><option value="in">in</option></select></div>
+      <h3>Configuración de Exportación</h3>
+      <div class="grid">
+        <div class="row"><label>Ancho (px)</label><input id="rzW" type="number"></div>
+        <div class="row"><label>Alto (px)</label><input id="rzH" type="number"></div>
         <div class="row"><label>DPI</label><input id="rzDPI" type="number" value="300"></div>
+        <div class="row">
+            <label>Unidad</label>
+            <select id="rzU"><option value="px">px</option><option value="cm">cm</option></select>
+        </div>
       </div>
       <div style="display:flex; gap:10px; margin-top:20px; justify-content:flex-end">
         <button onclick="document.getElementById('resizeModal').classList.add('hidden')">Cancelar</button>
-        <button id="rzApply" style="background:var(--vip); color:#000; font-weight:bold; border:none; padding:8px 20px; border-radius:8px; cursor:pointer">GUARDAR</button>
+        <button id="rzApply" style="background:var(--vip); color:#000; border:none; padding:8px 20px; border-radius:8px; font-weight:bold">DESCARGAR</button>
       </div>
     </div>
   </div>
 
-  <script>
-    (function(){
-      const fileInp=document.getElementById('file'), canvas=document.getElementById('canvas'), ctx=canvas.getContext('2d');
-      const mode=document.getElementById('mode'), colorInp=document.getElementById('color'), fuzz=document.getElementById('fuzz');
-      const contract=document.getElementById('contract'), feather=document.getElementById('feather'), stage=document.getElementById('stage');
-      let ocanvas=document.createElement('canvas'), octx=ocanvas.getContext('2d'), scale=1, lastOut=null;
+<script>
+(function(){
+  let isVip = localStorage.getItem('jj_session') === 'active';
+  if(isVip) { document.getElementById('vip-tag').innerText = "SOCIO VIP"; document.getElementById('vip-tag').style.color = "var(--vip)"; }
 
-      fileInp.onchange = e => {
-        const img = new Image();
-        img.onload = () => {
-          ocanvas.width=img.width; ocanvas.height=img.height;
-          octx.drawImage(img,0,0);
-          canvas.width=img.width; canvas.height=img.height;
-          scale = Math.min(stage.clientWidth/img.width, stage.clientHeight/img.height, 0.85);
-          process();
-        };
-        img.src = URL.createObjectURL(e.target.files[0]);
-      };
+  const file = document.getElementById('file'), canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
+  const stage = document.getElementById('stage'), mode = document.getElementById('mode'), colorPick = document.getElementById('colorPick');
+  const fuzz = document.getElementById('fuzz'), feather = document.getElementById('feather'), contract = document.getElementById('contract');
+    
+  let ocanvas = document.createElement('canvas'), octx = ocanvas.getContext('2d');
+  let scale=1, lastOut=null;
 
-      function process(){
-        if(!ocanvas.width) return;
-        let target = hexToRgb(colorInp.value);
-        if(mode.value==='white') target=[255,255,255];
-        if(mode.value==='black') target=[0,0,0];
-        const fVal = +fuzz.value, cVal = +contract.value;
-        const threshold = (fVal * 2.5) + (cVal * 5);
-        const src = octx.getImageData(0,0,ocanvas.width,ocanvas.height), d = src.data;
-        const out = ctx.createImageData(ocanvas.width,ocanvas.height), o = out.data;
-        for(let i=0; i<d.length; i+=4){
-          const dist = Math.sqrt((d[i]-target[0])**2 + (d[i+1]-target[1])**2 + (d[i+2]-target[2])**2);
-          o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-          o[i+3] = dist < threshold ? 0 : d[i+3];
-        }
-        lastOut=out; render();
-      }
+  file.onchange = e => {
+    const f = e.target.files[0];
+    const img = new Image();
+    img.onload = () => {
+      ocanvas.width = img.width; ocanvas.height = img.height;
+      octx.drawImage(img,0,0);
+      canvas.width = img.width; canvas.height = img.height;
+      scale = Math.min(stage.clientWidth/img.width, stage.clientHeight/img.height, 0.8);
+      processNow();
+    };
+    img.src = URL.createObjectURL(f);
+  };
 
-      function render(){
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        if(lastOut) ctx.putImageData(lastOut,0,0);
-        canvas.style.transform=`scale(${scale})`;
-      }
+  function processNow(){
+    if(!ocanvas.width) return;
+    let target = hexToRgb(colorPick.value);
+    if(mode.value==='white') target=[255,255,255];
+    if(mode.value==='black') target=[0,0,0];
 
-      canvas.onclick = e => {
-        if(mode.value !== 'pick') return;
-        const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / scale, y = (e.clientY - rect.top) / scale;
-        const p = octx.getImageData(x, y, 1, 1).data;
-        colorInp.value = "#" + ((1 << 24) + (p[0] << 16) + (p[1] << 8) + p[2]).toString(16).slice(1);
-        process();
-      };
+    const fVal = +fuzz.value, cVal = +contract.value;
+    const threshold = (fVal * 2.5) + (cVal * 5);
+    const id = octx.getImageData(0,0,ocanvas.width,ocanvas.height), d = id.data;
+    const out = ctx.createImageData(ocanvas.width,ocanvas.height), o = out.data;
 
-      document.getElementById('btnOpenExport').onclick = () => {
-        if(!ocanvas.width) return;
-        document.getElementById('resizeModal').classList.remove('hidden');
-        document.getElementById('rzW').value = ocanvas.width;
-        document.getElementById('rzH').value = ocanvas.height;
-      };
+    for(let i=0; i<d.length; i+=4){
+      const dist = Math.sqrt((d[i]-target[0])**2 + (d[i+1]-target[1])**2 + (d[i+2]-target[2])**2);
+      o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
+      o[i+3] = dist < threshold ? 0 : d[i+3];
+    }
+    lastOut = out; render();
+  }
 
-      document.getElementById('rzApply').onclick = () => {
-        const a = document.createElement('a'); a.download = 'jj_studio.png';
-        a.href = canvas.toDataURL(); a.click();
-        document.getElementById('resizeModal').classList.add('hidden');
-      };
+  function render(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if(lastOut) ctx.putImageData(lastOut,0,0);
+    canvas.style.transform=`scale(${scale})`;
+  }
 
-      const cpH=document.getElementById('cpH');
-      const drawH=()=>{const g=cpH.getContext('2d'); const grd=g.createLinearGradient(0,0,0,100); for(let i=0;i<=360;i+=10) grd.addColorStop(i/360,`hsl(${i},100%,50%)`); g.fillStyle=grd; g.fillRect(0,0,20,100);};
-      drawH();
-      cpH.onmousedown = e => { const r=cpH.getBoundingClientRect(); stage.style.background=`hsl(${((e.clientY-r.top)/100)*360},40%,15%)`; };
+  canvas.onclick = e => {
+    if(mode.value !== 'pick') return;
+    const rect = canvas.getBoundingClientRect();
+    const x = (e.clientX - rect.left)/scale, y = (e.clientY - rect.top)/scale;
+    const p = octx.getImageData(x,y,1,1).data;
+    colorPick.value = rgbToHex(p[0], p[1], p[2]);
+    processNow();
+  };
 
-      function hexToRgb(h){const v=h.replace('#',''); return [parseInt(v.slice(0,2),16),parseInt(v.slice(2,4),16),parseInt(v.slice(4,6),16)];}
-      [mode, colorInp, fuzz, feather, contract].forEach(el => el.oninput = process);
-      stage.onwheel = e => { e.preventDefault(); scale *= e.deltaY > 0 ? 0.9 : 1.1; render(); };
-      document.getElementById('reset').onclick = () => location.reload();
-    })();
-  </script>
+  document.getElementById('download').onclick = () => {
+    if(!isVip) return document.getElementById('vip-modal').classList.remove('hidden');
+    document.getElementById('resizeModal').classList.remove('hidden');
+    document.getElementById('rzW').value = ocanvas.width;
+    document.getElementById('rzH').value = ocanvas.height;
+  };
+
+  document.getElementById('rzApply').onclick = () => {
+    const a = document.createElement('a'); a.download = 'jj_studio_pro.png';
+    a.href = canvas.toDataURL(); a.click();
+    document.getElementById('resizeModal').classList.add('hidden');
+  };
+
+  const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH');
+  function drawH(){
+    const g=cpH.getContext('2d'); const grd=g.createLinearGradient(0,0,0,120);
+    for(let i=0;i<=360;i+=10) grd.addColorStop(i/360,`hsl(${i},100%,50%)`);
+    g.fillStyle=grd; g.fillRect(0,0,20,120);
+  }
+  drawH();
+  cpH.onmousedown = e => {
+    const r = cpH.getBoundingClientRect();
+    stage.style.background = `hsl(${((e.clientY - r.top)/120)*360}, 50%, 10%)`;
+  };
+
+  function hexToRgb(h){const v=h.replace('#',''); return [parseInt(v.slice(0,2),16),parseInt(v.slice(2,4),16),parseInt(v.slice(4,6),16)];}
+  function rgbToHex(r,g,b){return "#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}
+
+  [fuzz, feather, contract, mode, colorPick].forEach(el => el.oninput = processNow);
+  stage.onwheel = e => { e.preventDefault(); scale *= e.deltaY > 0 ? 0.9 : 1.1; render(); };
+  document.getElementById('reset').onclick = () => location.reload();
+})();
+</script>
 </body>
 </html>
