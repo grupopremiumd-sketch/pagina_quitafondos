@@ -47,9 +47,12 @@
 
         .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 20px; border-radius: 12px; cursor: pointer; transition: 0.3s; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; text-align: left; width: 100%; }
         .choice-card:hover { border-color: var(--vip); background: #222; transform: scale(1.02); }
+        .wa-float { position: fixed; bottom: 20px; right: 20px; background: var(--wa); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000; }
     </style>
 </head>
 <body>
+
+    <a href="https://wa.me/51916689969" class="wa-float" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="30"></a>
 
     <div id="choice-modal" class="modal-back hidden">
         <div class="modal">
@@ -77,28 +80,6 @@
         </div>
     </div>
 
-    <div id="modalExport" class="modal-back hidden">
-        <div class="modal">
-            <h3 style="margin-top:0">Configurar Descarga PNG</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; text-align:left;">
-                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Ancho</label><div style="display:flex;gap:5px;"><input type="number" id="rzW" class="val-box" style="width:70px"><span id="utW" style="font-size:11px;color:#666">px</span></div></div>
-                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Alto</label><div style="display:flex;gap:5px;"><input type="number" id="rzH" class="val-box" style="width:70px"><span id="utH" style="font-size:11px;color:#666">px</span></div></div>
-                <div style="grid-column: span 2; display:flex; justify-content:space-between; align-items:center;">
-                    <label>Método</label>
-                    <select id="rzMethod" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:6px; border-radius:6px; width:220px;">
-                        <option value="high">Alta calidad (Bicúbica)</option>
-                        <option value="medium">Bueno (Bilinear)</option>
-                        <option value="low">Rápido</option>
-                    </select>
-                </div>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:20px; justify-content:flex-end;">
-                <button class="btn-s" onclick="closeExport()">Cancelar</button>
-                <button class="btn-s" style="background:#222; color:var(--vip); border-color:var(--vip);" onclick="finalDownload()">DESCARGAR AHORA</button>
-            </div>
-        </div>
-    </div>
-
     <header>
         <div class="logo-text">J&J STUDIO PRO</div>
         <div id="status-tag">MODO INVITADO</div>
@@ -113,14 +94,14 @@
             
             <h2>2. Limpieza</h2>
             <div class="control-row">
-                <select id="mode" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; flex:1;">
+                <select id="mode" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; flex:1;" onchange="process()">
                     <option value="white">Quitar blanco</option>
                     <option value="black">Quitar negro</option>
                     <option value="auto">Auto (esquinas)</option>
                 </select>
             </div>
-            <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
-            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
+            <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60" oninput="process()"><div class="val-box" id="fuzzV">60</div></div>
+            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8" oninput="process()"><div class="val-box" id="featherV">0.8</div></div>
 
             <label style="margin-top:20px; display:block; font-size:12px; font-weight: bold;">3. COLOR DEL LIENZO</label>
             <div class="cp-container">
@@ -129,7 +110,7 @@
             </div>
 
             <button class="btn-dl" onclick="handleDownloadClick()">DESCARGAR PNG</button>
-            <button class="btn-s" style="margin-top:10px; width:100%" onclick="location.reload()">Cerrar Sesión / Reiniciar</button>
+            <button class="btn-s" style="margin-top:10px; width:100%" onclick="location.reload()">Reiniciar</button>
         </section>
 
         <section class="stage" id="stage">
@@ -142,14 +123,12 @@
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec";
-        let isVip = false; // Memoria de sesión desactivada (se reinicia al recargar)
+        let isVip = false;
 
-        function handleDownloadClick() { if (isVip) { openExport(); } else { document.getElementById('choice-modal').classList.remove('hidden'); } }
+        function handleDownloadClick() { if (isVip) { downloadCanvas(); } else { document.getElementById('choice-modal').classList.remove('hidden'); } }
         function openLogin() { closeChoice(); document.getElementById('login-modal').classList.remove('hidden'); }
         function closeChoice() { document.getElementById('choice-modal').classList.add('hidden'); }
         function closeLogin() { document.getElementById('login-modal').classList.add('hidden'); }
-        function openExport() { if(!oCanvas.width) return; updateUnits(); document.getElementById('modalExport').classList.remove('hidden'); }
-        function closeExport() { document.getElementById('modalExport').classList.add('hidden'); }
 
         async function validateAccess() {
             const u = document.getElementById('user-id').value, p = document.getElementById('access-key').value;
@@ -162,66 +141,99 @@
                     document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO"; 
                     document.getElementById('status-tag').classList.add('status-vip'); 
                     closeLogin(); 
-                    alert("¡Validado con éxito para esta sesión!"); 
+                    alert("¡Validado con éxito!"); 
                 } else { alert("Datos incorrectos."); }
             } catch(e) { alert("Error de conexión"); }
         }
 
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
-        let aspectRatio = 1;
 
         document.getElementById('file').onchange = e => {
             const f = e.target.files[0];
             const img = new Image();
-            img.onload = () => { oCanvas.width = img.width; oCanvas.height = img.height; aspectRatio = img.width/img.height; oCtx.drawImage(img,0,0); process(); };
+            img.onload = () => {
+                oCanvas.width = img.width; oCanvas.height = img.height;
+                oCtx.drawImage(img,0,0); 
+                process(); 
+            };
             img.src = URL.createObjectURL(f);
         };
 
         function process() {
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value);
+            const mode = document.getElementById('mode').value;
             document.getElementById('fuzzV').innerText = fuzz;
-            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data, out = ctx.createImageData(oCanvas.width,oCanvas.height), o = out.data;
+            
+            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
+            const out = ctx.createImageData(oCanvas.width,oCanvas.height), o = out.data;
+            
             const threshold = fuzz * 2.5;
             for(let i=0; i<d.length; i+=4) {
-                const brightness = (d[i]+d[i+1]+d[i+2])/3;
-                o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                o[i+3] = (brightness > (255 - threshold)) ? 0 : d[i+3];
+                const r=d[i], g=d[i+1], b=d[i+2], a=d[i+3];
+                const brightness = (r+g+b)/3;
+                let alpha = a;
+
+                if (mode === 'white' && brightness > (255 - threshold)) alpha = 0;
+                else if (mode === 'black' && brightness < threshold) alpha = 0;
+
+                o[i]=r; o[i+1]=g; o[i+2]=b; o[i+3]=alpha;
             }
-            canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out,0,0);
+            canvas.width = oCanvas.width; canvas.height = oCanvas.height;
+            ctx.putImageData(out,0,0);
         }
 
-        // Selector Color Lienzo
-        const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
-        let hue=0;
-        function drawCP() {
-            hCtx.clearRect(0,0,25,120); const gH=hCtx.createLinearGradient(0,0,0,120); for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`); hCtx.fillStyle=gH; hCtx.fillRect(0,0,25,120);
-            svCtx.fillStyle=`hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,220,120);
-            const gW=svCtx.createLinearGradient(0,0,220,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent'); svCtx.fillStyle=gW; svCtx.fillRect(0,0,220,120);
-            const gB=svCtx.createLinearGradient(0,0,0,120); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000'); svCtx.fillStyle=gB; svCtx.fillRect(0,0,220,120);
-        }
-        drawCP();
-        cpSV.onmousedown = (e) => {
-            const rect = cpSV.getBoundingClientRect();
-            const id = svCtx.getImageData(e.clientX - rect.left, e.clientY - rect.top, 1, 1).data;
-            document.getElementById('stage').style.backgroundColor = `rgb(${id[0]},${id[1]},${id[2]})`;
-        };
-
-        function updateUnits() {
-            document.getElementById('rzW').value = oCanvas.width;
-            document.getElementById('rzH').value = oCanvas.height;
-        }
-
-        function finalDownload() {
+        function downloadCanvas() {
             const link = document.createElement('a');
-            link.download = 'jj_studio.png';
+            link.download = 'jj_studio_pro.png';
             link.href = canvas.toDataURL();
             link.click();
-            closeExport();
         }
 
-        document.getElementById('fuzz').oninput = process;
+        // Selector Color Lienzo Pro
+        const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
+        let hue=0;
+
+        function drawCP() {
+            hCtx.clearRect(0,0,25,120);
+            const gH=hCtx.createLinearGradient(0,0,0,120);
+            for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`);
+            hCtx.fillStyle=gH; hCtx.fillRect(0,0,25,120);
+
+            svCtx.fillStyle=`hsl(${hue},100%,50%)`;
+            svCtx.fillRect(0,0,220,120);
+            const gW=svCtx.createLinearGradient(0,0,220,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent');
+            svCtx.fillStyle=gW; svCtx.fillRect(0,0,220,120);
+            const gB=svCtx.createLinearGradient(0,0,0,120); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000');
+            svCtx.fillStyle=gB; svCtx.fillRect(0,0,220,120);
+        }
+        drawCP();
+
+        cpSV.onmousedown = (e) => {
+            const rect = cpSV.getBoundingClientRect();
+            const update = (evt) => {
+                const x = Math.max(0, Math.min(evt.clientX - rect.left, 219));
+                const y = Math.max(0, Math.min(evt.clientY - rect.top, 119));
+                const data = svCtx.getImageData(x, y, 1, 1).data;
+                document.getElementById('stage').style.backgroundColor = `rgb(${data[0]},${data[1]},${data[2]})`;
+            };
+            update(e);
+            window.onmousemove = update;
+            window.onmouseup = () => window.onmousemove = null;
+        };
+
+        cpH.onmousedown = (e) => {
+            const rect = cpH.getBoundingClientRect();
+            const update = (evt) => {
+                const y = Math.max(0, Math.min(evt.clientY - rect.top, 119));
+                hue = (y / 120) * 360;
+                drawCP();
+            };
+            update(e);
+            window.onmousemove = update;
+            window.onmouseup = () => window.onmousemove = null;
+        };
     </script>
 </body>
 </html>
