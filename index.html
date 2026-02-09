@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro — Herramienta Definitiva</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <title>J&J Studio Pro — Quitar Fondos</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
@@ -27,10 +26,6 @@
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
         .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 50px; text-align: center; font-size: 11px; }
         
-        .cp-container { display: flex; gap: 10px; height: 120px; margin-top: 10px; user-select: none; }
-        #cpSV { flex: 1; border-radius: 6px; border: 1px solid #2a2a2a; cursor: crosshair; }
-        #cpH { width: 20px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: ns-resize; }
-
         .btn-group { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
         .btn-s { flex: 1; min-width: 100px; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; transition: 0.2s; }
         .btn-s:hover { background: #222; border-color: var(--vip); }
@@ -41,7 +36,6 @@
         canvas#canvas { display: block; max-height: 85vh; }
         #crop-box { position: absolute; border: 2px dashed #fff; cursor: move; display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); z-index: 50; }
         .resizer { width: 12px; height: 12px; background: #fff; border: 2px solid var(--accent); position: absolute; right: -6px; bottom: -6px; cursor: nwse-resize; border-radius: 50%; }
-        #qr-preview { position: absolute; cursor: move; border: 2px dashed var(--vip); display: none; z-index: 60; background: #fff; }
 
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
         .modal { background: #121212; padding: 25px; border-radius: 18px; width: 520px; border: 1px solid #262626; text-align: center; }
@@ -91,15 +85,6 @@
                 <div style="display:flex; justify-content:space-between; align-items:center;"><label>Alto</label><div style="display:flex;gap:5px;"><input type="number" id="rzH" class="m-input"><span id="utH" style="font-size:11px;color:#666">cm</span></div></div>
                 <div style="display:flex; justify-content:space-between; align-items:center;"><label>Unidad</label><select id="rzUnit" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:6px; border-radius:6px; width:110px;"><option value="cm">cm</option><option value="in">in</option><option value="px">px</option></select></div>
                 <div style="display:flex; justify-content:space-between; align-items:center;"><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
-                <div style="grid-column: span 2; display:flex; justify-content:space-between; align-items:center;">
-                    <label>Método</label>
-                    <select id="rzMethod" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:6px; border-radius:6px; width:220px;">
-                        <option value="high">Alta calidad (Bicúbica)</option>
-                        <option value="medium">Bueno (Bilinear)</option>
-                        <option value="low">Rápido (Nearest)</option>
-                    </select>
-                </div>
-                <div style="grid-column: span 2;"><input type="checkbox" id="lockAspect" checked> <span style="font-size:12px; color:#888;">Mantener proporción de aspecto</span></div>
             </div>
             <div style="display:flex; gap:10px; margin-top:20px; justify-content:flex-end;">
                 <button class="btn-s" onclick="closeExport()">Cancelar</button>
@@ -112,33 +97,31 @@
 
     <main class="wrap">
         <section class="panel">
-            <button class="btn-s" style="background: #00d2ff; color: #000; margin-bottom: 20px;" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR</button>
+            <button class="btn-s" style="background: var(--vip); color: #000; margin-bottom: 20px;" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR</button>
             
             <h2>1. Imagen</h2>
             <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:12px; margin-bottom:10px;">
             
-            <h2>2. QR Dinámico</h2>
-            <input type="text" id="qrText" placeholder="Texto o Link" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; width:100%; border-radius:6px; margin-bottom:5px;">
-            <div class="btn-group">
-                <button class="btn-s" id="btn-gen-qr">Generar QR</button>
-                <button class="btn-s hidden" id="btn-add-qr" style="background:var(--vip); color:#000;">Añadir</button>
-            </div>
-
-            <h2>3. Limpieza de Fondo</h2>
+            <h2>2. Limpieza de Fondo</h2>
             <div class="control-row"><select id="mode" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; flex:1;"><option value="white">Quitar blanco</option><option value="black">Quitar negro</option><option value="pick">Elegir color...</option><option value="auto">Auto (esquinas)</option></select></div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
-            <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" step="1" value="0"><div class="val-box" id="contractV">0</div></div>
 
-            <h2>4. Herramientas</h2>
-            <div class="btn-group"><button class="btn-s" id="btn-init-crop">✂️ Recortar</button><button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000;">Aplicar</button><button class="btn-s" onclick="location.reload()">Reiniciar</button></div>
-
-            <label style="margin-top:20px; display:block; font-size:11px;">COLOR DEL LIENZO (ARRASTRAR)</label>
-            <div class="cp-container"><canvas id="cpSV" width="220" height="120"></canvas><canvas id="cpH" width="20" height="120"></canvas></div>
+            <h2>3. Herramientas</h2>
+            <div class="btn-group">
+                <button class="btn-s" id="btn-init-crop">✂️ Recortar</button>
+                <button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000;">Aplicar</button>
+                <button class="btn-s" onclick="location.reload()">Reiniciar</button>
+            </div>
 
             <button class="btn-dl" onclick="handleDownloadClick()">DESCARGAR PNG</button>
         </section>
-        <section class="stage" id="stage"><div id="canvas-container"><canvas id="canvas"></canvas><div id="crop-box"><div class="resizer"></div></div><div id="qr-preview"></div></div></section>
+        <section class="stage" id="stage">
+            <div id="canvas-container">
+                <canvas id="canvas"></canvas>
+                <div id="crop-box"><div class="resizer"></div></div>
+            </div>
+        </section>
     </main>
 
     <script>
@@ -180,7 +163,7 @@
 
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
-        let aspectRatio = 1, targetColor = [255,255,255], isResizing = false, isDragging = false;
+        let aspectRatio = 1, isResizing = false, isDragging = false;
         const cropBox = document.getElementById('crop-box');
 
         document.getElementById('file').onchange = e => {
@@ -192,11 +175,16 @@
 
         function process() {
             if(!oCanvas.width) return;
-            const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value), contract = parseInt(document.getElementById('contract').value), mode = document.getElementById('mode').value;
-            document.getElementById('fuzzV').innerText = fuzz; document.getElementById('featherV').innerText = feather; document.getElementById('contractV').innerText = contract;
+            const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value), mode = document.getElementById('mode').value;
+            document.getElementById('fuzzV').innerText = fuzz; document.getElementById('featherV').innerText = feather;
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data, out = ctx.createImageData(oCanvas.width,oCanvas.height), o = out.data;
-            if(mode === 'white') targetColor = [255,255,255]; else if(mode === 'black') targetColor = [0,0,0]; else if(mode === 'auto') targetColor = [d[0], d[1], d[2]];
-            const threshold = (fuzz*2.5)+(contract*10), soft = (feather*15)+1;
+            
+            let targetColor = [255,255,255];
+            if(mode === 'white') targetColor = [255,255,255]; 
+            else if(mode === 'black') targetColor = [0,0,0]; 
+            else if(mode === 'auto') targetColor = [d[0], d[1], d[2]];
+
+            const threshold = (fuzz*2.5), soft = (feather*15)+1;
             for(let i=0; i<d.length; i+=4) {
                 const dist = Math.sqrt((d[i]-targetColor[0])**2 + (d[i+1]-targetColor[1])**2 + (d[i+2]-targetColor[2])**2);
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
@@ -213,7 +201,8 @@
             if(isResizing) { cropBox.style.width = (e.clientX-cropBox.getBoundingClientRect().left)+'px'; cropBox.style.height = (e.clientY-cropBox.getBoundingClientRect().top)+'px'; }
             else if(isDragging) { const rect = document.getElementById('canvas-container').getBoundingClientRect(); cropBox.style.left = (e.clientX-rect.left-cropBox.offsetWidth/2)+'px'; cropBox.style.top = (e.clientY-rect.top-cropBox.offsetHeight/2)+'px'; }
         };
-        window.onmouseup = () => { isResizing=false; isDragging=false; isDraggingQR=false; };
+        window.onmouseup = () => { isResizing=false; isDragging=false; };
+        
         document.getElementById('btn-apply-crop').onclick = () => {
             const canvRect = canvas.getBoundingClientRect(), boxRect = cropBox.getBoundingClientRect(), scale = oCanvas.width/canvRect.width;
             const x = (boxRect.left-canvRect.left)*scale, y = (boxRect.top-canvRect.top)*scale, w = boxRect.width*scale, h = boxRect.height*scale;
@@ -222,67 +211,22 @@
             cropBox.style.display='none'; document.getElementById('btn-apply-crop').classList.add('hidden'); process();
         };
 
-        // --- QR ---
-        let isDraggingQR = false;
-        document.getElementById('btn-gen-qr').onclick = () => {
-            const txt = document.getElementById('qrText').value; if(!txt) return;
-            const qp = document.getElementById('qr-preview'); qp.innerHTML = ""; qp.style.display = "block";
-            new QRCode(qp, { text: txt, width: 120, height: 120 });
-            document.getElementById('btn-add-qr').classList.remove('hidden');
-        };
-        document.getElementById('qr-preview').onmousedown = () => isDraggingQR = true;
-        window.addEventListener('mousemove', (e) => {
-            if(isDraggingQR) {
-                const rect = document.getElementById('canvas-container').getBoundingClientRect();
-                const qp = document.getElementById('qr-preview');
-                qp.style.left = (e.clientX - rect.left - qp.offsetWidth/2) + 'px';
-                qp.style.top = (e.clientY - rect.top - qp.offsetHeight/2) + 'px';
-            }
-        });
-        document.getElementById('btn-add-qr').onclick = () => {
-            const qp = document.getElementById('qr-preview'), qrImg = qp.querySelector('img'), rect = qp.getBoundingClientRect(), canvRect = canvas.getBoundingClientRect(), scale = oCanvas.width/canvRect.width;
-            oCtx.drawImage(qrImg, (rect.left-canvRect.left)*scale, (rect.top-canvRect.top)*scale, rect.width*scale, rect.height*scale);
-            qp.style.display = "none"; document.getElementById('btn-add-qr').classList.add('hidden'); process();
-        };
-
-        // --- LIENZO ---
-        const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
-        let hue=0, svDragging=false, hDragging=false;
-        function drawCP() {
-            hCtx.clearRect(0,0,20,120); const gH=hCtx.createLinearGradient(0,0,0,120); for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`); hCtx.fillStyle=gH; hCtx.fillRect(0,0,20,120);
-            svCtx.fillStyle=`hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,220,120);
-            const gW=svCtx.createLinearGradient(0,0,220,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent'); svCtx.fillStyle=gW; svCtx.fillRect(0,0,220,120);
-            const gB=svCtx.createLinearGradient(0,0,0,120); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000'); svCtx.fillStyle=gB; svCtx.fillRect(0,0,220,120);
-        }
-        drawCP();
-        cpH.onmousedown = () => hDragging=true; cpSV.onmousedown = () => svDragging=true;
-        window.addEventListener('mousemove', (e) => {
-            if(hDragging) { const r = cpH.getBoundingClientRect(); hue = (Math.max(0, Math.min(e.clientY-r.top, r.height))/r.height)*360; drawCP(); }
-            if(svDragging) { const r = cpSV.getBoundingClientRect(), x = Math.max(0, Math.min(e.clientX-r.left, r.width)), y = Math.max(0, Math.min(e.clientY-r.top, r.height)); const id=svCtx.getImageData(x,y,1,1).data; document.getElementById('stage').style.backgroundColor=`rgb(${id[0]},${id[1]},${id[2]})`; }
-        });
-        window.addEventListener('mouseup', () => { hDragging=false; svDragging=false; });
-
         // --- EXPORT ---
-        const rzW=document.getElementById('rzW'), rzH=document.getElementById('rzH'), lock=document.getElementById('lockAspect'), rzUnit=document.getElementById('rzUnit'), rzDPI=document.getElementById('rzDPI');
+        const rzW=document.getElementById('rzW'), rzH=document.getElementById('rzH'), rzUnit=document.getElementById('rzUnit'), rzDPI=document.getElementById('rzDPI');
         function updateUnits() {
             const dpi=parseInt(rzDPI.value), unit=rzUnit.value;
-            document.getElementById('utW').innerText=unit; document.getElementById('utH').innerText=unit;
             if(unit==='cm') { rzW.value=(oCanvas.width/dpi*2.54).toFixed(3); rzH.value=(oCanvas.height/dpi*2.54).toFixed(3); }
             else if(unit==='in') { rzW.value=(oCanvas.width/dpi).toFixed(3); rzH.value=(oCanvas.height/dpi).toFixed(3); }
             else { rzW.value=oCanvas.width; rzH.value=oCanvas.height; }
         }
-        rzUnit.onchange=updateUnits;
-        rzW.oninput = () => { if(lock.checked) rzH.value = Math.round(rzW.value/aspectRatio); };
-        rzH.oninput = () => { if(lock.checked) rzW.value = Math.round(rzH.value*aspectRatio); };
         function finalDownload() {
-            const dpi=parseInt(rzDPI.value), method=document.getElementById('rzMethod').value;
+            const dpi=parseInt(rzDPI.value);
             let fW=rzW.value; if(rzUnit.value==='cm') fW=(rzW.value/2.54*dpi); else if(rzUnit.value==='in') fW=(rzW.value*dpi);
             const temp=document.createElement('canvas'); temp.width=fW; temp.height=fW/aspectRatio; const tCtx=temp.getContext('2d');
-            if(method==='low') tCtx.imageSmoothingEnabled=false; else { tCtx.imageSmoothingEnabled=true; tCtx.imageSmoothingQuality=method; }
-            tCtx.drawImage(canvas,0,0,temp.width,temp.height); const a=document.createElement('a'); a.download='jj_studio_pro.png'; a.href=temp.toDataURL(); a.click(); closeExport();
+            tCtx.drawImage(canvas,0,0,temp.width,temp.height); const a=document.createElement('a'); a.download='jj_studio_limpieza.png'; a.href=temp.toDataURL(); a.click(); closeExport();
         }
 
-        ['fuzz','feather','contract','mode'].forEach(id => document.getElementById(id).oninput = process);
+        ['fuzz','feather','mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
 </body>
 </html>
