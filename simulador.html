@@ -3,121 +3,123 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nómadas Style — J&J Studio</title>
+    <title>Nómadas Style — J&J Studio Pro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <style>
-        :root { --bg: #000; --panel: #0a0a0a; --accent: #ffffff; --border: #1a1a1a; --text: #888; }
-        body { margin: 0; background: var(--bg); color: white; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; overflow: hidden; }
+        :root {
+            --bg: #000; --panel: #0a0a0a; --accent: #00d2ff; --border: #1a1a1a;
+            --text-muted: #666; --vip: #00d2ff; --wa: #25d366;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--bg); color: white; font-family: -apple-system, system-ui, sans-serif; overflow: hidden; }
         
-        .layout { display: grid; grid-template-columns: 300px 1fr; height: 100vh; }
+        .layout { display: grid; grid-template-columns: 320px 1fr; height: 100vh; }
         
-        /* Panel Lateral estilo Nómadas */
-        .sidebar { background: var(--panel); border-right: 1px solid var(--border); padding: 24px; display: flex; flex-direction: column; gap: 20px; z-index: 10; }
-        .nav-back { color: #555; text-decoration: none; font-size: 12px; margin-bottom: 10px; display: block; }
-        .logo { font-weight: 800; font-size: 20px; margin-bottom: 30px; letter-spacing: -1px; }
+        /* Sidebar Estilo Nómadas */
+        .sidebar { background: var(--panel); border-right: 1px solid var(--border); padding: 25px; display: flex; flex-direction: column; gap: 20px; z-index: 100; overflow-y: auto; }
+        .logo { font-weight: 900; font-size: 22px; letter-spacing: -1.5px; color: #fff; margin-bottom: 20px; }
+        .logo span { color: var(--vip); }
 
-        .control-box { background: #111; border: 1px solid var(--border); padding: 16px; border-radius: 12px; }
-        .label { font-size: 11px; color: var(--text); text-transform: uppercase; margin-bottom: 8px; display: block; font-weight: 600; }
+        .control-group { background: #111; border: 1px solid var(--border); padding: 16px; border-radius: 14px; }
+        .label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: block; font-weight: 700; }
         
-        input[type="file"] { font-size: 12px; color: #555; }
-        input[type="range"] { width: 100%; accent-color: #fff; cursor: pointer; }
+        input[type="range"] { width: 100%; accent-color: #fff; cursor: pointer; height: 4px; }
+        input[type="file"] { font-size: 11px; color: #444; }
         
-        .btn-premium { background: #22c55e; color: #000; border: none; padding: 14px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; margin-top: auto; }
+        .btn-premium { background: #fff; color: #000; border: none; padding: 15px; border-radius: 10px; font-weight: 800; cursor: pointer; width: 100%; transition: 0.3s; }
+        .btn-premium:hover { transform: scale(1.02); background: var(--vip); }
         
-        /* Área 3D */
-        .viewer { position: relative; background: radial-gradient(circle at center, #111 0%, #000 100%); cursor: grab; }
-        #canvas-container { width: 100%; height: 100%; }
+        /* Visor 3D */
+        .viewer { position: relative; background: radial-gradient(circle at center, #151515 0%, #000 100%); cursor: grab; }
+        #canvas-3d { width: 100%; height: 100%; }
 
-        /* Paywall */
-        #lock-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; text-align: center; }
+        /* Paywall Bloqueo */
+        #paywall { position: fixed; inset: 0; background: rgba(0,0,0,0.97); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
+        .pay-card { background: #111; border: 1px solid #222; padding: 40px; border-radius: 24px; max-width: 400px; }
     </style>
 </head>
 <body>
 
-<div id="lock-screen">
-    <h1 style="font-size: 40px; margin-bottom: 10px;">Acceso Limitado</h1>
-    <p style="color: #666; margin-bottom: 30px;">Tu prueba gratuita de simulación 3D ha terminado.</p>
-    <button class="btn-premium" style="width: auto; padding: 15px 40px;" onclick="window.open('https://wa.me/51916689969')">SER PREMIUM</button>
+<div id="paywall">
+    <div class="pay-card">
+        <h2 style="font-size: 30px; margin-bottom: 10px;">💎 J&J VIP</h2>
+        <p style="color: #666; margin-bottom: 30px;">Prueba gratuita agotada. Suscríbete para crear mockups ilimitados con tu modelo 3D real.</p>
+        <button class="btn-premium" style="margin-bottom: 10px;" onclick="window.open('https://wa.me/51916689969')">ACTIVAR POR WHATSAPP</button>
+        <button onclick="location.reload()" style="background:none; border:none; color:#444; cursor:pointer; font-size:12px;">Ya soy socio / Volver</button>
+    </div>
 </div>
 
 <div class="layout">
     <aside class="sidebar">
-        <a href="index.html" class="nav-back">← HERRAMIENTAS</a>
-        <div class="logo">J&J STUDIO</div>
+        <div class="logo">J&J <span>STUDIO</span></div>
+        <button onclick="location.href='index.html'" style="background:none; border:1px solid #333; color:#888; padding:8px; border-radius:8px; cursor:pointer; font-size:11px; margin-bottom:10px;">← IR AL QUITAFONDOS</button>
 
-        <div class="control-box">
-            <span class="label">Sube tu diseño (PNG)</span>
+        <div class="control-group">
+            <span class="label">1. Tu Diseño (PNG)</span>
             <input type="file" id="upload-png" accept="image/png">
         </div>
 
-        <div class="control-box">
-            <span class="label">Color de la Prenda</span>
-            <input type="color" id="shirt-color" value="#ffffff" style="width:100%; height:40px; border:none; background:none;">
+        <div class="control-group">
+            <span class="label">2. Color de Prenda</span>
+            <input type="color" id="shirt-color" value="#ffffff" style="width:100%; height:35px; border:none; background:none; cursor:pointer;">
         </div>
 
-        <div class="control-box">
-            <span class="label">Escala del Diseño</span>
-            <input type="range" id="logo-scale" min="0.1" max="2" step="0.05" value="0.5">
-            <span class="label" style="margin-top:15px;">Posición Vertical</span>
+        <div class="control-group">
+            <span class="label">3. Ajustes de Estampado</span>
+            <label style="font-size:10px; color:#444;">Tamaño</label>
+            <input type="range" id="logo-scale" min="0.1" max="2" step="0.01" value="0.5">
+            <label style="font-size:10px; color:#444; margin-top:10px; display:block;">Posición</label>
             <input type="range" id="logo-y" min="-1" max="1" step="0.01" value="0.3">
         </div>
 
-        <div class="control-box">
-            <span class="label">Animación</span>
-            <select id="anim-type" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:8px; border-radius:6px;">
-                <option value="rotate">Rotación Continua</option>
-                <option value="none">Estático</option>
-            </select>
+        <div class="control-group">
+            <span class="label">4. Animación</span>
+            <input type="range" id="anim-speed" min="0" max="0.03" step="0.001" value="0.005">
         </div>
 
-        <button class="btn-premium" onclick="checkDownload()">DESCARGAR MOCKUP</button>
+        <button class="btn-premium" onclick="handleDownload()">DESCARGAR MOCKUP 3D</button>
     </aside>
 
-    <main class="viewer">
-        <div id="canvas-container"></div>
-    </main>
+    <main class="viewer" id="container-3d"></main>
 </div>
 
 <script>
-    let scene, camera, renderer, shirtModel, designTexture, controls;
-    let downloads = localStorage.getItem('jj_sim_count') || 0;
+    let scene, camera, renderer, shirt, designTexture, controls;
+    let downloadsUsed = localStorage.getItem('jj_sim_used') || 0;
 
     function init() {
         scene = new THREE.Scene();
-        const container = document.getElementById('canvas-container');
+        const container = document.getElementById('container-3d');
         
         camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(0, 0, 3);
+        camera.position.set(0, 0, 3.5);
 
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
         renderer.setSize(container.clientWidth, container.clientHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
         container.appendChild(renderer.domElement);
 
-        // Controles de cámara (Orbit)
         controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
 
-        // Iluminación de estudio
-        const ambient = new THREE.AmbientLight(0xffffff, 0.5);
-        scene.add(ambient);
-        const sun = new THREE.DirectionalLight(0xffffff, 1);
-        sun.position.set(5, 5, 5);
-        scene.add(sun);
+        // Luces de Estudio
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+        const light = new THREE.DirectionalLight(0xffffff, 0.5);
+        light.position.set(2, 5, 5);
+        scene.add(light);
 
-        // CARGADOR DE MODELO REAL (.GLB)
+        // CARGA TU MODELO tshirt.glb
         const loader = new THREE.GLTFLoader();
-        // Nota: Reemplaza esta URL con tu archivo de camiseta real
-        const modelUrl = 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF-Binary/DamagedHelmet.glb'; 
-        
-        // Simulación de carga de camiseta (mientras consigues tu .glb de camiseta)
-        // Aquí es donde "Nómadas" carga su archivo de camiseta.
-        loader.load(modelUrl, (gltf) => {
-            shirtModel = gltf.scene;
-            shirtModel.scale.set(1, 1, 1);
-            scene.add(shirtModel);
+        loader.load('tshirt.glb', (gltf) => {
+            shirt = gltf.scene;
+            shirt.position.y = -1; // Ajuste de altura inicial
+            scene.add(shirt);
+        }, undefined, (error) => {
+            console.error("Error cargando el modelo:", error);
+            alert("Sube el archivo tshirt.glb a tu GitHub para verlo.");
         });
 
         animate();
@@ -125,62 +127,64 @@
 
     function animate() {
         requestAnimationFrame(animate);
-        if (shirtModel && document.getElementById('anim-type').value === 'rotate') {
-            shirtModel.rotation.y += 0.005;
+        if (shirt) {
+            shirt.rotation.y += parseFloat(document.getElementById('anim-speed').value);
         }
         controls.update();
         renderer.render(scene, camera);
     }
 
-    // Lógica para aplicar el diseño PNG sobre la camiseta
+    // Lógica para el Diseño PNG
     document.getElementById('upload-png').onchange = e => {
         const file = e.target.files[0];
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            const loader = new THREE.TextureLoader();
-            loader.load(event.target.result, (tex) => {
-                designTexture = tex;
-                updateShirtMaterial();
-            });
-        };
-        reader.readAsDataURL(file);
+        const loader = new THREE.TextureLoader();
+        loader.load(URL.createObjectURL(file), (tex) => {
+            designTexture = tex;
+            tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            updateShirt();
+        });
     };
 
-    function updateShirtMaterial() {
-        if (!shirtModel) return;
-        shirtModel.traverse((child) => {
+    function updateShirt() {
+        if (!shirt) return;
+        const color = document.getElementById('shirt-color').value;
+        const scale = document.getElementById('logo-scale').value;
+        const posY = document.getElementById('logo-y').value;
+
+        shirt.traverse((child) => {
             if (child.isMesh) {
-                child.material.color.set(document.getElementById('shirt-color').value);
+                child.material.color.set(color);
                 if (designTexture) {
                     child.material.map = designTexture;
-                    const scale = document.getElementById('logo-scale').value;
                     child.material.map.repeat.set(scale, scale);
-                    child.material.map.offset.set(0.5 - scale/2, parseFloat(document.getElementById('logo-y').value));
+                    child.material.map.offset.set(0.5 - scale/2, parseFloat(posY));
                 }
                 child.material.needsUpdate = true;
             }
         });
     }
 
-    document.getElementById('shirt-color').oninput = updateShirtMaterial;
-    document.getElementById('logo-scale').oninput = updateShirtMaterial;
-    document.getElementById('logo-y').oninput = updateShirtMaterial;
+    document.getElementById('shirt-color').oninput = updateShirt;
+    document.getElementById('logo-scale').oninput = updateShirt;
+    document.getElementById('logo-y').oninput = updateShirt;
 
-    function checkDownload() {
-        if (downloads >= 1) {
-            document.getElementById('lock-screen').style.display = 'flex';
+    // Descarga y Bloqueo
+    function handleDownload() {
+        if (downloadsUsed >= 1) {
+            document.getElementById('paywall').style.display = 'flex';
         } else {
             const link = document.createElement('a');
-            link.download = 'jj-studio-mockup.png';
-            link.href = renderer.domElement.toDataURL();
+            link.download = 'jj-mockup-pro.png';
+            link.href = renderer.domElement.toDataURL('image/png');
             link.click();
-            downloads++;
-            localStorage.setItem('jj_sim_count', 1);
+            downloadsUsed++;
+            localStorage.setItem('jj_sim_used', 1);
+            setTimeout(() => { document.getElementById('paywall').style.display = 'flex'; }, 1000);
         }
     }
 
     window.addEventListener('resize', () => {
-        const container = document.getElementById('canvas-container');
+        const container = document.getElementById('container-3d');
         camera.aspect = container.clientWidth / container.clientHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(container.clientWidth, container.clientHeight);
