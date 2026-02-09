@@ -3,83 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio — Simulador 3D Premium</title>
+    <title>J&J Studio Pro — Simulador 3D</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <style>
-        :root { 
-            --bg: #000; --panel: #0a0a0a; --accent: #00d2ff; --border: #1a1a1a; --text: #888; 
-        }
-        body { margin: 0; background: var(--bg); color: white; font-family: -apple-system, system-ui, sans-serif; overflow: hidden; }
-        
+        :root { --bg: #000; --accent: #00d2ff; --panel: #0a0a0a; --border: #1a1a1a; }
+        body { margin: 0; background: var(--bg); color: white; font-family: sans-serif; overflow: hidden; }
         .layout { display: grid; grid-template-columns: 320px 1fr; height: 100vh; }
-        
-        /* Panel J&J Studio */
-        .sidebar { background: var(--panel); border-right: 1px solid var(--border); padding: 25px; display: flex; flex-direction: column; gap: 20px; z-index: 10; overflow-y: auto; }
-        .logo { font-weight: 800; font-size: 22px; letter-spacing: -1px; color: #fff; margin-bottom: 25px; text-align: center; }
+        .sidebar { background: var(--panel); border-right: 1px solid var(--border); padding: 25px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; z-index: 10; }
+        .logo { font-weight: 800; font-size: 22px; color: #fff; margin-bottom: 20px; text-align: center; }
         .logo span { color: var(--accent); }
-
-        .control-box { background: #111; border: 1px solid var(--border); padding: 16px; border-radius: 12px; }
-        .label { font-size: 11px; color: var(--text); text-transform: uppercase; margin-bottom: 8px; display: block; font-weight: 600; }
-        
-        input[type="file"] { font-size: 12px; color: #555; width: 100%; }
-        input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; height: 4px; }
-        
-        .btn-premium { background: var(--accent); color: #000; border: none; padding: 14px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; margin-top: auto; transition: 0.3s; }
-        .btn-premium:hover { filter: brightness(1.2); transform: translateY(-2px); }
-        
-        /* Visor */
-        .viewer { position: relative; background: radial-gradient(circle at center, #151515 0%, #000 100%); cursor: grab; }
+        .control-box { background: #111; border: 1px solid var(--border); padding: 15px; border-radius: 12px; }
+        label { font-size: 10px; color: #666; text-transform: uppercase; display: block; margin-bottom: 8px; font-weight: bold; }
+        input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+        .btn-dl { width: 100%; padding: 15px; background: var(--accent); color: #000; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; margin-top: 10px; }
+        .viewer { background: radial-gradient(circle at center, #151515 0%, #000 100%); cursor: grab; }
         #canvas-container { width: 100%; height: 100%; }
-
-        /* Paywall Bloqueo */
-        #lock-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; text-align: center; }
+        #paywall { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
     </style>
 </head>
 <body>
 
-<div id="lock-screen">
-    <h1 style="font-size: 40px; margin-bottom: 10px; color: var(--accent);">J&J VIP</h1>
-    <p style="color: #666; margin-bottom: 30px; max-width: 320px;">Tu descarga de prueba ha finalizado. Suscríbete a la Comunidad J&J para uso ilimitado.</p>
-    <button class="btn-premium" style="width: auto; padding: 15px 40px;" onclick="window.open('https://wa.me/51916689969')">OBTENER MEMBRESÍA</button>
+<div id="paywall">
+    <div style="background:#111; padding:40px; border-radius:24px; border:1px solid #222;">
+        <h2 style="color:var(--accent)">J&J VIP</h2>
+        <p style="color:#888;">Prueba gratuita agotada.</p>
+        <button class="btn-dl" onclick="window.open('https://wa.me/51916689969')">SUSCRIBIRME</button>
+    </div>
 </div>
 
 <div class="layout">
     <aside class="sidebar">
         <div class="logo">J&J <span>STUDIO</span></div>
-        
-        <button onclick="location.href='index.html'" style="background:none; border:1px solid #333; color:#666; padding:8px; border-radius:6px; cursor:pointer; font-size:11px; margin-bottom:10px;">← VOLVER AL QUITAFONDOS</button>
+        <button onclick="location.href='index.html'" style="background:none; border:1px solid #333; color:#555; padding:8px; border-radius:6px; cursor:pointer; font-size:10px; margin-bottom:10px;">← VOLVER AL QUITAFONDOS</button>
 
         <div class="control-box">
-            <span class="label">1. Imagen PNG (Diseño)</span>
+            <label>1. Subir Diseño PNG</label>
             <input type="file" id="upload-png" accept="image/png">
         </div>
 
         <div class="control-box">
-            <span class="label">2. Color de la Prenda</span>
+            <label>2. Color de Prenda</label>
             <input type="color" id="shirt-color" value="#ffffff" style="width:100%; height:35px; border:none; background:none; cursor:pointer;">
         </div>
 
         <div class="control-box">
-            <span class="label">3. Ajustes de Estampado</span>
-            <label style="font-size:10px; color:#444;">Escala</label>
-            <input type="range" id="logo-scale" min="0.1" max="3" step="0.01" value="1">
-            <label style="font-size:10px; color:#444; margin-top:10px; display:block;">Posición Vertical</label>
-            <input type="range" id="logo-y" min="-2" max="2" step="0.01" value="0.5">
+            <label>3. Ajustes de Logo</label>
+            <label>Tamaño</label>
+            <input type="range" id="logo-scale" min="0.1" max="5" step="0.1" value="1">
+            <label style="margin-top:10px;">Posición (Arriba/Abajo)</label>
+            <input type="range" id="logo-y" min="0" max="1" step="0.01" value="0.5">
         </div>
 
         <div class="control-box">
-            <span class="label">4. Giro Automático</span>
-            <input type="range" id="anim-speed" min="0" max="0.04" step="0.001" value="0.005">
+            <label>4. Rotación</label>
+            <input type="range" id="anim-speed" min="0" max="0.05" step="0.001" value="0.005">
         </div>
 
-        <button class="btn-premium" onclick="checkDownload()">DESCARGAR MOCKUP</button>
+        <button class="btn-dl" onclick="checkDownload()">DESCARGAR MOCKUP</button>
     </aside>
 
-    <main class="viewer">
-        <div id="canvas-container"></div>
-    </main>
+    <main class="viewer" id="canvas-container"></main>
 </div>
 
 <script>
@@ -90,37 +75,42 @@
         scene = new THREE.Scene();
         const container = document.getElementById('canvas-container');
         
-        camera = new THREE.PerspectiveCamera(40, container.clientWidth / container.clientHeight, 0.1, 1000);
-        camera.position.set(0, 0, 5);
+        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 5000);
+        camera.position.set(0, 0, 8); // Alejamos la cámara un poco por si el modelo es grande
 
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
         renderer.setSize(container.clientWidth, container.clientHeight);
-        renderer.toneMapping = THREE.ACESFilmicToneMapping;
         renderer.setPixelRatio(window.devicePixelRatio);
         container.appendChild(renderer.domElement);
 
         controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
 
-        // Iluminación Pro
-        scene.add(new THREE.AmbientLight(0xffffff, 1.2));
-        const light = new THREE.DirectionalLight(0xffffff, 0.8);
+        // Iluminación Potente
+        scene.add(new THREE.AmbientLight(0xffffff, 1.5));
+        const light = new THREE.DirectionalLight(0xffffff, 1);
         light.position.set(5, 10, 7);
         scene.add(light);
 
-        // CARGA DE TU ARCHIVO tshirt.glb
         const loader = new THREE.GLTFLoader();
+        // Cargamos tu archivo local
         loader.load('tshirt.glb', (gltf) => {
             shirtModel = gltf.scene;
             
-            // Centrado automático basado en el tamaño real del modelo
+            // ESCALADO CRÍTICO: Ajusta el modelo al tamaño de la pantalla
             const box = new THREE.Box3().setFromObject(shirtModel);
+            const size = box.getSize(new THREE.Vector3());
             const center = box.getCenter(new THREE.Vector3());
-            shirtModel.position.sub(center);
+            
+            const maxDim = Math.max(size.x, size.y, size.z);
+            const scale = 4 / maxDim; // Forzamos a que mida 4 unidades
+            shirtModel.scale.set(scale, scale, scale);
+            shirtModel.position.sub(center.multiplyScalar(scale));
             
             scene.add(shirtModel);
+            updateMaterial(); // Aplicar color blanco inicial
         }, undefined, (err) => {
-            console.error("Asegúrate de subir tshirt.glb a tu repositorio.");
+            alert("Error: No se encuentra el archivo tshirt.glb en la carpeta.");
         });
 
         animate();
@@ -131,7 +121,7 @@
         if (shirtModel) {
             shirtModel.rotation.y += parseFloat(document.getElementById('anim-speed').value);
         }
-        controls.update();
+        if(controls) controls.update();
         renderer.render(scene, camera);
     }
 
@@ -140,7 +130,9 @@
         const loader = new THREE.TextureLoader();
         loader.load(URL.createObjectURL(file), (tex) => {
             designTexture = tex;
-            tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            // Evita que la imagen se repita como mosaico
+            designTexture.wrapS = THREE.ClampToEdgeWrapping;
+            designTexture.wrapT = THREE.ClampToEdgeWrapping;
             updateMaterial();
         });
     };
@@ -156,9 +148,10 @@
                 child.material.color.set(color);
                 if (designTexture) {
                     child.material.map = designTexture;
-                    child.material.map.repeat.set(scale, scale);
-                    // Offset para centrar el diseño en el pecho
-                    child.material.map.offset.set(0.5 - scale/2, parseFloat(posY));
+                    // Ajuste de escala inversa para Three.js
+                    child.material.map.repeat.set(1/scale, 1/scale);
+                    // Ajuste de posición: 0.5 es el centro
+                    child.material.map.offset.set(0.5 - (0.5/scale), parseFloat(posY));
                 }
                 child.material.needsUpdate = true;
             }
@@ -171,7 +164,7 @@
 
     function checkDownload() {
         if (downloads >= 1) {
-            document.getElementById('lock-screen').style.display = 'flex';
+            document.getElementById('paywall').style.display = 'flex';
         } else {
             const link = document.createElement('a');
             link.download = 'jj-mockup-3d.png';
@@ -179,7 +172,7 @@
             link.click();
             downloads++;
             localStorage.setItem('jj_sim_count', 1);
-            setTimeout(() => { document.getElementById('lock-screen').style.display = 'flex'; }, 1000);
+            setTimeout(() => { document.getElementById('paywall').style.display = 'flex'; }, 1000);
         }
     }
 
