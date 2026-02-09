@@ -1,82 +1,9 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro — Simulador 3D</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <style>
-        :root { --bg: #000; --accent: #00d2ff; --panel: #0a0a0a; --border: #1a1a1a; }
-        body { margin: 0; background: var(--bg); color: white; font-family: sans-serif; overflow: hidden; }
-        .layout { display: grid; grid-template-columns: 320px 1fr; height: 100vh; }
-        .sidebar { background: var(--panel); border-right: 1px solid var(--border); padding: 25px; display: flex; flex-direction: column; gap: 15px; overflow-y: auto; z-index: 10; }
-        .logo { font-weight: 800; font-size: 22px; color: #fff; margin-bottom: 20px; text-align: center; }
-        .logo span { color: var(--accent); }
-        .control-box { background: #111; border: 1px solid var(--border); padding: 15px; border-radius: 12px; }
-        label { font-size: 10px; color: #666; text-transform: uppercase; display: block; margin-bottom: 8px; font-weight: bold; }
-        input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
-        .btn-dl { width: 100%; padding: 15px; background: var(--accent); color: #000; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; margin-top: 10px; }
-        .viewer { background: radial-gradient(circle at center, #151515 0%, #000 100%); cursor: grab; }
-        #canvas-container { width: 100%; height: 100%; }
-        #paywall { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-    </style>
-</head>
-<body>
-
-<div id="paywall">
-    <div style="background:#111; padding:40px; border-radius:24px; border:1px solid #222;">
-        <h2 style="color:var(--accent)">J&J VIP</h2>
-        <p style="color:#888;">Prueba gratuita agotada.</p>
-        <button class="btn-dl" onclick="window.open('https://wa.me/51916689969')">SUSCRIBIRME</button>
-    </div>
-</div>
-
-<div class="layout">
-    <aside class="sidebar">
-        <div class="logo">J&J <span>STUDIO</span></div>
-        <button onclick="location.href='index.html'" style="background:none; border:1px solid #333; color:#555; padding:8px; border-radius:6px; cursor:pointer; font-size:10px; margin-bottom:10px;">← VOLVER AL QUITAFONDOS</button>
-
-        <div class="control-box">
-            <label>1. Subir Diseño PNG</label>
-            <input type="file" id="upload-png" accept="image/png">
-        </div>
-
-        <div class="control-box">
-            <label>2. Color de Prenda</label>
-            <input type="color" id="shirt-color" value="#ffffff" style="width:100%; height:35px; border:none; background:none; cursor:pointer;">
-        </div>
-
-        <div class="control-box">
-            <label>3. Ajustes de Logo</label>
-            <label>Tamaño</label>
-            <input type="range" id="logo-scale" min="0.1" max="5" step="0.1" value="1">
-            <label style="margin-top:10px;">Posición (Arriba/Abajo)</label>
-            <input type="range" id="logo-y" min="0" max="1" step="0.01" value="0.5">
-        </div>
-
-        <div class="control-box">
-            <label>4. Rotación</label>
-            <input type="range" id="anim-speed" min="0" max="0.05" step="0.001" value="0.005">
-        </div>
-
-        <button class="btn-dl" onclick="checkDownload()">DESCARGAR MOCKUP</button>
-    </aside>
-
-    <main class="viewer" id="canvas-container"></main>
-</div>
-
-<script>
-    let scene, camera, renderer, shirtModel, designTexture, controls;
-    let downloads = localStorage.getItem('jj_sim_count') || 0;
-
-    function init() {
+function init() {
         scene = new THREE.Scene();
         const container = document.getElementById('canvas-container');
         
-        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 5000);
-        camera.position.set(0, 0, 8); // Alejamos la cámara un poco por si el modelo es grande
+        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 10000);
+        camera.position.set(0, 0, 10); // Cámara un poco más atrás
 
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true });
         renderer.setSize(container.clientWidth, container.clientHeight);
@@ -86,104 +13,58 @@
         controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.enableDamping = true;
 
-        // Iluminación Potente
+        // Iluminación envolvente (clave para que no se vea negro)
         scene.add(new THREE.AmbientLight(0xffffff, 1.5));
-        const light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(5, 10, 7);
-        scene.add(light);
+        const light1 = new THREE.DirectionalLight(0xffffff, 1);
+        light1.position.set(5, 10, 7);
+        scene.add(light1);
+        
+        const light2 = new THREE.DirectionalLight(0xffffff, 0.8);
+        light2.position.set(-5, 5, -5);
+        scene.add(light2);
 
         const loader = new THREE.GLTFLoader();
-        // Cargamos tu archivo local
+        // Carga el archivo desde la raíz
         loader.load('tshirt.glb', (gltf) => {
             shirtModel = gltf.scene;
             
-            // ESCALADO CRÍTICO: Ajusta el modelo al tamaño de la pantalla
+            // Centrado y escalado automático
             const box = new THREE.Box3().setFromObject(shirtModel);
             const size = box.getSize(new THREE.Vector3());
             const center = box.getCenter(new THREE.Vector3());
             
             const maxDim = Math.max(size.x, size.y, size.z);
-            const scale = 4 / maxDim; // Forzamos a que mida 4 unidades
+            const scale = 5 / maxDim; 
             shirtModel.scale.set(scale, scale, scale);
             shirtModel.position.sub(center.multiplyScalar(scale));
             
             scene.add(shirtModel);
-            updateMaterial(); // Aplicar color blanco inicial
+            console.log("Camiseta cargada con éxito");
         }, undefined, (err) => {
-            alert("Error: No se encuentra el archivo tshirt.glb en la carpeta.");
+            console.error("Error: Asegúrate de que tshirt.glb esté en la misma carpeta que este HTML");
         });
 
         animate();
     }
 
-    function animate() {
-        requestAnimationFrame(animate);
-        if (shirtModel) {
-            shirtModel.rotation.y += parseFloat(document.getElementById('anim-speed').value);
-        }
-        if(controls) controls.update();
-        renderer.render(scene, camera);
-    }
-
-    document.getElementById('upload-png').onchange = e => {
-        const file = e.target.files[0];
-        const loader = new THREE.TextureLoader();
-        loader.load(URL.createObjectURL(file), (tex) => {
-            designTexture = tex;
-            // Evita que la imagen se repita como mosaico
-            designTexture.wrapS = THREE.ClampToEdgeWrapping;
-            designTexture.wrapT = THREE.ClampToEdgeWrapping;
-            updateMaterial();
-        });
-    };
-
     function updateMaterial() {
         if (!shirtModel) return;
         const color = document.getElementById('shirt-color').value;
-        const scale = document.getElementById('logo-scale').value;
-        const posY = document.getElementById('logo-y').value;
+        const scale = 1 / parseFloat(document.getElementById('logo-scale').value);
+        const posY = parseFloat(document.getElementById('logo-y').value);
 
         shirtModel.traverse((child) => {
             if (child.isMesh) {
                 child.material.color.set(color);
                 if (designTexture) {
                     child.material.map = designTexture;
-                    // Ajuste de escala inversa para Three.js
-                    child.material.map.repeat.set(1/scale, 1/scale);
-                    // Ajuste de posición: 0.5 es el centro
-                    child.material.map.offset.set(0.5 - (0.5/scale), parseFloat(posY));
+                    // Ajustes para que el logo no se repita y se vea centrado
+                    designTexture.wrapS = designTexture.wrapT = THREE.ClampToEdgeWrapping;
+                    child.material.map.repeat.set(scale, scale);
+                    // El offset 0.5 es el centro, restamos la escala para ajustar
+                    child.material.map.offset.set(0.5 - (0.5 * scale), posY);
                 }
                 child.material.needsUpdate = true;
             }
         });
     }
-
-    document.getElementById('shirt-color').oninput = updateMaterial;
-    document.getElementById('logo-scale').oninput = updateMaterial;
-    document.getElementById('logo-y').oninput = updateMaterial;
-
-    function checkDownload() {
-        if (downloads >= 1) {
-            document.getElementById('paywall').style.display = 'flex';
-        } else {
-            const link = document.createElement('a');
-            link.download = 'jj-mockup-3d.png';
-            link.href = renderer.domElement.toDataURL('image/png');
-            link.click();
-            downloads++;
-            localStorage.setItem('jj_sim_count', 1);
-            setTimeout(() => { document.getElementById('paywall').style.display = 'flex'; }, 1000);
-        }
-    }
-
-    window.addEventListener('resize', () => {
-        const container = document.getElementById('canvas-container');
-        camera.aspect = container.clientWidth / container.clientHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(container.clientWidth, container.clientHeight);
-    });
-
-    init();
-</script>
-</body>
-</html>
