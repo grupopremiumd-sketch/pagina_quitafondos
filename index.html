@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro — Demo Gratuita</title>
+    <title>J&J Studio Pro — Herramienta Élite</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
@@ -12,77 +12,80 @@
         * { box-sizing: border-box; }
         body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
 
-        /* --- LOGIN / PAYWALL --- */
-        #login-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        /* --- INTERFAZ --- */
+        .wrap { display: grid; grid-template-columns: 350px 1fr; height: 100vh; }
+        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; }
+        h2 { font-size: 13px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
+        .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+        label { font-size: 12px; color: #ddd; width: 120px; }
+        input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
+        .val-box { background: #1a1a1a; color: var(--vip); border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 50px; text-align: center; font-size: 12px; font-weight: bold; }
+        
+        .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; height: 100%; }
+        canvas#canvas { display: block; max-height: 85vh; max-width: 90%; box-shadow: 0 0 40px rgba(0,0,0,0.5); }
+
+        .btn-dl { width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 10px; font-weight: 900; cursor: pointer; font-size: 14px; }
+
+        /* --- PAYWALL INTUITIVO --- */
+        #paywall-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; align-items: center; justify-content: center; display: none; }
         .login-card { background: var(--panel); padding: 30px; border-radius: 20px; border: 1px solid var(--border); width: 90%; max-width: 450px; text-align: center; }
         .logo-text { font-size: 2rem; font-weight: 800; background: linear-gradient(to right, #00d2ff, #0081ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; }
         
-        .sub-options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .sub-options { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
         .opt-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; text-align: left; }
         .opt-card:hover { border-color: var(--vip); background: #222; }
         .opt-card h4 { margin: 0; color: #fff; font-size: 13px; }
         .opt-card p { margin: 5px 0 0; font-size: 10px; color: var(--muted); }
         
-        .btn-free { width: 100%; padding: 12px; background: #333; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-bottom: 20px; border: 1px solid #444; }
-        .btn-free:hover { background: #444; }
-
         .login-form { border-top: 1px solid #222; padding-top: 20px; display: none; }
         .m-input-main { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; color: #fff; border: 1px solid #333; border-radius: 8px; outline: none; }
-        
-        /* --- INTERFAZ --- */
-        .wrap { display: grid; grid-template-columns: 350px 1fr; height: 100vh; }
-        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; }
-        .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; }
-        canvas#canvas { display: block; max-height: 80vh; max-width: 90%; }
-        .btn-dl { width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; font-size: 14px; }
 
+        /* --- MODAL EXPORTAR --- */
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 480px; border: 1px solid #262626; }
+        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 500px; border: 1px solid #262626; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
-    <div id="login-overlay">
+    <div id="paywall-overlay">
         <div class="login-card">
             <div class="logo-text">J&J STUDIO PRO</div>
-            <p id="welcome-msg" style="color:var(--muted); font-size:14px; margin-bottom:20px;">
-                ¡Bienvenido! Puedes realizar <b>1 descarga gratuita</b> para probar la calidad profesional.
-            </p>
+            <h3 style="color:#fff; margin:0">¡Descargas Agotadas!</h3>
+            <p style="color:var(--muted); font-size:14px; margin-top:10px;">Ya usaste tu descarga de prueba. Suscríbete para seguir usando el quitafondos y el simulador sin límites.</p>
             
-            <button class="btn-free" id="btn-start-free" onclick="startFreeTrial()">PROBAR 1 DESCARGA GRATIS</button>
-
-            <div class="sub-options">
+            <div class="sub-options" id="main-options">
                 <div class="opt-card" onclick="showLoginForm()">
                     <h4>💎 Soy Socio VIP</h4>
-                    <p>Acceso ilimitado y herramientas élite.</p>
+                    <p>Inicia sesión y descarga sin límites.</p>
                 </div>
-                <div class="opt-card" onclick="window.open('https://wa.me/51916689969?text=Hola,%20quiero%20el%20acceso%20VIP','_blank')">
-                    <h4 style="color:var(--wa)">📲 Suscribirme</h4>
-                    <p>Activa tu cuenta por WhatsApp.</p>
+                <div class="opt-card" onclick="window.open('https://wa.me/51916689969?text=Hola,%20usé%20la%20prueba%20gratis%20y%20quiero%20suscribirme','_blank')">
+                    <h4 style="color:var(--wa)">📲 Nuevo Usuario</h4>
+                    <p>Activa tu cuenta por WhatsApp aquí.</p>
                 </div>
             </div>
 
             <div id="login-form" class="login-form">
-                <input type="text" id="user-id" class="m-input-main" placeholder="Celular">
-                <input type="password" id="access-key" class="m-input-main" placeholder="Contraseña">
-                <button class="btn-free" style="background:var(--vip); color:#000;" onclick="validateAccess()">INGRESAR AHORA</button>
-                <button onclick="hideLoginForm()" style="background:none; border:none; color:var(--muted); margin-top:10px; cursor:pointer;">Regresar</button>
+                <input type="text" id="user-id" class="m-input-main" placeholder="📱 Celular">
+                <input type="password" id="access-key" class="m-input-main" placeholder="🔑 Contraseña">
+                <button class="btn-dl" style="background:var(--vip); color:#000; margin:0" onclick="validateAccess()">VERIFICAR Y ENTRAR</button>
+                <button onclick="hideLoginForm()" style="background:none; border:none; color:var(--muted); margin-top:15px; cursor:pointer; font-size:12px;">← Regresar</button>
             </div>
         </div>
     </div>
 
     <main class="wrap">
         <aside class="panel">
-            <h2 style="font-size:12px; color:var(--vip)">SISTEMA DE PRUEBA ACTIVO</h2>
+            <h2>1. Cargar imagen</h2>
             <input type="file" id="file" accept="image/*" style="width:100%; margin-bottom:20px;">
             
-            <div style="background:#1a1a1a; padding:10px; border-radius:8px; margin-bottom:20px;">
-                <label style="font-size:11px; color:#888;">Tolerancia</label>
-                <input type="range" id="fuzz" min="0" max="150" value="60" oninput="process()">
-            </div>
+            <h2>2. Configuración (px)</h2>
+            <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="150" value="60" oninput="process()"><div class="val-box" id="fV">60</div></div>
+            <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="0" max="10" step="1" value="0" oninput="process()"><div class="val-box" id="cV">0 px</div></div>
+            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="15" step="1" value="0" oninput="process()"><div class="val-box" id="sV">0 px</div></div>
 
             <button class="btn-dl" onclick="handleDownloadRequest()">DESCARGAR PNG</button>
+            <p id="free-tag" style="font-size:10px; color:#555; text-align:center; margin-top:10px;">TIENES 1 DESCARGA DE PRUEBA</p>
         </aside>
 
         <section class="stage">
@@ -92,20 +95,21 @@
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--vip); margin-top:0">Configurar Descarga</h3>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; text-align:left;">
-                <div><label style="font-size:11px;">Ancho (px)</label><input type="number" id="rzW" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:8px; border-radius:5px;"></div>
-                <div><label style="font-size:11px;">Alto (px)</label><input type="number" id="rzH" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:8px; border-radius:5px;"></div>
+            <h3 style="color:var(--vip); margin-top:0">Configurar Descarga Élite</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; text-align:left; margin:20px 0;">
+                <div><label style="font-size:11px;">Ancho (px)</label><input type="number" id="rzW" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:8px; border-radius:6px;"></div>
+                <div><label style="font-size:11px;">Alto (px)</label><input type="number" id="rzH" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:8px; border-radius:6px;"></div>
                 <div style="grid-column: span 2">
                     <label style="font-size:11px;">Método de Remuestreo (Calidad)</label>
-                    <select id="rzMethod" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:8px; border-radius:5px;">
-                        <option value="bicubic">Bicúbica (Ideal para Sublimación)</option>
+                    <select id="rzMethod" style="width:100%; background:#000; color:#fff; border:1px solid #333; padding:8px; border-radius:6px;">
+                        <option value="bicubic">Bicúbica (Mejor para Sublimación)</option>
                         <option value="bilinear">Bilinear (Estándar)</option>
-                        <option value="nearest">Nearest (Pixel Art / DTF Rápido)</option>
+                        <option value="nearest">Nearest (Rápido / Pixelado)</option>
                     </select>
                 </div>
             </div>
-            <button class="btn-dl" style="margin-top:20px" onclick="finalDownload()">APLICAR Y DESCARGAR</button>
+            <button class="btn-dl" style="margin:0" onclick="finalDownload()">DESCARGAR AHORA</button>
+            <button onclick="closeExport()" style="background:none; border:none; color:#666; width:100%; margin-top:15px; cursor:pointer;">Cancelar</button>
         </div>
     </div>
 
@@ -113,35 +117,27 @@
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec";
         
         let isVip = false;
-        let downloadsUsed = localStorage.getItem('jj_free_used') || 0;
+        let downloadsUsed = localStorage.getItem('jj_downloads') || 0;
 
-        function startFreeTrial() {
-            if(downloadsUsed >= 1) {
-                alert("Ya utilizaste tu descarga gratuita. Por favor, suscríbete.");
-                showLoginForm();
-            } else {
-                document.getElementById('login-overlay').style.display = 'none';
-            }
-        }
+        // Si ya usó la descarga, mostramos el paywall al cargar
+        if(downloadsUsed >= 1) { showPaywall(); }
 
         function handleDownloadRequest() {
-            if(isVip) {
-                openExportModal();
-            } else if (downloadsUsed < 1) {
-                openExportModal();
+            if(!oCanvas.width) return;
+            if(isVip || downloadsUsed < 1) {
+                openExport();
             } else {
-                document.getElementById('welcome-msg').innerHTML = "<b style='color:var(--accent)'>¡Límite alcanzado!</b><br>Ya usaste tu descarga gratuita. Suscríbete para acceso ilimitado.";
-                document.getElementById('btn-start-free').style.display = 'none';
-                document.getElementById('login-overlay').style.display = 'flex';
+                showPaywall();
             }
         }
 
-        function openExportModal() {
-            if(!oCanvas.width) return;
+        function openExport() {
             document.getElementById('rzW').value = oCanvas.width;
             document.getElementById('rzH').value = oCanvas.height;
             document.getElementById('modalExport').classList.remove('hidden');
         }
+
+        function closeExport() { document.getElementById('modalExport').classList.add('hidden'); }
 
         function finalDownload() {
             const w = document.getElementById('rzW').value;
@@ -164,14 +160,32 @@
 
             if(!isVip) {
                 downloadsUsed++;
-                localStorage.setItem('jj_free_used', downloadsUsed);
+                localStorage.setItem('jj_downloads', downloadsUsed);
+                setTimeout(() => { showPaywall(); }, 1500); // Bloquea después de la descarga
             }
-            
-            document.getElementById('modalExport').classList.add('hidden');
-            if(!isVip) location.reload(); // Recarga para mostrar el paywall
+            closeExport();
         }
 
-        // --- Lógica de Imagen (Simplificada para el ejemplo) ---
+        function showPaywall() { document.getElementById('paywall-overlay').style.display = 'flex'; }
+        function showLoginForm() { document.getElementById('main-options').style.display='none'; document.getElementById('login-form').style.display='block'; }
+        function hideLoginForm() { document.getElementById('main-options').style.display='grid'; document.getElementById('login-form').style.display='none'; }
+
+        async function validateAccess() {
+            const u = document.getElementById('user-id').value, p = document.getElementById('access-key').value;
+            if(!u || !p) return;
+            try {
+                const res = await fetch(`${WEB_APP_URL}?user=${u}&pass=${p}`);
+                const data = await res.json();
+                if(data.access) {
+                    isVip = true;
+                    document.getElementById('paywall-overlay').style.display = 'none';
+                    document.getElementById('free-tag').innerText = "ACCESO VIP ILIMITADO";
+                    document.getElementById('free-tag').style.color = "var(--vip)";
+                } else { alert("Datos incorrectos"); }
+            } catch(e) { alert("Error"); }
+        }
+
+        // --- MOTOR DE IMAGEN (URBAN STYLE) ---
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d');
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
 
@@ -183,29 +197,25 @@
 
         function process() {
             if(!oCanvas.width) return;
-            const fuzz = document.getElementById('fuzz').value;
-            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
-            const out = ctx.createImageData(oCanvas.width,oCanvas.height), o = out.data;
+            const fuzz = document.getElementById('fuzz').value, cont = document.getElementById('contract').value, soft = document.getElementById('feather').value;
+            document.getElementById('fV').innerText = fuzz; document.getElementById('cV').innerText = cont+" px"; document.getElementById('sV').innerText = soft+" px";
+
+            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data, out = ctx.createImageData(oCanvas.width,oCanvas.height), o = out.data;
+            const thr = fuzz * 2.2;
             for(let i=0; i<d.length; i+=4) {
-                const b = (d[i]+d[i+1]+d[i+2])/3;
-                o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                o[i+3] = (b > (255-fuzz*1.5)) ? 0 : d[i+3];
+                const diff = Math.sqrt((d[i]-255)**2 + (d[i+1]-255)**2 + (d[i+2]-255)**2);
+                o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2]; o[i+3] = (diff < thr) ? 0 : d[i+3];
             }
             canvas.width = oCanvas.width; canvas.height = oCanvas.height;
             ctx.putImageData(out, 0, 0);
-        }
 
-        function showLoginForm() { document.querySelector('.sub-options').style.display='none'; document.getElementById('btn-start-free').style.display='none'; document.getElementById('login-form').style.display='block'; }
-        function hideLoginForm() { document.querySelector('.sub-options').style.display='grid'; document.getElementById('btn-start-free').style.display='block'; document.getElementById('login-form').style.display='none'; }
-
-        async function validateAccess() {
-            const u = document.getElementById('user-id').value, p = document.getElementById('access-key').value;
-            const res = await fetch(`${WEB_APP_URL}?user=${u}&pass=${p}`);
-            const data = await res.json();
-            if(data.access) {
-                isVip = true;
-                document.getElementById('login-overlay').style.display = 'none';
-            } else { alert("Error de acceso"); }
+            if(cont > 0 || soft > 0) {
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.filter = `blur(${Math.max(cont, soft)}px)`;
+                ctx.drawImage(canvas, 0, 0);
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.filter = 'none';
+            }
         }
     </script>
 </body>
