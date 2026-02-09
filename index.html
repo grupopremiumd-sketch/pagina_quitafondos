@@ -11,7 +11,7 @@
             --vip: #00d2ff;
         }
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; height: 100vh; }
 
         header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: #0b0b0b; display: flex; align-items: center; justify-content: space-between; height: 60px; }
         .logo-text { font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, var(--vip), #0081ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -20,82 +20,60 @@
 
         .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
         .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; z-index: 100; }
-        h2 { font-size: 13px; color: var(--muted); margin-bottom: 15px; font-weight: 700; text-transform: uppercase; }
-        .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
-        label { font-size: 13px; color: #ddd; width: 120px; }
+        h2 { font-size: 13px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; }
+        
+        .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; gap: 10px; }
+        label { font-size: 12px; color: #ddd; width: 100px; }
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
         .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 50px; text-align: center; font-size: 12px; }
         
-        .cp-container { display: flex; gap: 10px; height: 120px; margin-top: 10px; user-select: none; }
+        .cp-container { display: flex; gap: 10px; height: 100px; margin-top: 10px; user-select: none; }
         #cpSV { flex: 1; border-radius: 6px; border: 1px solid #2a2a2a; cursor: crosshair; }
-        #cpH { width: 25px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: ns-resize; }
+        #cpH { width: 20px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: ns-resize; }
 
-        .btn-group { display: flex; gap: 8px; margin-top: 15px; }
-        .btn-s { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; }
-        .btn-dl { width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 20px; font-weight: 900; cursor: pointer; font-size: 14px; }
+        .btn-s { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; margin-bottom: 10px; }
+        .btn-dl { width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 10px; font-weight: 900; cursor: pointer; }
 
-        .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; height: 100%; transition: background 0.1s; }
-        #canvas-container { position: relative; display: inline-block; }
-        canvas#canvas { display: block; max-height: 85vh; }
-        #crop-box { position: absolute; border: 2px dashed #fff; cursor: move; display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); z-index: 50; }
-        .resizer { width: 12px; height: 12px; background: #fff; border: 2px solid var(--accent); position: absolute; right: -6px; bottom: -6px; cursor: nwse-resize; border-radius: 50%; }
+        .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; height: 100%; }
+        #canvas-container { position: relative; background-image: radial-gradient(#1a1a1a 2px, transparent 2px); background-size: 20px 20px; padding: 20px; border-radius: 10px; }
+        canvas#canvas { display: block; max-width: 100%; max-height: 80vh; object-fit: contain; }
 
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 520px; border: 1px solid #262626; text-align: center; }
-        .m-input { background: #fffbe6; color: #333; border: 1px solid #d4b106; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; margin-bottom: 10px; }
+        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 450px; border: 1px solid #262626; text-align: center; }
         .hidden { display: none !important; }
-
-        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 20px; border-radius: 12px; cursor: pointer; transition: 0.3s; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; text-align: left; width: 100%; }
-        .choice-card:hover { border-color: var(--vip); background: #222; transform: scale(1.02); }
+        .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 10px; }
+        
+        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
+        .wa-float { position: fixed; bottom: 20px; right: 20px; background: var(--wa); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000; }
     </style>
 </head>
 <body>
 
+    <a href="https://wa.me/51916689969" class="wa-float" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="30"></a>
+
     <div id="choice-modal" class="modal-back hidden">
         <div class="modal">
-            <h3 style="margin-top:0; color:var(--vip)">¡Casi listo!</h3>
-            <p style="color:var(--muted); font-size:14px; margin-bottom:25px;">Para descargar elige una opción:</p>
+            <h3 style="color:var(--vip)">¡Casi listo!</h3>
+            <p style="color:var(--muted); font-size:14px;">Elige una opción para descargar:</p>
             <div class="choice-card" onclick="openLogin()">
                 <div style="font-size:24px;">💎</div>
-                <div><div style="font-weight:bold; color:white;">Soy Suscriptor VIP</div><div style="font-size:12px; color:var(--muted)">Inicia sesión para descargar.</div></div>
+                <div><div style="font-weight:bold; color:white;">Soy Suscriptor VIP</div><div style="font-size:11px; color:var(--muted)">Inicia sesión para descargar.</div></div>
             </div>
             <div class="choice-card" onclick="window.open('https://wa.me/51916689969?text=Hola,%20quiero%20activar%20mi%20suscripción','_blank')">
                 <div style="font-size:24px;">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">No tengo suscripción</div><div style="font-size:12px; color:var(--muted)">Habla con nosotros para activar tu cuenta.</div></div>
+                <div><div style="font-weight:bold; color:var(--wa);">No tengo suscripción</div><div style="font-size:11px; color:var(--muted)">Adquiere tu acceso ahora.</div></div>
             </div>
-            <button onclick="closeChoice()" style="background:none; border:none; color:var(--muted); margin-top:10px; cursor:pointer;">Cerrar</button>
+            <button onclick="closeChoice()" style="background:none; border:none; color:var(--muted); cursor:pointer;">Cerrar</button>
         </div>
     </div>
 
     <div id="login-modal" class="modal-back hidden">
-        <div class="modal" style="max-width:380px;">
-            <h3 style="margin-top:0">Validar Membresía</h3>
-            <input type="text" id="user-id" class="m-input" placeholder="📱 Número de Celular">
+        <div class="modal" style="max-width:350px;">
+            <h3>Validar Acceso</h3>
+            <input type="text" id="user-id" class="m-input" placeholder="📱 Celular">
             <input type="password" id="access-key" class="m-input" placeholder="🔑 Contraseña">
-            <button class="btn-dl" onclick="validateAccess()" style="margin:0;">VERIFICAR Y ENTRAR</button>
-            <button onclick="closeLogin()" style="background:none; border:none; color:var(--muted); margin-top:15px; cursor:pointer;">Regresar</button>
-        </div>
-    </div>
-
-    <div id="modalExport" class="modal-back hidden">
-        <div class="modal">
-            <h3 style="margin-top:0">Configurar Descarga PNG</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; text-align:left;">
-                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Ancho</label><div style="display:flex;gap:5px;"><input type="number" id="rzW" class="val-box" style="width:70px"><span id="utW" style="font-size:11px;color:#666">px</span></div></div>
-                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Alto</label><div style="display:flex;gap:5px;"><input type="number" id="rzH" class="val-box" style="width:70px"><span id="utH" style="font-size:11px;color:#666">px</span></div></div>
-                <div style="grid-column: span 2; display:flex; justify-content:space-between; align-items:center;">
-                    <label>Método</label>
-                    <select id="rzMethod" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:6px; border-radius:6px; width:220px;">
-                        <option value="high">Alta calidad (Bicúbica)</option>
-                        <option value="medium">Bueno (Bilinear)</option>
-                        <option value="low">Rápido</option>
-                    </select>
-                </div>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:20px; justify-content:flex-end;">
-                <button class="btn-s" onclick="closeExport()">Cancelar</button>
-                <button class="btn-s" style="background:#222; color:var(--vip); border-color:var(--vip);" onclick="finalDownload()">DESCARGAR AHORA</button>
-            </div>
+            <button class="btn-dl" onclick="validateAccess()" style="margin:0; background:var(--vip); color:#000;">ENTRAR</button>
+            <button onclick="closeLogin()" style="background:none; border:none; color:var(--muted); margin-top:15px; cursor:pointer;">Volver</button>
         </div>
     </div>
 
@@ -105,51 +83,50 @@
     </header>
 
     <main class="wrap">
-        <section class="panel">
-            <button class="btn-s" style="background: #00d2ff; color: #000; margin-bottom: 20px;" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR MOCKUP</button>
+        <aside class="panel">
+            <button class="btn-s" style="background: var(--vip); color: #000;" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR</button>
             
             <h2>1. Cargar imagen</h2>
-            <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:12px; margin-bottom:20px;">
+            <input type="file" id="file" accept="image/*">
             
             <h2>2. Limpieza</h2>
             <div class="control-row">
-                <select id="mode" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; flex:1;">
+                <select id="mode" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; width:100%;">
                     <option value="white">Quitar blanco</option>
                     <option value="black">Quitar negro</option>
-                    <option value="auto">Auto (esquinas)</option>
+                    <option value="auto">Auto (esquina)</option>
                 </select>
             </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
-            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
 
-            <label style="margin-top:20px; display:block; font-size:12px; font-weight: bold;">3. COLOR DEL LIENZO</label>
+            <h2>3. Color Lienzo</h2>
             <div class="cp-container">
-                <canvas id="cpSV" width="220" height="120"></canvas>
-                <canvas id="cpH" width="25" height="120"></canvas>
+                <canvas id="cpSV" width="220" height="100"></canvas>
+                <canvas id="cpH" width="20" height="100"></canvas>
             </div>
 
             <button class="btn-dl" onclick="handleDownloadClick()">DESCARGAR PNG</button>
-            <button class="btn-s" style="margin-top:10px; width:100%" onclick="location.reload()">Cerrar Sesión / Reiniciar</button>
-        </section>
+            <button class="btn-s" style="margin-top:10px" onclick="location.reload()">Cerrar Sesión</button>
+        </aside>
 
         <section class="stage" id="stage">
             <div id="canvas-container">
                 <canvas id="canvas"></canvas>
-                <div id="crop-box"><div class="resizer"></div></div>
             </div>
         </section>
     </main>
 
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec";
-        let isVip = false; // Memoria de sesión desactivada (se reinicia al recargar)
+        let isVip = false; // Sesión se reinicia siempre
 
-        function handleDownloadClick() { if (isVip) { openExport(); } else { document.getElementById('choice-modal').classList.remove('hidden'); } }
+        const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
+        let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
+
+        function handleDownloadClick() { if (isVip) { download(); } else { document.getElementById('choice-modal').classList.remove('hidden'); } }
         function openLogin() { closeChoice(); document.getElementById('login-modal').classList.remove('hidden'); }
         function closeChoice() { document.getElementById('choice-modal').classList.add('hidden'); }
         function closeLogin() { document.getElementById('login-modal').classList.add('hidden'); }
-        function openExport() { if(!oCanvas.width) return; updateUnits(); document.getElementById('modalExport').classList.remove('hidden'); }
-        function closeExport() { document.getElementById('modalExport').classList.add('hidden'); }
 
         async function validateAccess() {
             const u = document.getElementById('user-id').value, p = document.getElementById('access-key').value;
@@ -161,20 +138,18 @@
                     isVip = true; 
                     document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO"; 
                     document.getElementById('status-tag').classList.add('status-vip'); 
-                    closeLogin(); 
-                    alert("¡Validado con éxito para esta sesión!"); 
+                    closeLogin(); alert("¡Validado!"); 
                 } else { alert("Datos incorrectos."); }
             } catch(e) { alert("Error de conexión"); }
         }
 
-        const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
-        let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
-        let aspectRatio = 1;
-
         document.getElementById('file').onchange = e => {
             const f = e.target.files[0];
             const img = new Image();
-            img.onload = () => { oCanvas.width = img.width; oCanvas.height = img.height; aspectRatio = img.width/img.height; oCtx.drawImage(img,0,0); process(); };
+            img.onload = () => {
+                oCanvas.width = img.width; oCanvas.height = img.height;
+                oCtx.drawImage(img,0,0); process();
+            };
             img.src = URL.createObjectURL(f);
         };
 
@@ -182,46 +157,58 @@
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value);
             document.getElementById('fuzzV').innerText = fuzz;
-            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data, out = ctx.createImageData(oCanvas.width,oCanvas.height), o = out.data;
+            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
+            const out = ctx.createImageData(oCanvas.width,oCanvas.height), o = out.data;
             const threshold = fuzz * 2.5;
+
             for(let i=0; i<d.length; i+=4) {
-                const brightness = (d[i]+d[i+1]+d[i+2])/3;
-                o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                o[i+3] = (brightness > (255 - threshold)) ? 0 : d[i+3];
+                const r=d[i], g=d[i+1], b=d[i+2], a=d[i+3];
+                const brightness = (r+g+b)/3;
+                o[i]=r; o[i+1]=g; o[i+2]=b;
+                o[i+3] = (document.getElementById('mode').value === 'white') 
+                    ? (brightness > (255 - threshold) ? 0 : a)
+                    : (brightness < threshold ? 0 : a);
             }
-            canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out,0,0);
+            canvas.width = oCanvas.width; canvas.height = oCanvas.height;
+            ctx.putImageData(out,0,0);
+        }
+
+        function download() {
+            const a = document.createElement('a');
+            a.download = 'jj_studio_pro.png';
+            a.href = canvas.toDataURL();
+            a.click();
         }
 
         // Selector Color Lienzo
         const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
         let hue=0;
         function drawCP() {
-            hCtx.clearRect(0,0,25,120); const gH=hCtx.createLinearGradient(0,0,0,120); for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`); hCtx.fillStyle=gH; hCtx.fillRect(0,0,25,120);
-            svCtx.fillStyle=`hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,220,120);
-            const gW=svCtx.createLinearGradient(0,0,220,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent'); svCtx.fillStyle=gW; svCtx.fillRect(0,0,220,120);
-            const gB=svCtx.createLinearGradient(0,0,0,120); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000'); svCtx.fillStyle=gB; svCtx.fillRect(0,0,220,120);
+            hCtx.clearRect(0,0,20,100); const gH=hCtx.createLinearGradient(0,0,0,100); for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`); hCtx.fillStyle=gH; hCtx.fillRect(0,0,20,100);
+            svCtx.fillStyle=`hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,220,100);
+            const gW=svCtx.createLinearGradient(0,0,220,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent'); svCtx.fillStyle=gW; svCtx.fillRect(0,0,220,100);
+            const gB=svCtx.createLinearGradient(0,0,0,100); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000'); svCtx.fillStyle=gB; svCtx.fillRect(0,0,220,100);
         }
         drawCP();
         cpSV.onmousedown = (e) => {
             const rect = cpSV.getBoundingClientRect();
-            const id = svCtx.getImageData(e.clientX - rect.left, e.clientY - rect.top, 1, 1).data;
-            document.getElementById('stage').style.backgroundColor = `rgb(${id[0]},${id[1]},${id[2]})`;
+            const update = (evt) => {
+                const x = Math.max(0, Math.min(evt.clientX - rect.left, 219)), y = Math.max(0, Math.min(evt.clientY - rect.top, 99));
+                const data = svCtx.getImageData(x, y, 1, 1).data;
+                document.getElementById('stage').style.backgroundColor = `rgb(${data[0]},${data[1]},${data[2]})`;
+            };
+            update(e); window.onmousemove = update; window.onmouseup = () => window.onmousemove = null;
+        };
+        cpH.onmousedown = (e) => {
+            const rect = cpH.getBoundingClientRect();
+            const update = (evt) => {
+                const y = Math.max(0, Math.min(evt.clientY - rect.top, 99)); hue = (y / 100) * 360; drawCP();
+            };
+            update(e); window.onmousemove = update; window.onmouseup = () => window.onmousemove = null;
         };
 
-        function updateUnits() {
-            document.getElementById('rzW').value = oCanvas.width;
-            document.getElementById('rzH').value = oCanvas.height;
-        }
-
-        function finalDownload() {
-            const link = document.createElement('a');
-            link.download = 'jj_studio.png';
-            link.href = canvas.toDataURL();
-            link.click();
-            closeExport();
-        }
-
         document.getElementById('fuzz').oninput = process;
+        document.getElementById('mode').onchange = process;
     </script>
 </body>
 </html>
