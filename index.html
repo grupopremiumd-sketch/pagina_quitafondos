@@ -15,8 +15,8 @@
         .wrap { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
         @media (min-width: 900px) { .wrap { flex-direction: row; } }
 
-        /* PANEL */
-        .panel { padding: 15px; background: var(--panel); border-right: 1px solid var(--border); overflow-y: auto; width: 100%; max-height: 45vh; flex-shrink: 0; }
+        /* PANEL CONTROL */
+        .panel { padding: 15px; background: var(--panel); border-right: 1px solid var(--border); overflow-y: auto; width: 100%; max-height: 48vh; flex-shrink: 0; }
         @media (min-width: 900px) { .panel { width: 380px; max-height: 100vh; } }
 
         h2 { font-size: 10px; color: var(--accent); margin: 18px 0 10px 0; text-transform: uppercase; letter-spacing: 1.5px; border-bottom: 1px solid #333; padding-bottom: 5px; }
@@ -24,37 +24,38 @@
         .control-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
         label { font-size: 11px; color: #aaa; width: 90px; flex-shrink: 0; }
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
-        .val-box { background: #000; color: var(--accent); padding: 2px 6px; border-radius: 4px; min-width: 40px; text-align: center; font-size: 10px; font-family: monospace; border: 1px solid #333; }
+        .val-box { background: #000; color: var(--accent); padding: 2px 6px; border-radius: 4px; min-width: 42px; text-align: center; font-size: 10px; font-family: monospace; border: 1px solid #333; }
         
-        select, input[type="file"], .m-input { background: #222; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 6px; font-size: 12px; width: 100%; outline: none; transition: border 0.2s; }
-        select:focus, .m-input:focus { border-color: var(--accent); }
+        select, input[type="file"], .m-input { background: #222; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 6px; font-size: 12px; width: 100%; outline: none; }
 
         .btn-s { padding: 12px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: #eee; cursor: pointer; font-size: 11px; font-weight: bold; flex: 1; }
         .btn-dl { width: 100%; padding: 16px; background: linear-gradient(135deg, #00d2ff, #0081ff); color: #fff; border: none; border-radius: 8px; margin-top: 10px; font-weight: 900; cursor: pointer; letter-spacing: 1px; }
 
-        /* COLOR PICKER */
-        .cp-container { display: flex; gap: 10px; height: 110px; margin-top: 5px; }
+        /* COLOR PICKER LIENZO PURO */
+        .cp-container { display: flex; gap: 10px; height: 100px; margin-top: 5px; }
         #cpSV { flex: 1; border-radius: 6px; border: 1px solid #333; cursor: crosshair; }
         #cpH { width: 30px; border-radius: 6px; border: 1px solid #333; cursor: ns-resize; }
 
-        /* STAGE */
+        /* ESCENARIO */
         .stage { flex: 1; background: #0f0f0f; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; }
-        #canvas-container { position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+        #canvas-container { position: relative; margin: auto; }
         canvas#canvas { display: block; max-width: 90vw; max-height: 80vh; background: transparent; }
 
         #crop-box { position: absolute; border: 2px dashed var(--accent); display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.7); z-index: 50; }
-        .resizer { width: 20px; height: 20px; background: #fff; position: absolute; right: -10px; bottom: -10px; border-radius: 50%; border: 3px solid var(--accent); }
+        .resizer { width: 22px; height: 22px; background: #fff; position: absolute; right: -11px; bottom: -11px; border-radius: 50%; border: 3px solid var(--accent); }
 
-        /* MODAL */
-        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(10px); }
-        .modal { background: #141414; padding: 30px; border-radius: 15px; width: 90%; max-width: 450px; border: 1px solid #333; }
+        /* MODAL EXPORTACIÓN */
+        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(8px); }
+        .modal { background: #141414; padding: 30px; border-radius: 15px; width: 90%; max-width: 460px; border: 1px solid #333; }
+        .m-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <main class="wrap">
         <section class="panel">
-            <h1 style="font-size: 20px; margin: 0 0 20px 0; color:#fff; text-align: center;">J&J STUDIO <span style="color:var(--accent)">ULTRA</span></h1>
+            <h1 style="font-size: 18px; margin: 0 0 20px 0; color:#fff; text-align: center;">J&J STUDIO <span style="color:var(--accent)">ULTRA</span></h1>
             
             <input type="file" id="file" accept="image/*">
             
@@ -65,7 +66,7 @@
                     <select id="aiMode">
                         <option value="none">Original (Rápido)</option>
                         <option value="clean">IA Denoiser (Suavizar)</option>
-                        <option value="ultra">Ultra-Sharp (Máxima definición)</option>
+                        <option value="ultra">Ultra-Sharp (Máxima Definición)</option>
                     </select>
                 </div>
                 <div class="control-row">
@@ -81,19 +82,19 @@
                     <select id="mode">
                         <option value="white">Quitar Blanco</option>
                         <option value="black">Quitar Negro</option>
-                        <option value="pick">Gotero (Click Imagen)</option>
+                        <option value="pick">Elegir Color (Click Imagen)</option>
                         <option value="auto">Auto-detección</option>
                     </select>
                 </div>
                 <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="255" value="40"><div class="val-box" id="fuzzV">40</div></div>
-                <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="50" value="8"><div class="val-box" id="featherV">8</div></div>
-                <div class="control-row"><label>Borde (px)</label><input type="range" id="edge" min="-12" max="12" value="0"><div class="val-box" id="edgeV">0</div></div>
+                <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="60" value="10"><div class="val-box" id="featherV">10</div></div>
+                <div class="control-row"><label>Contraer px</label><input type="range" id="edge" min="-15" max="15" value="0"><div class="val-box" id="edgeV">0</div></div>
             </div>
 
             <div class="btn-group" style="display:flex; gap:8px;">
                 <button class="btn-s" id="btn-init-crop">Cortar</button>
-                <button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000;">Aplicar</button>
-                <button class="btn-s" onclick="location.reload()">Reset</button>
+                <button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000; border:none;">Aplicar</button>
+                <button class="btn-s" onclick="location.reload()">Reiniciar</button>
             </div>
 
             <h2>3. Color del Lienzo Puro</h2>
@@ -102,7 +103,7 @@
                 <canvas id="cpH"></canvas>
             </div>
 
-            <button class="btn-dl" id="openExport">EXPORTAR RESULTADO</button>
+            <button class="btn-dl" id="openExport">EXPORTAR ARCHIVO</button>
         </section>
 
         <section class="stage" id="stage">
@@ -117,22 +118,25 @@
         <div class="modal">
             <h3 style="color:var(--accent); margin-top:0;">Ajustes de Exportación</h3>
             
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px;">
-                <div><label>Ancho (px)</label><input type="number" id="rzW" class="m-input"></div>
-                <div><label>Alto (px)</label><input type="number" id="rzH" class="m-input"></div>
+            <div class="m-grid">
+                <div><label style="font-size:11px; color:#888;">Ancho (px)</label><input type="number" id="rzW" class="m-input"></div>
+                <div><label style="font-size:11px; color:#888;">Alto (px)</label><input type="number" id="rzH" class="m-input"></div>
             </div>
 
-            <div style="margin-bottom:15px;">
-                <label>Algoritmo de Remuestreo</label>
-                <select id="algo" class="m-input">
-                    <option value="high">Lanczos / Bicúbica (Nítido)</option>
-                    <option value="medium">Bilinear (Suave)</option>
-                    <option value="low">Nearest Neighbor (Pixelado)</option>
-                </select>
+            <div class="m-grid" style="margin-top:10px;">
+                <div><label style="font-size:11px; color:#888;">Resolución (DPI)</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
+                <div>
+                    <label style="font-size:11px; color:#888;">Algoritmo</label>
+                    <select id="algo" class="m-input">
+                        <option value="high">Bicúbica (Nítido)</option>
+                        <option value="medium">Bilinear (Suave)</option>
+                        <option value="low">Nearest (Pixel)</option>
+                    </select>
+                </div>
             </div>
 
-            <div style="margin-bottom:20px; font-size:12px;">
-                <label style="width:auto; cursor:pointer;"><input type="checkbox" id="lockAspect" checked> Mantener proporción original</label>
+            <div style="margin: 15px 0 20px 0; font-size:12px; color:#aaa;">
+                <label style="cursor:pointer;"><input type="checkbox" id="lockAspect" checked> Mantener proporción original</label>
             </div>
 
             <div style="display:flex; gap:10px;">
@@ -145,12 +149,13 @@
     <script>
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
-        let aspectRatio = 1, targetColor = [255,255,255];
+        let aspectRatio = 1, targetColor = [255,255,255], isMoving = false;
         const cropBox = document.getElementById('crop-box');
 
-        // CARGA
+        // CARGAR IMAGEN
         document.getElementById('file').onchange = e => {
-            const f = e.target.files[0]; if(!f) return;
+            const f = e.target.files[0];
+            if(!f) return;
             const img = new Image();
             img.onload = () => {
                 oCanvas.width = img.width; oCanvas.height = img.height;
@@ -162,93 +167,73 @@
             img.src = URL.createObjectURL(f);
         };
 
-        // MOTOR DE PROCESAMIENTO ULTRA
+        // MOTOR DE PROCESAMIENTO EXTREME
         function process() {
             if(!oCanvas.width) return;
-            
             const fuzz = parseInt(document.getElementById('fuzz').value);
             const feather = parseInt(document.getElementById('feather').value);
             const edge = parseInt(document.getElementById('edge').value);
             const contrast = document.getElementById('contrast').value;
             const ai = document.getElementById('aiMode').value;
 
-            document.getElementById('fuzzV').innerText = fuzz;
-            document.getElementById('featherV').innerText = feather;
-            document.getElementById('edgeV').innerText = edge;
-            document.getElementById('contrastV').innerText = contrast;
+            ['fuzz','feather','edge','contrast'].forEach(id => document.getElementById(id+'V').innerText = document.getElementById(id).value);
 
-            // 1. Pipeline de Calidad (Pre-proceso)
-            const workC = document.createElement('canvas');
-            workC.width = oCanvas.width; workC.height = oCanvas.height;
-            const wCtx = workC.getContext('2d');
+            const work = document.createElement('canvas');
+            work.width = oCanvas.width; work.height = oCanvas.height;
+            const wCtx = work.getContext('2d');
             
-            let filterStr = `contrast(${contrast}%)`;
-            if(ai === 'ultra') filterStr += ` saturate(110%) brightness(102%)`;
-            if(ai === 'clean') filterStr += ` blur(0.3px)`;
-            wCtx.filter = filterStr;
+            // Pipeline de Mejora
+            let f = `contrast(${contrast}%)`;
+            if(ai === 'ultra') f += ` saturate(110%) brightness(102%) contrast(110%)`;
+            if(ai === 'clean') f += ` blur(0.4px)`;
+            wCtx.filter = f;
             wCtx.drawImage(oCanvas, 0, 0);
 
-            // 2. Extracción de Precisión
-            const id = wCtx.getImageData(0, 0, workC.width, workC.height);
-            const d = id.data, out = ctx.createImageData(workC.width, workC.height), o = out.data;
+            const id = wCtx.getImageData(0, 0, work.width, work.height);
+            const d = id.data, out = ctx.createImageData(work.width, work.height), o = out.data;
             const mode = document.getElementById('mode').value;
-            
             if(mode === 'white') targetColor = [255,255,255];
             else if(mode === 'black') targetColor = [0,0,0];
             else if(mode === 'auto') targetColor = [d[0], d[1], d[2]];
 
             for(let i=0; i<d.length; i+=4) {
-                // Distancia Euclidiana para mayor precisión de color
-                const dist = Math.sqrt(
-                    Math.pow(d[i]-targetColor[0], 2) + 
-                    Math.pow(d[i+1]-targetColor[1], 2) + 
-                    Math.pow(d[i+2]-targetColor[2], 2)
-                );
-                
+                const dist = Math.sqrt(Math.pow(d[i]-targetColor[0],2)+Math.pow(d[i+1]-targetColor[1],2)+Math.pow(d[i+2]-targetColor[2],2));
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-
                 if(dist < fuzz) {
-                    // Suavizado mejorado
-                    let alpha = 0;
+                    let a = 0;
                     if(feather > 0) {
-                        alpha = Math.pow((dist / fuzz), (50/feather)) * 255;
-                        alpha = Math.max(0, Math.min(255, alpha));
+                        a = Math.pow((dist/fuzz), (60/feather)) * 255;
+                        a = Math.max(0, Math.min(255, a));
                     }
-                    o[i+3] = alpha;
-                } else {
-                    o[i+3] = d[i+3];
-                }
+                    o[i+3] = a;
+                } else { o[i+3] = d[i+3]; }
             }
 
-            // 3. Contraer / Expandir por vecindad
+            // Contraer / Expandir por vecindad lateral
             if(edge !== 0) {
                 const copyAlpha = new Uint8ClampedArray(o);
-                const w = workC.width, h = workC.height;
-                const radius = Math.abs(edge);
+                const w = work.width, h = work.height, r = Math.abs(edge);
                 for(let y=0; y<h; y++) {
                     for(let x=0; x<w; x++) {
-                        const idx = (y * w + x) * 4 + 3;
-                        let val = copyAlpha[idx];
-                        if(edge < 0) { // Contraer
-                            for(let r=1; r<=radius; r++) {
-                                let ni = ((y)*w + (x+r))*4+3;
-                                if(copyAlpha[ni] < val) val = copyAlpha[ni];
+                        const i = (y * w + x) * 4 + 3;
+                        let v = copyAlpha[i];
+                        if(edge < 0) {
+                            for(let j=1; j<=r; j++) {
+                                let ni = i + (j*4); if(ni < copyAlpha.length && copyAlpha[ni] < v) v = copyAlpha[ni];
                             }
-                        } else { // Expandir
-                            for(let r=1; r<=radius; r++) {
-                                let ni = ((y)*w + (x+r))*4+3;
-                                if(copyAlpha[ni] > val) val = copyAlpha[ni];
+                        } else {
+                            for(let j=1; j<=r; j++) {
+                                let ni = i + (j*4); if(ni < copyAlpha.length && copyAlpha[ni] > v) v = copyAlpha[ni];
                             }
                         }
-                        o[idx] = val;
+                        o[i] = v;
                     }
                 }
             }
-
             ctx.putImageData(out, 0, 0);
         }
 
-        // COLOR PICKER LIENZO PURO
+        // SELECTOR COLOR LIENZO PURO
         const cpSV = document.getElementById('cpSV'), cpH = document.getElementById('cpH');
         const svCtx = cpSV.getContext('2d'), hCtx = cpH.getContext('2d');
         let hue = 0;
@@ -256,7 +241,6 @@
         function drawCP() {
             cpSV.width = cpSV.clientWidth; cpSV.height = cpSV.clientHeight;
             cpH.width = cpH.clientWidth; cpH.height = cpH.clientHeight;
-            hCtx.clearRect(0,0,cpH.width,cpH.height);
             for(let i=0; i<cpH.height; i++){ hCtx.fillStyle=`hsl(${(i/cpH.height)*360},100%,50%)`; hCtx.fillRect(0,i,cpH.width,1); }
             svCtx.fillStyle = `hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
             let gW = svCtx.createLinearGradient(0,0,cpSV.width,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent');
@@ -273,7 +257,6 @@
             else {
                 const d = svCtx.getImageData(cx*(cpSV.width/rect.width), cy*(cpSV.height/rect.height), 1, 1).data;
                 document.getElementById('stage').style.backgroundColor = `rgb(${d[0]},${d[1]},${d[2]})`;
-                document.getElementById('stage').style.backgroundImage = 'none';
             }
         };
 
@@ -288,7 +271,7 @@
         });
         setTimeout(drawCP, 500);
 
-        // EXPORTACIÓN
+        // EXPORTACIÓN COMPLETA
         document.getElementById('openExport').onclick = () => {
             if(!oCanvas.width) return;
             document.getElementById('rzW').value = Math.round(canvas.width);
@@ -302,8 +285,7 @@
         };
 
         function finalDownload() {
-            const w = parseInt(document.getElementById('rzW').value);
-            const h = parseInt(document.getElementById('rzH').value);
+            const w = parseInt(document.getElementById('rzW').value), h = parseInt(document.getElementById('rzH').value);
             const algo = document.getElementById('algo').value;
             const tc = document.createElement('canvas'); tc.width = w; tc.height = h;
             const tx = tc.getContext('2d');
