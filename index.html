@@ -31,7 +31,7 @@
         .btn-s { padding: 12px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: #eee; cursor: pointer; font-size: 11px; font-weight: bold; flex: 1; }
         .btn-dl { width: 100%; padding: 16px; background: linear-gradient(135deg, #00d2ff, #0081ff); color: #fff; border: none; border-radius: 8px; margin-top: 10px; font-weight: 900; cursor: pointer; letter-spacing: 1px; }
 
-        /* COLOR PICKER */
+        /* COLOR PICKER (Lienzo) */
         .cp-container { display: flex; gap: 10px; height: 100px; margin-top: 5px; }
         #cpSV { flex: 1; border-radius: 6px; border: 1px solid #333; cursor: crosshair; }
         #cpH { width: 30px; border-radius: 6px; border: 1px solid #333; cursor: ns-resize; }
@@ -44,7 +44,7 @@
         #crop-box { position: absolute; border: 2px dashed var(--accent); display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.7); z-index: 50; }
         .resizer { width: 22px; height: 22px; background: #fff; position: absolute; right: -11px; bottom: -11px; border-radius: 50%; border: 3px solid var(--accent); }
 
-        /* MODAL EXPORTACIÓN CON MEDIDAS */
+        /* MODAL EXPORTACIÓN */
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(8px); }
         .modal { background: #141414; padding: 30px; border-radius: 15px; width: 95%; max-width: 480px; border: 1px solid #333; }
         .m-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
@@ -97,8 +97,8 @@
                 <button class="btn-s" onclick="location.reload()">Reset</button>
             </div>
 
-            <h2>3. Color del Lienzo</h2>
-            <div class="cp-container">
+            <h2>3. Color del Lienzo Puro</h2>
+            <div class="cp-container" id="cp-parent">
                 <canvas id="cpSV"></canvas>
                 <canvas id="cpH"></canvas>
             </div>
@@ -117,12 +117,10 @@
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
             <h3 style="color:var(--accent); margin-top:0;">Ajustes de Exportación</h3>
-            
             <div class="m-grid">
                 <div><label style="font-size:10px; color:#888;">ANCHO</label><input type="number" id="rzW" class="m-input"></div>
                 <div><label style="font-size:10px; color:#888;">ALTO</label><input type="number" id="rzH" class="m-input"></div>
             </div>
-
             <div class="m-grid">
                 <div>
                     <label style="font-size:10px; color:#888;">UNIDAD</label>
@@ -134,23 +132,17 @@
                 </div>
                 <div><label style="font-size:10px; color:#888;">RESOLUCIÓN (DPI)</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
             </div>
-
-            <div style="margin-bottom:15px;">
-                <label style="font-size:10px; color:#888;">CALIDAD DE ESCALADO</label>
+            <div style="margin-bottom:15px;"><label style="font-size:10px; color:#888;">CALIDAD</label>
                 <select id="algo" class="m-input">
-                    <option value="high">Bicúbica (Lanczos - Nítido)</option>
+                    <option value="high">Bicúbica (Nítido)</option>
                     <option value="medium">Bilinear (Suave)</option>
-                    <option value="low">Nearest (Duro)</option>
+                    <option value="low">Nearest (Pixel)</option>
                 </select>
             </div>
-
-            <div style="margin: 10px 0 20px 0; font-size:12px;">
-                <label style="cursor:pointer;"><input type="checkbox" id="lockAspect" checked> Mantener proporción original</label>
-            </div>
-
+            <div style="margin: 10px 0 20px 0; font-size:12px;"><input type="checkbox" id="lockAspect" checked> Mantener proporción original</div>
             <div style="display:flex; gap:10px;">
                 <button class="btn-s" onclick="document.getElementById('modalExport').classList.add('hidden')">Cancelar</button>
-                <button class="btn-s" style="background:var(--success); color:#000; border:none;" onclick="finalDownload()">DESCARGAR PNG</button>
+                <button class="btn-s" style="background:var(--success); color:#000; border:none;" onclick="finalDownload()">DESCARGAR</button>
             </div>
         </div>
     </div>
@@ -187,11 +179,10 @@
             const work = document.createElement('canvas');
             work.width = oCanvas.width; work.height = oCanvas.height;
             const wCtx = work.getContext('2d');
-            
-            let f = `contrast(${contrast}%)`;
-            if(ai === 'ultra') f += ` saturate(110%) brightness(102%) contrast(110%)`;
-            if(ai === 'clean') f += ` blur(0.3px)`;
-            wCtx.filter = f;
+            let filterStr = `contrast(${contrast}%)`;
+            if(ai === 'ultra') filterStr += ` saturate(110%) brightness(102%) contrast(110%)`;
+            if(ai === 'clean') filterStr += ` blur(0.3px)`;
+            wCtx.filter = filterStr;
             wCtx.drawImage(oCanvas, 0, 0);
 
             const id = wCtx.getImageData(0, 0, work.width, work.height);
@@ -234,14 +225,19 @@
             ctx.putImageData(out, 0, 0);
         }
 
-        // SELECTOR COLOR
+        // LÓGICA DE SELECTOR DE COLOR (LIENZO)
         const cpSV = document.getElementById('cpSV'), cpH = document.getElementById('cpH');
         const svCtx = cpSV.getContext('2d'), hCtx = cpH.getContext('2d');
         let hue = 0;
 
-        function drawCP() {
+        function resizeCP() {
             cpSV.width = cpSV.clientWidth; cpSV.height = cpSV.clientHeight;
             cpH.width = cpH.clientWidth; cpH.height = cpH.clientHeight;
+            drawCP();
+        }
+
+        function drawCP() {
+            hCtx.clearRect(0,0,cpH.width,cpH.height);
             for(let i=0; i<cpH.height; i++){ hCtx.fillStyle=`hsl(${(i/cpH.height)*360},100%,50%)`; hCtx.fillRect(0,i,cpH.width,1); }
             svCtx.fillStyle = `hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
             let gW = svCtx.createLinearGradient(0,0,cpSV.width,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent');
@@ -258,6 +254,7 @@
             else {
                 const d = svCtx.getImageData(cx*(cpSV.width/rect.width), cy*(cpSV.height/rect.height), 1, 1).data;
                 document.getElementById('stage').style.backgroundColor = `rgb(${d[0]},${d[1]},${d[2]})`;
+                document.getElementById('stage').style.backgroundImage = 'none';
             }
         };
 
@@ -270,9 +267,10 @@
             window.addEventListener('mouseup', () => el.m=0);
             window.addEventListener('touchend', () => el.m=0);
         });
-        setTimeout(drawCP, 500);
+        window.addEventListener('load', resizeCP);
+        window.addEventListener('resize', resizeCP);
 
-        // EXPORTACIÓN CON MEDIDAS (PX, CM, IN)
+        // EXPORTACIÓN
         document.getElementById('openExport').onclick = () => {
             if(!oCanvas.width) return;
             document.getElementById('rzW').value = Math.round(canvas.width);
@@ -280,42 +278,19 @@
             document.getElementById('modalExport').classList.remove('hidden');
         };
 
-        document.getElementById('rzW').oninput = () => {
-            if(document.getElementById('lockAspect').checked) 
-                document.getElementById('rzH').value = Math.round(document.getElementById('rzW').value / aspectRatio);
-        };
-
         function finalDownload() {
-            const wInput = parseFloat(document.getElementById('rzW').value);
-            const hInput = parseFloat(document.getElementById('rzH').value);
-            const unit = document.getElementById('rzUnit').value;
-            const dpi = parseInt(document.getElementById('rzDPI').value);
-            const algo = document.getElementById('algo').value;
-
-            let finalW = wInput, finalH = hInput;
-            
-            // Conversión de medidas
-            if(unit === 'cm') { 
-                finalW = (wInput / 2.54) * dpi; 
-                finalH = (hInput / 2.54) * dpi; 
-            } else if(unit === 'in') { 
-                finalW = wInput * dpi; 
-                finalH = hInput * dpi; 
-            }
-
-            const tc = document.createElement('canvas'); 
-            tc.width = finalW; tc.height = finalH;
+            const wIn = parseFloat(document.getElementById('rzW').value), hIn = parseFloat(document.getElementById('rzH').value);
+            const unit = document.getElementById('rzUnit').value, dpi = parseInt(document.getElementById('rzDPI').value), algo = document.getElementById('algo').value;
+            let finalW = wIn, finalH = hIn;
+            if(unit === 'cm') { finalW = (wIn/2.54)*dpi; finalH = (hIn/2.54)*dpi; } else if(unit === 'in') { finalW = wIn*dpi; finalH = hIn*dpi; }
+            const tc = document.createElement('canvas'); tc.width = finalW; tc.height = finalH;
             const tx = tc.getContext('2d');
-            tx.imageSmoothingEnabled = (algo !== 'low');
-            tx.imageSmoothingQuality = (algo === 'high') ? 'high' : 'medium';
+            tx.imageSmoothingEnabled = (algo !== 'low'); tx.imageSmoothingQuality = (algo === 'high') ? 'high' : 'medium';
             tx.drawImage(canvas, 0, 0, finalW, finalH);
-            
-            const a = document.createElement('a'); a.download = 'jj_studio_export.png';
-            a.href = tc.toDataURL('image/png'); a.click();
+            const a = document.createElement('a'); a.download = 'jj_studio_ultra.png'; a.href = tc.toDataURL('image/png'); a.click();
             document.getElementById('modalExport').classList.add('hidden');
         }
 
-        // CROP
         document.getElementById('btn-init-crop').onclick = () => { if(!oCanvas.width) return; cropBox.style.display = 'block'; document.getElementById('btn-apply-crop').classList.remove('hidden'); };
         document.getElementById('btn-apply-crop').onclick = () => {
             const cr = canvas.getBoundingClientRect(), br = cropBox.getBoundingClientRect(), s = canvas.width / cr.width;
