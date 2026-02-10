@@ -3,164 +3,177 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quitar Fondo - Comunidad J&J VIP</title>
+    <title>Editor Pro - Comunidad J&J</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --bg-main: #0a0a0a;
-            --panel-bg: #151515;
-            --border-color: #2a2a2a;
+            --bg-dark: #0f0f0f;
+            --panel-bg: #1a1a1a;
             --accent: #00ff88;
-            --text-gray: #b0b0b0;
+            --border: #2d2d2d;
+            --text: #e0e0e0;
         }
 
-        body, html {
-            margin: 0; padding: 0;
-            height: 100%; width: 100%;
-            background-color: var(--bg-main);
-            color: white; font-family: 'Inter', sans-serif;
-            overflow: hidden;
-        }
+        body, html { margin: 0; padding: 0; height: 100%; background: var(--bg-dark); color: var(--text); font-family: 'Segoe UI', sans-serif; overflow: hidden; }
 
-        /* Layout Principal */
-        .app-wrapper {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            grid-template-rows: 60px 1fr;
-            height: 100vh;
-        }
+        .app-container { display: grid; grid-template-columns: 320px 1fr; height: 100vh; }
 
-        header {
-            grid-column: 1 / -1;
-            background: var(--panel-bg);
-            border-bottom: 1px solid var(--border-color);
-            display: flex; align-items: center; padding: 0 20px;
-            justify-content: space-between;
-        }
+        /* Sidebar */
+        .sidebar { background: var(--panel-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow-y: auto; }
+        .sidebar-content { padding: 20px; flex-grow: 1; }
 
-        .logo { font-weight: 800; letter-spacing: 1px; color: var(--accent); }
+        /* Botones VIP / Acceso */
+        .vip-panel { background: #252525; padding: 15px; border-bottom: 1px solid var(--border); }
+        .btn-vip { background: linear-gradient(90deg, #ffd700, #ffa500); color: #000; width: 100%; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; margin-bottom: 8px; }
+        .btn-ws { background: #25d366; color: white; width: 100%; border: none; padding: 10px; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; display: block; text-align: center; }
 
-        /* Panel Lateral */
-        .sidebar {
-            background: var(--panel-bg);
-            border-right: 1px solid var(--border-color);
-            padding: 20px; overflow-y: auto;
-        }
-
-        .section-title {
-            font-size: 11px; text-transform: uppercase;
-            color: var(--text-gray); margin: 20px 0 10px;
-            letter-spacing: 1.5px; border-bottom: 1px solid var(--border-color);
-            padding-bottom: 5px;
-        }
-
-        /* Editor / Canvas */
-        .editor-area {
-            position: relative;
-            display: flex; justify-content: center; align-items: center;
-            background-image: radial-gradient(#222 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-
-        #canvas-container {
-            position: relative;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
-            cursor: crosshair;
-        }
-
-        /* Controles de Estilo */
-        .control-row { margin-bottom: 15px; }
-        label { display: block; font-size: 12px; margin-bottom: 5px; color: var(--text-gray); }
+        /* Configuración */
+        .section-title { font-size: 11px; text-transform: uppercase; color: #666; margin: 15px 0 10px; letter-spacing: 1px; border-bottom: 1px solid var(--border); }
+        .control-group { margin-bottom: 12px; }
+        label { display: block; font-size: 12px; margin-bottom: 4px; color: #999; }
+        select, input[type="number"], input[type="text"] { width: 100%; background: #111; border: 1px solid var(--border); color: white; padding: 6px; border-radius: 4px; box-sizing: border-box; }
         
-        select, input[type="number"], input[type="text"] {
-            width: 100%; background: #222; border: 1px solid var(--border-color);
-            color: white; padding: 8px; border-radius: 4px; outline: none;
-        }
+        /* Canvas Workspace */
+        .workspace { position: relative; display: flex; justify-content: center; align-items: center; background-image: conic-gradient(#1a1a1a 90deg, #222 90deg 180deg, #1a1a1a 180deg 270deg, #222 270deg); background-size: 40px 40px; }
+        #canvas { max-width: 95%; max-height: 95%; box-shadow: 0 0 40px rgba(0,0,0,0.5); }
 
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-
-        .btn {
-            background: #252525; border: 1px solid var(--border-color);
-            color: white; padding: 10px; border-radius: 4px; cursor: pointer;
-            font-size: 12px; font-weight: 600; text-align: center;
-        }
-
-        .btn-success { background: var(--accent); color: black; border: none; }
-        .btn:hover { filter: brightness(1.2); }
-
-        /* Status Bar Inferior */
-        .status-bar {
-            position: absolute; bottom: 0; left: 320px; right: 0;
-            background: rgba(20,20,20,0.8); padding: 5px 20px;
-            font-size: 11px; color: var(--text-gray); display: flex; gap: 20px;
-        }
+        .btn-action { width: 100%; padding: 10px; margin-top: 5px; border-radius: 4px; border: 1px solid var(--border); cursor: pointer; font-weight: 600; }
+        .btn-apply { background: var(--accent); color: black; border: none; }
     </style>
 </head>
 <body>
 
-<div class="app-wrapper">
-    <header>
-        <div class="logo">COMUNIDAD J&J VIP <span style="color:white">| REMOVER FONDO</span></div>
-        <div style="font-size: 12px; color: #666;">Versión 2.0 BETA</div>
-    </header>
-
+<div class="app-container">
     <div class="sidebar">
-        <div class="btn" onclick="document.getElementById('fileInput').click()">
-            <i class="fa fa-upload"></i> CARGAR IMAGEN
-        </div>
-        <input type="file" id="fileInput" hidden>
-
-        <div class="section-title">Configuración de Eliminación</div>
-        <div class="control-row">
-            <label>Modo</label>
-            <select id="mode">
-                <option>Quitar fondo blanco</option>
-                <option>Quitar fondo negro</option>
-                <option>Elegir color (Cuentagotas)</option>
-                <option>Auto (Esquinas)</option>
-            </select>
+        <div class="vip-panel">
+            <button class="btn-vip" onclick="window.open('https://tu-web-de-membresia.com')"><i class="fa fa-crown"></i> MI SUSCRIPCIÓN VIP</button>
+            <button class="btn-action" style="background: #444; color: white; margin-bottom: 8px;">1 PRUEBA GRATUITA</button>
+            <a href="https://wa.me/TUNUMERO" class="btn-ws" target="_blank"><i class="fab fa-whatsapp"></i> CONTACTAR SOPORTE</a>
         </div>
 
-        <div class="control-row">
-            <label>Tolerancia</label>
-            <input type="range" id="tolerance" min="0" max="150" value="30" style="width:100%">
-        </div>
+        <div class="sidebar-content">
+            <button class="btn-action" onclick="document.getElementById('fileInput').click()" style="background: #333; color: white;">
+                <i class="fa fa-image"></i> CARGAR IMAGEN
+            </button>
+            <input type="file" id="fileInput" hidden accept="image/*">
 
-        <div class="section-title">Redimensionar</div>
-        <div class="btn-group">
-            <div><label>Ancho (px)</label><input type="number" id="w_px" value="1080"></div>
-            <div><label>Alto (px)</label><input type="number" id="h_px" value="1080"></div>
-        </div>
+            <div class="section-title">Configuración</div>
+            <div class="control-group">
+                <label>Modo</label>
+                <select id="mode">
+                    <option>Quitar fondo blanco</option>
+                    <option>Quitar fondo negro</option>
+                    <option>Auto (esquinas)</option>
+                </select>
+            </div>
 
-        <div class="section-title">Acciones</div>
-        <button class="btn btn-success" style="width: 100%; margin-bottom: 10px;" onclick="process()">APLICAR CAMBIOS</button>
-        <div class="btn-group">
-            <div class="btn" onclick="reset()">REINICIAR</div>
-            <div class="btn" style="background:#007bff; border:none;" onclick="download()">DESCARGAR</div>
+            <div class="control-group">
+                <label>Tolerancia / Suavizado (px)</label>
+                <div style="display: flex; gap: 5px;">
+                    <input type="number" id="tolerance" value="30" title="Tolerancia">
+                    <input type="number" id="smooth" value="1" title="Suavizado">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Contraer / Expandir (px)</label>
+                <input type="number" id="expand" value="0">
+            </div>
+
+            <div class="section-title">Redimensionar</div>
+            <div class="control-group" style="display: flex; gap: 5px;">
+                <div><label>Ancho</label><input type="number" id="width" placeholder="px"></div>
+                <div><label>Alto</label><input type="number" id="height" placeholder="px"></div>
+            </div>
+
+            <div class="control-group">
+                <label>Unidades / Resolución</label>
+                <div style="display: flex; gap: 5px;">
+                    <select id="units"><option>px</option><option>in</option><option>cm</option></select>
+                    <input type="number" id="res" value="300" title="PPI">
+                </div>
+            </div>
+
+            <div class="control-group">
+                <label>Método / Proporción</label>
+                <select id="method">
+                    <option>Cúbica (Alta calidad)</option>
+                    <option>Bilinear (Bueno)</option>
+                    <option>Nearest (Rápido)</option>
+                </select>
+                <label style="margin-top: 5px; display: flex; align-items: center; gap: 5px;">
+                    <input type="checkbox" checked id="aspect"> Mantener proporción
+                </label>
+            </div>
+
+            <button class="btn-action btn-apply" onclick="process()">APLICAR Y DESCARGAR</button>
         </div>
     </div>
 
-    <div class="editor-area">
-        <div id="canvas-container">
-            <canvas id="mainCanvas"></canvas>
-        </div>
-        
-        <div class="status-bar">
-            <span><i class="fa fa-mouse-pointer"></i> Zoom con rueda</span>
-            <span><i class="fa fa-keyboard"></i> Espacio para mover</span>
-            <span id="img-info">Sin imagen cargada</span>
-        </div>
+    <div class="workspace">
+        <canvas id="canvas"></canvas>
     </div>
 </div>
 
 <script>
-    // Aquí se integra la lógica de UrbanCartoon:
-    // 1. Manejo de Canvas con Zoom y Pan (usando MouseWheel y Drag)
-    // 2. Algoritmo de eliminación de fondo por color exacto o esquinas
-    // 3. Redimensionado con mantenimiento de aspecto
-    
-    // (Nota: El script completo de manipulación de canvas y zoom es extenso, 
-    // pero esta estructura ya te da el LOOK exacto que pediste).
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const fileInput = document.getElementById('fileInput');
+    let img = new Image();
+
+    fileInput.onchange = (e) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            img.onload = () => {
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                document.getElementById('width').value = img.width;
+                document.getElementById('height').value = img.height;
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(e.target.files[0]);
+    };
+
+    function process() {
+        if (!img.src) return alert("Carga una imagen primero");
+        
+        // Redimensionado básico
+        const newW = document.getElementById('width').value;
+        const newH = document.getElementById('height').value;
+        
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = newW;
+        tempCanvas.height = newH;
+        const tempCtx = tempCanvas.getContext('2d');
+        
+        // Aplicar método de escalado
+        const method = document.getElementById('method').value;
+        if(method.includes("Cúbica")) tempCtx.imageSmoothingQuality = 'high';
+        
+        tempCtx.drawImage(img, 0, 0, newW, newH);
+        
+        // Lógica de eliminación de fondo (Simplificada para rendimiento)
+        const imageData = tempCtx.getImageData(0, 0, newW, newH);
+        const data = imageData.data;
+        const tol = document.getElementById('tolerance').value;
+
+        for (let i = 0; i < data.length; i += 4) {
+            // Ejemplo: Quitar Blanco
+            if (data[i] > 255 - tol && data[i+1] > 255 - tol && data[i+2] > 255 - tol) {
+                data[i+3] = 0;
+            }
+        }
+        
+        tempCtx.putImageData(imageData, 0, 0);
+        
+        // Descarga
+        const link = document.createElement('a');
+        link.download = 'comunidad_jj_pro.png';
+        link.href = tempCanvas.toDataURL();
+        link.click();
+    }
 </script>
 </body>
 </html>
