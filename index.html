@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Studio Pro — Full Control</title>
+    <title>J&J Studio Pro — IA Ultra Precision</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #141414; --text: #eee;
@@ -15,7 +15,6 @@
         .wrap { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
         @media (min-width: 900px) { .wrap { flex-direction: row; } }
 
-        /* PANEL */
         .panel { padding: 15px; background: var(--panel); border-right: 1px solid var(--border); overflow-y: auto; width: 100%; max-height: 48vh; flex-shrink: 0; }
         @media (min-width: 900px) { .panel { width: 380px; max-height: 100vh; } }
 
@@ -31,12 +30,10 @@
         .btn-s { padding: 12px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: #eee; cursor: pointer; font-size: 11px; font-weight: bold; flex: 1; }
         .btn-dl { width: 100%; padding: 16px; background: linear-gradient(135deg, #00d2ff, #0081ff); color: #fff; border: none; border-radius: 8px; margin-top: 10px; font-weight: 900; cursor: pointer; letter-spacing: 1px; }
 
-        /* COLOR PICKER (Lienzo) */
         .cp-container { display: flex; gap: 10px; height: 100px; margin-top: 5px; }
         #cpSV { flex: 1; border-radius: 6px; border: 1px solid #333; cursor: crosshair; }
         #cpH { width: 30px; border-radius: 6px; border: 1px solid #333; cursor: ns-resize; }
 
-        /* ESCENARIO */
         .stage { flex: 1; background: #0f0f0f; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; }
         #canvas-container { position: relative; margin: auto; }
         canvas#canvas { display: block; max-width: 90vw; max-height: 80vh; background: transparent; }
@@ -44,7 +41,6 @@
         #crop-box { position: absolute; border: 2px dashed var(--accent); display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.7); z-index: 50; }
         .resizer { width: 22px; height: 22px; background: #fff; position: absolute; right: -11px; bottom: -11px; border-radius: 50%; border: 3px solid var(--accent); }
 
-        /* MODAL EXPORTACIÓN */
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(8px); }
         .modal { background: #141414; padding: 30px; border-radius: 15px; width: 95%; max-width: 480px; border: 1px solid #333; }
         .m-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
@@ -55,18 +51,18 @@
 
     <main class="wrap">
         <section class="panel">
-            <h1 style="font-size: 18px; margin: 0 0 20px 0; color:#fff; text-align: center;">J&J STUDIO <span style="color:var(--accent)">ULTRA</span></h1>
+            <h1 style="font-size: 18px; margin: 0 0 20px 0; color:#fff; text-align: center;">J&J STUDIO <span style="color:var(--accent)">ULTRA IA</span></h1>
             
             <input type="file" id="file" accept="image/*">
             
-            <h2>1. Calidad & IA</h2>
+            <h2>1. Mejoramiento IA & Calidad</h2>
             <div class="control-group">
                 <div class="control-row">
-                    <label>Filtro IA</label>
+                    <label>Procesado IA</label>
                     <select id="aiMode">
-                        <option value="none">Original (Rápido)</option>
-                        <option value="clean">IA Denoiser (Suave)</option>
-                        <option value="ultra">Ultra-Sharp (Nítido)</option>
+                        <option value="none">Desactivado (Original)</option>
+                        <option value="soft">IA Soft (Remover Ruido)</option>
+                        <option value="ultra">IA Ultra (Super-Resolución)</option>
                     </select>
                 </div>
                 <div class="control-row">
@@ -76,7 +72,7 @@
                 </div>
             </div>
 
-            <h2>2. Quitar Fondo</h2>
+            <h2>2. Extracción de Precisión</h2>
             <div class="control-group">
                 <div class="control-row">
                     <select id="mode">
@@ -97,8 +93,8 @@
                 <button class="btn-s" onclick="location.reload()">Reset</button>
             </div>
 
-            <h2>3. Color del Lienzo Puro</h2>
-            <div class="cp-container" id="cp-parent">
+            <h2>3. Color del Lienzo</h2>
+            <div class="cp-container">
                 <canvas id="cpSV"></canvas>
                 <canvas id="cpH"></canvas>
             </div>
@@ -130,19 +126,19 @@
                         <option value="in">Pulgadas</option>
                     </select>
                 </div>
-                <div><label style="font-size:10px; color:#888;">RESOLUCIÓN (DPI)</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
+                <div><label style="font-size:10px; color:#888;">DPI (Resolución)</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
             </div>
-            <div style="margin-bottom:15px;"><label style="font-size:10px; color:#888;">CALIDAD</label>
+            <div style="margin-bottom:15px;"><label style="font-size:10px; color:#888;">CALIDAD DE ESCALADO</label>
                 <select id="algo" class="m-input">
-                    <option value="high">Bicúbica (Nítido)</option>
-                    <option value="medium">Bilinear (Suave)</option>
-                    <option value="low">Nearest (Pixel)</option>
+                    <option value="high">IA Lanczos (Máxima Nitidez)</option>
+                    <option value="medium">Bilinear (Estándar)</option>
+                    <option value="low">Nearest (Pixelado)</option>
                 </select>
             </div>
-            <div style="margin: 10px 0 20px 0; font-size:12px;"><input type="checkbox" id="lockAspect" checked> Mantener proporción original</div>
+            <div style="margin: 10px 0 20px 0; font-size:12px;"><input type="checkbox" id="lockAspect" checked> Bloquear Proporción</div>
             <div style="display:flex; gap:10px;">
                 <button class="btn-s" onclick="document.getElementById('modalExport').classList.add('hidden')">Cancelar</button>
-                <button class="btn-s" style="background:var(--success); color:#000; border:none;" onclick="finalDownload()">DESCARGAR</button>
+                <button class="btn-s" style="background:var(--success); color:#000;" onclick="finalDownload()">DESCARGAR</button>
             </div>
         </div>
     </div>
@@ -166,6 +162,7 @@
             img.src = URL.createObjectURL(f);
         };
 
+        // MOTOR DE PROCESO IA
         function process() {
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value);
@@ -176,18 +173,27 @@
 
             ['fuzz','feather','edge','contrast'].forEach(id => document.getElementById(id+'V').innerText = document.getElementById(id).value);
 
+            // 1. MEJORAMIENTO DE CALIDAD IA (Upsampling interno)
+            const scaleFactor = (ai === 'ultra') ? 2 : 1;
             const work = document.createElement('canvas');
-            work.width = oCanvas.width; work.height = oCanvas.height;
+            work.width = oCanvas.width * scaleFactor; 
+            work.height = oCanvas.height * scaleFactor;
             const wCtx = work.getContext('2d');
-            let filterStr = `contrast(${contrast}%)`;
-            if(ai === 'ultra') filterStr += ` saturate(110%) brightness(102%) contrast(110%)`;
-            if(ai === 'clean') filterStr += ` blur(0.3px)`;
-            wCtx.filter = filterStr;
-            wCtx.drawImage(oCanvas, 0, 0);
+            
+            wCtx.imageSmoothingEnabled = true;
+            wCtx.imageSmoothingQuality = 'high';
+            
+            let f = `contrast(${contrast}%)`;
+            if(ai === 'ultra') f += ` saturate(115%) brightness(102%) contrast(115%)`;
+            if(ai === 'soft') f += ` blur(0.4px) contrast(105%)`;
+            wCtx.filter = f;
+            wCtx.drawImage(oCanvas, 0, 0, work.width, work.height);
 
+            // 2. EXTRACCIÓN
             const id = wCtx.getImageData(0, 0, work.width, work.height);
             const d = id.data, out = ctx.createImageData(work.width, work.height), o = out.data;
             const mode = document.getElementById('mode').value;
+            
             if(mode === 'white') targetColor = [255,255,255];
             else if(mode === 'black') targetColor = [0,0,0];
             else if(mode === 'auto') targetColor = [d[0], d[1], d[2]];
@@ -197,14 +203,15 @@
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
                 if(dist < fuzz) {
                     let a = 0;
-                    if(feather > 0) a = Math.max(0, Math.min(255, Math.pow((dist/fuzz), (60/feather)) * 255));
+                    if(feather > 0) a = Math.max(0, Math.min(255, Math.pow((dist/fuzz), (65/feather)) * 255));
                     o[i+3] = a;
                 } else { o[i+3] = d[i+3]; }
             }
 
+            // 3. CONTRAER PX (Erosión inteligente)
             if(edge !== 0) {
                 const copyAlpha = new Uint8ClampedArray(o);
-                const w = work.width, h = work.height, r = Math.abs(edge);
+                const w = work.width, h = work.height, r = Math.abs(edge * scaleFactor);
                 for(let y=0; y<h; y++) {
                     for(let x=0; x<w; x++) {
                         const i = (y * w + x) * 4 + 3;
@@ -222,22 +229,18 @@
                     }
                 }
             }
+            canvas.width = work.width; canvas.height = work.height;
             ctx.putImageData(out, 0, 0);
         }
 
-        // LÓGICA DE SELECTOR DE COLOR (LIENZO)
+        // --- SELECTOR DE COLOR LIENZO ---
         const cpSV = document.getElementById('cpSV'), cpH = document.getElementById('cpH');
         const svCtx = cpSV.getContext('2d'), hCtx = cpH.getContext('2d');
         let hue = 0;
 
-        function resizeCP() {
+        function drawCP() {
             cpSV.width = cpSV.clientWidth; cpSV.height = cpSV.clientHeight;
             cpH.width = cpH.clientWidth; cpH.height = cpH.clientHeight;
-            drawCP();
-        }
-
-        function drawCP() {
-            hCtx.clearRect(0,0,cpH.width,cpH.height);
             for(let i=0; i<cpH.height; i++){ hCtx.fillStyle=`hsl(${(i/cpH.height)*360},100%,50%)`; hCtx.fillRect(0,i,cpH.width,1); }
             svCtx.fillStyle = `hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
             let gW = svCtx.createLinearGradient(0,0,cpSV.width,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent');
@@ -267,10 +270,9 @@
             window.addEventListener('mouseup', () => el.m=0);
             window.addEventListener('touchend', () => el.m=0);
         });
-        window.addEventListener('load', resizeCP);
-        window.addEventListener('resize', resizeCP);
+        window.addEventListener('load', () => { setTimeout(drawCP, 500); });
 
-        // EXPORTACIÓN
+        // EXPORTACIÓN PROFESIONAL
         document.getElementById('openExport').onclick = () => {
             if(!oCanvas.width) return;
             document.getElementById('rzW').value = Math.round(canvas.width);
@@ -287,7 +289,7 @@
             const tx = tc.getContext('2d');
             tx.imageSmoothingEnabled = (algo !== 'low'); tx.imageSmoothingQuality = (algo === 'high') ? 'high' : 'medium';
             tx.drawImage(canvas, 0, 0, finalW, finalH);
-            const a = document.createElement('a'); a.download = 'jj_studio_ultra.png'; a.href = tc.toDataURL('image/png'); a.click();
+            const a = document.createElement('a'); a.download = 'jj_studio_ultra_ia.png'; a.href = tc.toDataURL('image/png'); a.click();
             document.getElementById('modalExport').classList.add('hidden');
         }
 
