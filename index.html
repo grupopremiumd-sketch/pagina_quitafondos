@@ -3,290 +3,247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QUITAR DE FONDOS - UCX26BETA J&J</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>J&J Studio Pro — Herramienta Definitiva</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
-            --bg-body: #0a0a0a;
-            --bg-sidebar: #121212;
-            --accent: #00e676;
-            --border: #2c2c2c;
-            --text-main: #ffffff;
-            --text-dim: #888;
+            --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
+            --accent: #f87171; --border: #1f1f1f; --success: #10b981; --wa: #25d366;
+            --vip: #00d2ff;
         }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
 
-        body {
-            margin: 0; background-color: var(--bg-body);
-            color: var(--text-main); font-family: 'Inter', sans-serif;
-            display: flex; height: 100vh; overflow: hidden;
-        }
+        header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: #0b0b0b; display: flex; align-items: center; justify-content: space-between; height: 60px; }
+        .logo-text { font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, var(--vip), #0081ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        #status-tag { font-size: 11px; padding: 4px 10px; border-radius: 20px; background: #222; color: #888; font-weight: bold; border: 1px solid #333; }
+        .status-vip { background: #052e1a !important; color: var(--success) !important; border-color: var(--success) !important; }
 
-        /* SIDEBAR */
-        .sidebar {
-            width: 320px; background-color: var(--bg-sidebar);
-            border-right: 1px solid var(--border);
-            display: flex; flex-direction: column; overflow-y: auto;
-        }
-
-        .header-section {
-            padding: 20px; border-bottom: 1px solid var(--border);
-            background: #181818;
-        }
-
-        .btn-premium {
-            background: linear-gradient(135deg, #ffd700, #ff8f00);
-            color: black; border: none; width: 100%; padding: 12px;
-            font-weight: 800; border-radius: 4px; cursor: pointer; margin-bottom: 10px;
-        }
-
-        .btn-free {
-            background: #333; color: white; border: 1px solid var(--border);
-            width: 100%; padding: 10px; border-radius: 4px; cursor: pointer;
-            margin-bottom: 10px; font-size: 13px; font-weight: bold;
-        }
-
-        .btn-subscribe {
-            background: #25d366; color: white; text-decoration: none;
-            display: block; text-align: center; padding: 12px;
-            border-radius: 4px; font-weight: bold; font-size: 14px;
-        }
-
-        .panel-content { padding: 15px; }
-        .section-header {
-            font-size: 11px; color: var(--text-dim); text-transform: uppercase;
-            letter-spacing: 1px; margin: 20px 0 10px;
-            border-bottom: 1px solid var(--border); padding-bottom: 5px;
-        }
-
-        /* CONTROLES */
-        .control-group { margin-bottom: 18px; }
-        label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; color: #bbb; }
-        label span { color: var(--accent); font-weight: bold; }
-
-        input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
-        input[type="number"], select {
-            width: 100%; background: #000; border: 1px solid var(--border);
-            color: white; padding: 10px; border-radius: 4px; box-sizing: border-box;
-        }
-
-        /* SELECTOR DE LIENZO ESTILO PS */
-        .canvas-color-box {
-            display: flex; align-items: center; gap: 12px;
-            background: #1a1a1a; padding: 12px; border-radius: 6px;
-            border: 1px solid var(--border);
-        }
-        input[type="color"] {
-            width: 35px; height: 35px; border: none; background: none; cursor: pointer; padding: 0;
-        }
-
-        /* WORKSPACE */
-        .workspace {
-            flex: 1; position: relative; display: flex;
-            justify-content: center; align-items: center;
-            background-color: #1a1a1a; overflow: auto;
-        }
-
-        #canvas-wrap { position: relative; box-shadow: 0 0 60px rgba(0,0,0,0.9); }
+        .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
+        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; z-index: 100; }
+        h2 { font-size: 11px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
+        .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
+        label { font-size: 12px; color: #ddd; width: 120px; }
+        input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
+        .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 50px; text-align: center; font-size: 11px; }
         
-        canvas {
-            display: block; cursor: crosshair;
-            /* Fondo de transparencia (cuadritos) */
-            background-image: 
-                linear-gradient(45deg, #222 25%, transparent 25%), 
-                linear-gradient(-45deg, #222 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #222 75%), 
-                linear-gradient(-45deg, transparent 75%, #222 75%);
-            background-size: 20px 20px;
-        }
+        .cp-container { display: flex; gap: 10px; height: 120px; margin-top: 10px; user-select: none; }
+        #cpSV { flex: 1; border-radius: 6px; border: 1px solid #2a2a2a; cursor: crosshair; }
+        #cpH { width: 20px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: ns-resize; }
 
-        .footer-tools {
-            position: absolute; bottom: 25px; right: 25px;
-        }
+        .btn-group { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
+        .btn-s { flex: 1; min-width: 100px; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; transition: 0.2s; }
+        .btn-s:hover { background: #222; border-color: var(--vip); }
+        .btn-dl { width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 20px; font-weight: 900; cursor: pointer; }
 
-        .btn-save {
-            background: var(--accent); color: black; border: none;
-            padding: 18px 40px; border-radius: 6px; font-weight: 900;
-            cursor: pointer; font-size: 16px; box-shadow: 0 5px 20px rgba(0,230,118,0.4);
-            transition: transform 0.2s;
-        }
-        .btn-save:active { transform: scale(0.95); }
+        .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; height: 100%; }
+        #canvas-container { position: relative; display: inline-block; }
+        canvas#canvas { display: block; max-height: 85vh; }
+        #crop-box { position: absolute; border: 2px dashed #fff; cursor: move; display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); z-index: 50; }
+        .resizer { width: 12px; height: 12px; background: #fff; border: 2px solid var(--accent); position: absolute; right: -6px; bottom: -6px; cursor: nwse-resize; border-radius: 50%; }
+        #qr-preview { position: absolute; cursor: move; border: 2px dashed var(--vip); display: none; z-index: 60; background: #fff; }
+
+        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 520px; border: 1px solid #262626; text-align: center; }
+        .m-input { background: #fffbe6; color: #333; border: 1px solid #d4b106; padding: 6px 10px; border-radius: 4px; font-weight: bold; width: 110px; }
+        .hidden { display: none !important; }
+
+        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 20px; border-radius: 12px; cursor: pointer; transition: 0.3s; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; text-align: left; width: 100%; }
+        .choice-card:hover { border-color: var(--vip); background: #222; transform: scale(1.02); }
+        .wa-float { position: fixed; bottom: 20px; right: 20px; background: var(--wa); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000; }
     </style>
 </head>
 <body>
 
-<div class="sidebar">
-    <div class="header-section">
-        <button class="btn-premium">MEMBRESÍA VIP J&J</button>
-        <button class="btn-free">1 PRUEBA GRATUITA</button>
-        <a href="https://wa.me/TUNUMERO?text=Hola%20J&J%20quiero%20suscribirme%20al%20VIP" class="btn-subscribe">QUIERO SUSCRIBIRME</a>
-    </div>
+    <a href="https://wa.me/51916689969" class="wa-float" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="30"></a>
 
-    <div class="panel-content">
-        <button class="btn-free" onclick="document.getElementById('fileInput').click()" style="background: #222; border-color: var(--accent); color: var(--accent);">
-            <i class="fa fa-image"></i> SELECCIONAR IMAGEN
-        </button>
-        <input type="file" id="fileInput" hidden accept="image/*">
-
-        <div class="section-header">Ajustes de Recorte</div>
-        
-        <div class="control-group">
-            <label>Tolerancia <span id="t-val">30</span></label>
-            <input type="range" id="tolerance" min="0" max="150" value="30">
-        </div>
-
-        <div class="control-group">
-            <label>Suavizado de Bordes <span id="s-val">0</span></label>
-            <input type="range" id="smooth" min="0" max="20" value="0">
-        </div>
-
-        <div class="control-group">
-            <label>Contraer / Expandir <span id="e-val">0</span></label>
-            <input type="range" id="expand" min="-10" max="10" value="0">
-        </div>
-
-        <div class="section-header">Color de Lienzo (Photoshop)</div>
-        <div class="canvas-color-box">
-            <input type="color" id="canvasBg" value="#1a1a1a" oninput="updateLienzo(this.value)">
-            <span style="font-size: 11px; font-weight: bold; color: #888;">FONDO DE MESA</span>
-        </div>
-
-        <div class="section-header">Tamaño y Unidades</div>
-        <div class="control-group" style="display: flex; gap: 10px;">
-            <div><label>Ancho</label><input type="number" id="w_px"></div>
-            <div><label>Alto</label><input type="number" id="h_px"></div>
-        </div>
-        
-        <div class="control-group">
-            <label style="justify-content: flex-start; gap: 10px; cursor: pointer;">
-                <input type="checkbox" id="aspect" checked> Mantener proporción
-            </label>
-        </div>
-
-        <div class="control-group">
-            <label>Unidad de Medida</label>
-            <select id="units">
-                <option value="px">Píxeles (px)</option>
-                <option value="in">Pulgadas (in)</option>
-                <option value="cm">Centímetros (cm)</option>
-            </select>
+    <div id="choice-modal" class="modal-back hidden">
+        <div class="modal">
+            <h3 style="margin-top:0; color:var(--vip)">¡Casi listo!</h3>
+            <p style="color:var(--muted); font-size:14px; margin-bottom:25px;">Para descargar elige una opción:</p>
+            <div class="choice-card" onclick="openLogin()">
+                <div style="font-size:24px;">💎</div>
+                <div><div style="font-weight:bold; color:white;">Soy Suscriptor VIP</div><div style="font-size:12px; color:var(--muted)">Inicia sesión para descargar.</div></div>
+            </div>
+            <div class="choice-card" onclick="window.open('https://wa.me/51916689969?text=Hola,%20quiero%20activar%20mi%20suscripción%20en%20J&J%20Studio','_blank')">
+                <div style="font-size:24px;">📲</div>
+                <div><div style="font-weight:bold; color:var(--wa);">No tengo suscripción</div><div style="font-size:12px; color:var(--muted)">Habla con nosotros para activar tu cuenta.</div></div>
+            </div>
+            <button onclick="closeChoice()" style="background:none; border:none; color:var(--muted); margin-top:10px; cursor:pointer;">Cerrar</button>
         </div>
     </div>
-</div>
 
-<div class="workspace" id="workspace">
-    <div id="canvas-wrap">
-        <canvas id="mainCanvas"></canvas>
+    <div id="login-modal" class="modal-back hidden">
+        <div class="modal" style="max-width:380px;">
+            <h3>Validar Membresía</h3>
+            <input type="text" id="user-id" placeholder="📱 Número de Celular" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
+            <input type="password" id="access-key" placeholder="🔑 Contraseña" style="width:100%; padding:12px; margin-bottom:20px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
+            <button class="btn-dl" onclick="validateAccess()" style="margin:0;">VERIFICAR Y ENTRAR</button>
+            <button onclick="closeLogin()" style="background:none; border:none; color:var(--muted); margin-top:15px; cursor:pointer;">Regresar</button>
+        </div>
     </div>
-    <div class="footer-tools">
-        <button class="btn-save" onclick="saveImage()">
-            <i class="fa fa-download"></i> GUARDAR DISEÑO
-        </button>
+
+    <div id="modalExport" class="modal-back hidden">
+        <div class="modal">
+            <h3 style="margin-top:0">Configurar Descarga PNG</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; text-align:left;">
+                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Ancho</label><div style="display:flex;gap:5px;"><input type="number" id="rzW" class="m-input"><span id="utW" style="font-size:11px;color:#666">cm</span></div></div>
+                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Alto</label><div style="display:flex;gap:5px;"><input type="number" id="rzH" class="m-input"><span id="utH" style="font-size:11px;color:#666">cm</span></div></div>
+                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Unidad</label><select id="rzUnit" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:6px; border-radius:6px; width:110px;"><option value="cm">cm</option><option value="in">in</option><option value="px">px</option></select></div>
+                <div style="display:flex; justify-content:space-between; align-items:center;"><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
+                <div style="grid-column: span 2; display:flex; justify-content:space-between; align-items:center;">
+                    <label>Método</label>
+                    <select id="rzMethod" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:6px; border-radius:6px; width:220px;">
+                        <option value="high">Alta calidad (Bicúbica)</option>
+                        <option value="medium">Bueno (Bilinear)</option>
+                        <option value="low">Rápido (Nearest)</option>
+                    </select>
+                </div>
+                <div style="grid-column: span 2;"><input type="checkbox" id="lockAspect" checked> <span style="font-size:12px; color:#888;">Mantener proporción de aspecto</span></div>
+            </div>
+            <div style="display:flex; gap:10px; margin-top:20px; justify-content:flex-end;">
+                <button class="btn-s" onclick="closeExport()">Cancelar</button>
+                <button class="btn-s" style="background:#222; color:var(--vip); border-color:var(--vip);" onclick="finalDownload()">DESCARGAR AHORA</button>
+            </div>
+        </div>
     </div>
-</div>
 
-<script>
-    const canvas = document.getElementById('mainCanvas');
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    let imgOriginal = null;
-    let colorObjetivo = {r: 255, g: 255, b: 255};
-    let ratioAspecto = 1;
+    <header><div class="logo-text">J&J STUDIO PRO</div><div id="status-tag">MODO INVITADO</div></header>
 
-    // Cargar imagen
-    document.getElementById('fileInput').onchange = (e) => {
-        const reader = new FileReader();
-        reader.onload = (f) => {
-            imgOriginal = new Image();
-            imgOriginal.onload = () => {
-                canvas.width = imgOriginal.width;
-                canvas.height = imgOriginal.height;
-                ratioAspecto = imgOriginal.width / imgOriginal.height;
-                document.getElementById('w_px').value = imgOriginal.width;
-                document.getElementById('h_px').value = imgOriginal.height;
-                renderizar();
-            };
-            imgOriginal.src = f.target.result;
-        };
-        reader.readAsDataURL(e.target.files[0]);
-    };
-
-    // Selección de color (Cuentagotas directo)
-    canvas.addEventListener('mousedown', (e) => {
-        if(!imgOriginal) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = (e.clientX - rect.left) * (canvas.width / rect.width);
-        const y = (e.clientY - rect.top) * (canvas.height / rect.height);
-        const pixel = ctx.getImageData(x, y, 1, 1).data;
-        colorObjetivo = {r: pixel[0], g: pixel[1], b: pixel[2]};
-        renderizar();
-    });
-
-    function renderizar() {
-        if (!imgOriginal) return;
-        
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(imgOriginal, 0, 0);
-
-        const tol = parseInt(document.getElementById('tolerance').value);
-        const smooth = parseInt(document.getElementById('smooth').value);
-        const expand = parseInt(document.getElementById('expand').value);
-
-        document.getElementById('t-val').innerText = tol;
-        document.getElementById('s-val').innerText = smooth;
-        document.getElementById('e-val').innerText = expand;
-
-        let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        let pixeles = imgData.data;
-
-        // Procesamiento de bordes y transparencia
-        for (let i = 0; i < pixeles.length; i += 4) {
-            const r = pixeles[i], g = pixeles[i+1], b = pixeles[i+2];
-            const distancia = Math.sqrt(
-                Math.pow(r - colorObjetivo.r, 2) + 
-                Math.pow(g - colorObjetivo.g, 2) + 
-                Math.pow(b - colorObjetivo.b, 2)
-            );
+    <main class="wrap">
+        <section class="panel">
+            <button class="btn-s" style="background: #00d2ff; color: #000; margin-bottom: 20px;" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR</button>
             
-            if (distancia < tol) {
-                pixeles[i+3] = 0; // Transparente
-            } else if (distancia < tol + (smooth * 3)) {
-                // Suavizado dinámico de bordes
-                pixeles[i+3] = ((distancia - tol) / (smooth * 3)) * 255;
+            <h2>1. Imagen</h2>
+            <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:12px; margin-bottom:10px;">
+            
+            <h2>2. QR Dinámico</h2>
+            <input type="text" id="qrText" placeholder="Texto o Link" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; width:100%; border-radius:6px; margin-bottom:5px;">
+            <div class="btn-group">
+                <button class="btn-s" id="btn-gen-qr">Generar QR</button>
+                <button class="btn-s hidden" id="btn-add-qr" style="background:var(--vip); color:#000;">Añadir</button>
+            </div>
+
+            <h2>3. Limpieza de Fondo</h2>
+            <div class="control-row"><select id="mode" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; flex:1;"><option value="white">Quitar blanco</option><option value="black">Quitar negro</option><option value="pick">Elegir color...</option><option value="auto">Auto (esquinas)</option></select></div>
+            <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
+            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
+            <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" step="1" value="0"><div class="val-box" id="contractV">0</div></div>
+
+            <h2>4. Herramientas</h2>
+            <div class="btn-group"><button class="btn-s" id="btn-init-crop">✂️ Recortar</button><button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000;">Aplicar</button><button class="btn-s" onclick="location.reload()">Reiniciar</button></div>
+
+            <label style="margin-top:20px; display:block; font-size:11px;">COLOR DEL LIENZO (ARRASTRAR)</label>
+            <div class="cp-container"><canvas id="cpSV" width="220" height="120"></canvas><canvas id="cpH" width="20" height="120"></canvas></div>
+
+            <button class="btn-dl" onclick="handleDownloadClick()">DESCARGAR PNG</button>
+        </section>
+        <section class="stage" id="stage"><div id="canvas-container"><canvas id="canvas"></canvas><div id="crop-box"><div class="resizer"></div></div><div id="qr-preview"></div></div></section>
+    </main>
+
+    <script>
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec";
+        
+        let isVip = localStorage.getItem('jj_session') === 'active';
+
+        window.onload = () => {
+            if(isVip) { 
+                document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO"; 
+                document.getElementById('status-tag').classList.add('status-vip'); 
             }
+        };
+
+        function handleDownloadClick() { if (isVip) { openExport(); } else { document.getElementById('choice-modal').classList.remove('hidden'); } }
+        function openLogin() { closeChoice(); document.getElementById('login-modal').classList.remove('hidden'); }
+        function closeChoice() { document.getElementById('choice-modal').classList.add('hidden'); }
+        function closeLogin() { document.getElementById('login-modal').classList.add('hidden'); }
+        function openExport() { if(!oCanvas.width) return; updateUnits(); document.getElementById('modalExport').classList.remove('hidden'); }
+        function closeExport() { document.getElementById('modalExport').classList.add('hidden'); }
+
+        async function validateAccess() {
+            const u = document.getElementById('user-id').value, p = document.getElementById('access-key').value;
+            if(!u || !p) return;
+            try {
+                const res = await fetch(`${WEB_APP_URL}?user=${u}&pass=${p}`);
+                const data = await res.json();
+                if(data.access) { 
+                    isVip = true; 
+                    localStorage.setItem('jj_session', 'active'); 
+                    document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO"; 
+                    document.getElementById('status-tag').classList.add('status-vip'); 
+                    closeLogin(); 
+                    alert("¡Membresía validada!"); 
+                }
+                else { alert("Error: Socio no encontrado."); }
+            } catch(e) { alert("Error de conexión"); }
         }
-        ctx.putImageData(imgData, 0, 0);
 
-        // Algoritmo de Expansión / Contracción
-        if(expand !== 0) {
-            ctx.save();
-            ctx.globalCompositeOperation = 'copy';
-            // Simulación de expansión mediante desenfoque y niveles de contraste
-            ctx.filter = `blur(${Math.abs(expand)/3}px) contrast(${100 + expand * 40}%)`;
-            ctx.drawImage(canvas, 0, 0);
-            ctx.restore();
+        const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
+        let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
+        let aspectRatio = 1, targetColor = [255,255,255], isResizing = false, isDragging = false;
+        const cropBox = document.getElementById('crop-box');
+
+        document.getElementById('file').onchange = e => {
+            const f = e.target.files[0];
+            const img = new Image();
+            img.onload = () => { oCanvas.width = img.width; oCanvas.height = img.height; aspectRatio = img.width/img.height; oCtx.drawImage(img,0,0); process(); };
+            img.src = URL.createObjectURL(f);
+        };
+
+        function process() {
+            if(!oCanvas.width) return;
+            const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value), contract = parseInt(document.getElementById('contract').value), mode = document.getElementById('mode').value;
+            document.getElementById('fuzzV').innerText = fuzz; document.getElementById('featherV').innerText = feather; document.getElementById('contractV').innerText = contract;
+            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data, out = ctx.createImageData(oCanvas.width,oCanvas.height), o = out.data;
+            if(mode === 'white') targetColor = [255,255,255]; else if(mode === 'black') targetColor = [0,0,0]; else if(mode === 'auto') targetColor = [d[0], d[1], d[2]];
+            const threshold = (fuzz*2.5)+(contract*10), soft = (feather*15)+1;
+            for(let i=0; i<d.length; i+=4) {
+                const dist = Math.sqrt((d[i]-targetColor[0])**2 + (d[i+1]-targetColor[1])**2 + (d[i+2]-targetColor[2])**2);
+                o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
+                if(dist < threshold-soft) o[i+3]=0; else if(dist < threshold) o[i+3]=((dist-(threshold-soft))/soft)*d[i+3]; else o[i+3]=d[i+3];
+            }
+            canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out,0,0);
         }
-    }
 
-    function updateLienzo(color) {
-        document.getElementById('workspace').style.backgroundColor = color;
-    }
+        // --- CROP ---
+        document.getElementById('btn-init-crop').onclick = () => { if(!oCanvas.width) return; cropBox.style.display='block'; cropBox.style.width='200px'; cropBox.style.height='200px'; document.getElementById('btn-apply-crop').classList.remove('hidden'); };
+        cropBox.onmousedown = (e) => { if(!e.target.classList.contains('resizer')) isDragging = true; };
+        document.querySelector('.resizer').onmousedown = (e) => { isResizing=true; e.preventDefault(); };
+        window.onmousemove = (e) => {
+            if(isResizing) { cropBox.style.width = (e.clientX-cropBox.getBoundingClientRect().left)+'px'; cropBox.style.height = (e.clientY-cropBox.getBoundingClientRect().top)+'px'; }
+            else if(isDragging) { const rect = document.getElementById('canvas-container').getBoundingClientRect(); cropBox.style.left = (e.clientX-rect.left-cropBox.offsetWidth/2)+'px'; cropBox.style.top = (e.clientY-rect.top-cropBox.offsetHeight/2)+'px'; }
+        };
+        window.onmouseup = () => { isResizing=false; isDragging=false; isDraggingQR=false; };
+        document.getElementById('btn-apply-crop').onclick = () => {
+            const canvRect = canvas.getBoundingClientRect(), boxRect = cropBox.getBoundingClientRect(), scale = oCanvas.width/canvRect.width;
+            const x = (boxRect.left-canvRect.left)*scale, y = (boxRect.top-canvRect.top)*scale, w = boxRect.width*scale, h = boxRect.height*scale;
+            const temp = document.createElement('canvas'); temp.width=w; temp.height=h; temp.getContext('2d').drawImage(oCanvas,x,y,w,h,0,0,w,h);
+            oCanvas.width=w; oCanvas.height=h; aspectRatio=w/h; oCtx.clearRect(0,0,w,h); oCtx.drawImage(temp,0,0);
+            cropBox.style.display='none'; document.getElementById('btn-apply-crop').classList.add('hidden'); process();
+        };
 
-    // Eventos de entrada
-    ['tolerance', 'smooth', 'expand'].forEach(id => {
-        document.getElementById(id).oninput = renderizar;
-    });
+        // --- QR ---
+        let isDraggingQR = false;
+        document.getElementById('btn-gen-qr').onclick = () => {
+            const txt = document.getElementById('qrText').value; if(!txt) return;
+            const qp = document.getElementById('qr-preview'); qp.innerHTML = ""; qp.style.display = "block";
+            new QRCode(qp, { text: txt, width: 120, height: 120 });
+            document.getElementById('btn-add-qr').classList.remove('hidden');
+        };
+        document.getElementById('qr-preview').onmousedown = () => isDraggingQR = true;
+        window.addEventListener('mousemove', (e) => {
+            if(isDraggingQR) {
+                const rect = document.getElementById('canvas-container').getBoundingClientRect();
+                const qp = document.getElementById('qr-preview');
+                qp.style.left = (e.clientX - rect.left - qp.offsetWidth/2) + 'px';
+                qp.style.top = (e.clientY - rect.top - qp.offsetHeight/2) + 'px';
+            }
+        });
+        document.getElementById('btn-add-qr').onclick = () => {
+            const qp = document.getElementById('qr-preview'), qrImg = qp.querySelector('img'), rect = qp.getBoundingClientRect(), canvRect = canvas.getBoundingClientRect(), scale = oCanvas.width/canvRect.width;
+            oCtx.drawImage(qrImg, (rect.left-canvRect.left)*scale, (rect.top-canvRect.top)*scale, rect.width*scale, rect.height*scale);
+            qp.style.display = "none"; document.getElementById('btn-add-qr').classList.add('hidden'); process();
+        };
 
-    document.getElementById('w_px').oninput = (e) => {
-        if(document.getElementById('aspect').checked) 
-            document.getElementById('h_px').value = Math.round(e.target.value / ratioAspecto);
-    };
-
-    function saveImage() {
-        if(!imgOriginal) return alert("Carga una imagen primero");
-        const link = document.createElement('a');
-        link.download = 'jj_premium_render.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-    }
-</script>
-</body>
-</html>
+        // --- LIENZO ---
+        const cpSV=document.getElementById('cpSV'), cpH=documen
