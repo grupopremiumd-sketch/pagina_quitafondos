@@ -2,206 +2,222 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J VIP - UCX26 BETA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QUITAR DE FONDOS - J&J VIP UCX26</title>
+    
     <style>
+        /* CSS CALCADO DE URBAN CARTOON */
         :root {
-            --bg-dark: #1a1a1a;
-            --bg-sidebar: #252525;
-            --accent-blue: #007bff;
-            --text-main: #e0e0e0;
-            --border: #333;
+            --bg-body: #0b0b0b;
+            --bg-panel: #141414;
+            --accent: #0084ff;
+            --border: #262626;
+            --text: #ffffff;
+            --text-dim: #888;
         }
 
+        * { box-sizing: border-box; outline: none; }
+        
         body {
+            background-color: var(--bg-body);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: 'Segoe UI', Arial, sans-serif;
             display: flex;
-            flex-direction: column;
             height: 100vh;
             overflow: hidden;
         }
 
-        /* HEADER */
-        header {
-            background-color: var(--bg-sidebar);
-            padding: 10px 20px;
+        /* PANEL IZQUIERDO (CONTROLES) */
+        .sidebar-left {
+            width: 300px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            z-index: 10;
+        }
+
+        .header-logo {
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            padding-bottom: 20px;
+            color: #ffd700; /* Dorado J&J */
+            text-align: center;
+        }
+
+        .section-title {
+            color: var(--text-dim);
+            font-size: 11px;
+            text-transform: uppercase;
+            margin: 20px 0 10px 0;
+            letter-spacing: 1.5px;
+        }
+
+        .control-item {
+            margin-bottom: 15px;
+        }
+
+        .label-group {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+            margin-bottom: 8px;
         }
 
-        .logo { font-weight: bold; color: #fff; letter-spacing: 1px; }
-        .vip-tag { background: #ffd700; color: #000; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 900; }
-
-        /* LAYOUT 3 COLUMNAS */
-        .main-layout {
-            display: grid;
-            grid-template-columns: 280px 1fr 240px;
-            flex-grow: 1;
-        }
-
-        /* PANEL IZQUIERDO: HERRAMIENTAS */
-        .sidebar-left {
-            background-color: var(--bg-sidebar);
-            border-right: 1px solid var(--border);
-            padding: 15px;
-            overflow-y: auto;
-        }
-
-        .tool-group { margin-bottom: 25px; }
-        .tool-group h3 { font-size: 13px; color: #888; text-transform: uppercase; margin-bottom: 15px; }
-
-        .control-row { margin-bottom: 15px; }
-        .control-row label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; }
-        .val-display { color: var(--accent-blue); font-weight: bold; }
+        .val-num { color: var(--accent); font-weight: bold; }
 
         input[type="range"] {
             width: 100%;
+            -webkit-appearance: none;
+            background: #333;
             height: 4px;
-            background: #444;
-            accent-color: var(--accent-blue);
+            border-radius: 2px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
         }
 
         select {
             width: 100%;
-            background: #333;
+            background: #1a1a1a;
             color: #fff;
-            border: 1px solid #444;
+            border: 1px solid var(--border);
             padding: 8px;
             border-radius: 4px;
+            font-size: 12px;
         }
 
-        /* ÁREA CENTRAL */
-        .viewport {
+        /* AREA DE TRABAJO (CENTRAL) */
+        .work-area {
+            flex: 1;
             position: relative;
             background-image: 
-                linear-gradient(45deg, #202020 25%, transparent 25%), 
-                linear-gradient(-45deg, #202020 25%, transparent 25%), 
-                linear-gradient(45deg, transparent 75%, #202020 75%), 
-                linear-gradient(-45deg, transparent 75%, #202020 75%);
+                linear-gradient(45deg, #111 25%, transparent 25%), 
+                linear-gradient(-45deg, #111 25%, transparent 25%), 
+                linear-gradient(45deg, transparent 75%, #111 75%), 
+                linear-gradient(-45deg, transparent 75%, #111 75%);
             background-size: 20px 20px;
             display: flex;
             align-items: center;
             justify-content: center;
+            overflow: hidden;
         }
 
-        .drop-hint {
-            border: 2px dashed #444;
-            padding: 40px;
-            color: #666;
-            text-align: center;
+        #canvas-holder {
+            max-width: 90%;
+            max-height: 90%;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
         }
 
-        /* PANEL DERECHO: CAPAS / EXPORTAR */
+        /* PANEL DERECHO (EXPORTAR) */
         .sidebar-right {
-            background-color: var(--bg-sidebar);
+            width: 250px;
+            background: var(--bg-panel);
             border-left: 1px solid var(--border);
             padding: 15px;
+            display: flex;
+            flex-direction: column;
         }
 
-        .btn-export {
-            background: var(--accent-blue);
+        .btn-blue {
+            background: var(--accent);
             color: white;
             border: none;
-            width: 100%;
             padding: 12px;
-            border-radius: 4px;
+            border-radius: 5px;
             font-weight: bold;
+            font-size: 12px;
             cursor: pointer;
-            margin-top: 10px;
+            transition: 0.2s;
         }
 
-        .layer-item {
-            background: #333;
+        .btn-blue:hover { opacity: 0.9; }
+
+        .layer-box {
+            background: #1a1a1a;
+            border: 1px solid var(--border);
+            border-radius: 5px;
             padding: 10px;
-            border-radius: 4px;
+            font-size: 11px;
             display: flex;
             align-items: center;
             gap: 10px;
-            font-size: 12px;
         }
 
-        /* ADAPTACIÓN MÓVIL */
-        @media (max-width: 768px) {
-            .main-layout { grid-template-columns: 1fr; overflow-y: auto; }
-            .sidebar-left, .sidebar-right { border: none; }
-            .viewport { height: 300px; }
+        /* RESPONSIVE MÓVIL */
+        @media (max-width: 900px) {
+            body { flex-direction: column; overflow-y: auto; }
+            .sidebar-left, .sidebar-right { width: 100%; height: auto; border: none; }
+            .work-area { height: 400px; }
         }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="logo">MEMBRESÍA J&J <span class="vip-tag">VIP</span></div>
-    <div style="font-size: 12px; color: #00ff00;">● CONECTADO</div>
-</header>
-
-<div class="main-layout">
     <aside class="sidebar-left">
-        <div class="tool-group">
-            <h3>Remover Fondos</h3>
-            <div class="control-row">
-                <label>Modo de Algoritmo</label>
-                <select id="algoritmo">
-                    <option>Quitar Fondo Blanco (Sublimación)</option>
-                    <option>Quitar Fondo Negro (DTF)</option>
-                    <option>Remover Color Específico</option>
-                </select>
-            </div>
-            
-            <div class="control-row">
-                <label>Tolerancia <span class="val-display" id="tol-val">56</span></label>
-                <input type="range" min="0" max="100" value="56" oninput="document.getElementById('tol-val').innerText = this.value">
-            </div>
-
-            <div class="control-row">
-                <label>Suavizado de Bordes <span class="val-display" id="sua-val">3.9</span></label>
-                <input type="range" min="0" max="10" step="0.1" value="3.9" oninput="document.getElementById('sua-val').innerText = this.value">
-            </div>
+        <div class="header-logo">COMUNIDAD J&J VIP</div>
+        
+        <div class="section-title">Algoritmo de Remoción</div>
+        <div class="control-item">
+            <select>
+                <option>REMOVER COLOR BLANCO</option>
+                <option>REMOVER COLOR NEGRO</option>
+                <option>FONDO COMPLEJO (BETA)</option>
+            </select>
         </div>
 
-        <div class="tool-group">
-            <h3>Ajustes VIP</h3>
-            <button class="btn-export" style="background: #444; margin-bottom: 10px;">Simulador Multiproducto</button>
-            <button class="btn-export" style="background: #444;">Redimensionar Imagen</button>
+        <div class="control-item">
+            <div class="label-group">
+                <span>TOLERANCIA</span>
+                <span class="val-num" id="tol">56</span>
+            </div>
+            <input type="range" min="0" max="100" value="56" oninput="document.getElementById('tol').innerText = this.value">
         </div>
+
+        <div class="control-item">
+            <div class="label-group">
+                <span>SUAVIZADO</span>
+                <span class="val-num" id="sua">3.9</span>
+            </div>
+            <input type="range" min="0" max="10" step="0.1" value="3.9" oninput="document.getElementById('sua').innerText = this.value">
+        </div>
+
+        <div class="section-title">Herramientas VIP</div>
+        <button class="btn-blue" style="background:#222; margin-bottom:5px;">SIMULADOR 3D</button>
+        <button class="btn-blue" style="background:#222;">REDIMENSIONAR</button>
     </aside>
 
-    <section class="viewport">
-        <div id="canvas-container">
-            <div class="drop-hint" id="drop-text">
-                <img src="https://cdn-icons-png.flaticon.com/512/813/813442.png" width="40" style="filter: invert(0.5); margin-bottom: 10px;"><br>
-                PEGAR IMAGEN (CTRL + V) O ARRASTRAR
+    <main class="work-area">
+        <div id="canvas-holder">
+            <div style="color: #444; text-align: center;">
+                <p style="font-size: 50px; margin: 0;">+</p>
+                <p style="font-size: 12px;">PEGAR O ARRASTRAR IMAGEN</p>
             </div>
-            <canvas id="editor" style="max-width: 100%; display: none;"></canvas>
         </div>
-    </section>
+    </main>
 
     <aside class="sidebar-right">
-        <div class="tool-group">
-            <h3>Capas</h3>
-            <div class="layer-item">
-                <div style="width: 30px; height: 30px; background: #555; border-radius: 2px;"></div>
-                <span>Imagen_Cargada_1.png</span>
-            </div>
+        <div class="section-title">Capas Seleccionadas</div>
+        <div class="layer-box">
+            <div style="width:30px; height:30px; background:#333;"></div>
+            <span>Diseño_Original.png</span>
         </div>
 
-        <div class="tool-group" style="margin-top: auto;">
-            <h3>Finalizar</h3>
-            <button class="btn-export">DESCARGAR PNG</button>
-            <p style="font-size: 10px; color: #666; text-align: center; margin-top: 15px;">Versión UCX26 BETA - J&J Edition</p>
+        <div style="margin-top: auto;">
+            <div class="section-title">Acciones</div>
+            <button class="btn-blue" style="width: 100%;">DESCARGAR PNG</button>
+            <p style="font-size: 9px; color: #444; text-align: center; margin-top: 10px;">Versión J&J UCX26BETA</p>
         </div>
     </aside>
-</div>
-
-<script>
-    // Tu lógica de procesamiento de imagen aquí
-    // El diseño ya está calcado al de la URL que pasaste.
-</script>
 
 </body>
 </html>
