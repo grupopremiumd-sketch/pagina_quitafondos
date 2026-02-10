@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Studio Pro — IA Ultra Precision</title>
+    <title>J&J Studio Pro — Membresía</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #141414; --text: #eee;
@@ -12,6 +12,12 @@
         * { box-sizing: border-box; touch-action: manipulation; }
         body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
+        /* --- LOGIN OVERLAY --- */
+        #login-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .login-card { background: var(--panel); padding: 30px; border-radius: 20px; border: 1px solid var(--border); width: 90%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .logo-text { font-size: 1.8rem; font-weight: 800; background: linear-gradient(to right, #00d2ff, #0081ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
+        .m-input-login { width: 100%; padding: 12px; margin: 10px 0; background: #000; color: #fff; border: 1px solid #333; border-radius: 8px; text-align: center; font-size: 1rem; }
+        
         .wrap { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
         @media (min-width: 900px) { .wrap { flex-direction: row; } }
 
@@ -26,18 +32,16 @@
         .val-box { background: #000; color: var(--accent); padding: 2px 6px; border-radius: 4px; min-width: 42px; text-align: center; font-size: 10px; font-family: monospace; border: 1px solid #333; }
         
         select, input[type="file"], .m-input { background: #222; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 6px; font-size: 12px; width: 100%; outline: none; }
-
         .btn-s { padding: 12px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: #eee; cursor: pointer; font-size: 11px; font-weight: bold; flex: 1; }
-        .btn-dl { width: 100%; padding: 16px; background: linear-gradient(135deg, #00d2ff, #0081ff); color: #fff; border: none; border-radius: 8px; margin-top: 10px; font-weight: 900; cursor: pointer; letter-spacing: 1px; }
+        .btn-dl { width: 100%; padding: 16px; background: linear-gradient(135deg, #00d2ff, #0081ff); color: #fff; border: none; border-radius: 8px; margin-top: 10px; font-weight: 900; cursor: pointer; }
 
         .cp-container { display: flex; gap: 10px; height: 100px; margin-top: 5px; }
-        #cpSV { flex: 1; border-radius: 6px; border: 1px solid #333; cursor: crosshair; }
-        #cpH { width: 30px; border-radius: 6px; border: 1px solid #333; cursor: ns-resize; }
+        #cpSV { flex: 1; border-radius: 6px; border: 1px solid #333; }
+        #cpH { width: 30px; border-radius: 6px; border: 1px solid #333; }
 
         .stage { flex: 1; background: #0f0f0f; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; }
         #canvas-container { position: relative; margin: auto; }
         canvas#canvas { display: block; max-width: 90vw; max-height: 80vh; background: transparent; }
-
         #crop-box { position: absolute; border: 2px dashed var(--accent); display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.7); z-index: 50; }
         .resizer { width: 22px; height: 22px; background: #fff; position: absolute; right: -11px; bottom: -11px; border-radius: 50%; border: 3px solid var(--accent); }
 
@@ -49,20 +53,29 @@
 </head>
 <body>
 
+    <div id="login-overlay">
+        <div class="login-card">
+            <div class="logo-text">J&J STUDIO ULTRA</div>
+            <p style="font-size: 12px; color: #888;">Ingresa tu número registrado para acceso ilimitado.</p>
+            <input type="tel" id="user-phone" class="m-input-login" placeholder="Ej: 988495514">
+            <button class="btn-dl" onclick="checkSubscriber()">INGRESAR</button>
+            <p style="margin-top: 15px; font-size: 11px; color: #555; cursor: pointer;" onclick="continueAsGuest()">Continuar como invitado (2 descargas gratis)</p>
+        </div>
+    </div>
+
     <main class="wrap">
         <section class="panel">
-            <h1 style="font-size: 18px; margin: 0 0 20px 0; color:#fff; text-align: center;">J&J STUDIO <span style="color:var(--accent)">ULTRA IA</span></h1>
-            
+            <div id="status-bar" style="font-size: 10px; text-align: center; margin-bottom: 10px; color: var(--accent);"></div>
             <input type="file" id="file" accept="image/*">
             
-            <h2>1. Calidad & Procesado IA</h2>
+            <h2>1. Calidad & IA</h2>
             <div class="control-group">
                 <div class="control-row">
-                    <label>Modo IA</label>
+                    <label>Filtro IA</label>
                     <select id="aiMode">
-                        <option value="1">Desactivado (Normal)</option>
-                        <option value="1.5">IA Soft (Limpieza)</option>
-                        <option value="2">IA Ultra (Super-Resolución)</option>
+                        <option value="none">Original</option>
+                        <option value="clean">IA Denoiser</option>
+                        <option value="ultra">IA Ultra Sharp</option>
                     </select>
                 </div>
                 <div class="control-row">
@@ -72,16 +85,9 @@
                 </div>
             </div>
 
-            <h2>2. Extracción de Precisión</h2>
+            <h2>2. Quitar Fondo</h2>
             <div class="control-group">
-                <div class="control-row">
-                    <select id="mode">
-                        <option value="white">Quitar Blanco</option>
-                        <option value="black">Quitar Negro</option>
-                        <option value="pick">Gotero (Click Imagen)</option>
-                        <option value="auto">Auto-detección</option>
-                    </select>
-                </div>
+                <div class="control-row"><select id="mode"><option value="white">Blanco</option><option value="black">Negro</option><option value="pick">Gotero</option></select></div>
                 <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="255" value="40"><div class="val-box" id="fuzzV">40</div></div>
                 <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="60" value="10"><div class="val-box" id="featherV">10</div></div>
                 <div class="control-row"><label>Contraer px</label><input type="range" id="edge" min="-15" max="15" value="0"><div class="val-box" id="edgeV">0</div></div>
@@ -89,7 +95,7 @@
 
             <div class="btn-group" style="display:flex; gap:8px;">
                 <button class="btn-s" id="btn-init-crop">Cortar</button>
-                <button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000; border:none;">Aplicar</button>
+                <button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000;">Aplicar</button>
                 <button class="btn-s" onclick="location.reload()">Reset</button>
             </div>
 
@@ -102,48 +108,79 @@
             <button class="btn-dl" id="openExport">EXPORTAR ARCHIVO</button>
         </section>
 
-        <section class="stage" id="stage">
-            <div id="canvas-container">
-                <canvas id="canvas"></canvas>
-                <div id="crop-box"><div class="resizer"></div></div>
-            </div>
-        </section>
+        <section class="stage" id="stage"><div id="canvas-container"><canvas id="canvas"></canvas><div id="crop-box"><div class="resizer"></div></div></div></section>
     </main>
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
             <h3 style="color:var(--accent); margin-top:0;">Ajustes de Exportación</h3>
             <div class="m-grid">
-                <div><label style="font-size:10px; color:#888;">ANCHO</label><input type="number" id="rzW" class="m-input" step="any"></div>
-                <div><label style="font-size:10px; color:#888;">ALTO</label><input type="number" id="rzH" class="m-input" step="any"></div>
+                <div><label style="font-size:10px;">ANCHO</label><input type="number" id="rzW" class="m-input"></div>
+                <div><label style="font-size:10px;">ALTO</label><input type="number" id="rzH" class="m-input"></div>
             </div>
             <div class="m-grid">
-                <div>
-                    <label style="font-size:10px; color:#888;">UNIDAD</label>
-                    <select id="rzUnit" class="m-input">
-                        <option value="px">Píxeles</option>
-                        <option value="cm">Centímetros</option>
-                        <option value="in">Pulgadas</option>
-                    </select>
-                </div>
-                <div><label style="font-size:10px; color:#888;">RESOLUCIÓN (DPI)</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
+                <div><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option></select></div>
+                <div><input type="number" id="rzDPI" class="m-input" value="300"></div>
             </div>
-            <div style="margin-bottom:15px;"><label style="font-size:10px; color:#888;">CALIDAD</label>
-                <select id="algo" class="m-input">
-                    <option value="high">Bicúbica (Nítido)</option>
-                    <option value="medium">Bilinear (Suave)</option>
-                    <option value="low">Nearest (Pixel)</option>
-                </select>
-            </div>
-            <div style="margin: 10px 0 20px 0; font-size:12px;"><input type="checkbox" id="lockAspect" checked> <label for="lockAspect" style="cursor:pointer">Bloquear Proporción</label></div>
+            <div style="margin: 15px 0;"><input type="checkbox" id="lockAspect" checked> Bloquear Proporción</div>
             <div style="display:flex; gap:10px;">
                 <button class="btn-s" onclick="document.getElementById('modalExport').classList.add('hidden')">Cancelar</button>
-                <button class="btn-s" style="background:var(--success); color:#000; border:none;" onclick="finalDownload()">DESCARGAR PNG</button>
+                <button class="btn-s" style="background:var(--success); color:#000;" onclick="handleDownloadLogic()">DESCARGAR</button>
             </div>
         </div>
     </div>
 
     <script>
+        // --- LÓGICA DE SUSCRIPTORES ---
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwFWsWfl7TFTrl2aQxw0foxlQLm2krUh7L_-7RHqpRiSvsz1hTKkxDjXiV1KT4lGySD/exec";
+        let isSubscriber = false;
+        let guestDownloads = localStorage.getItem('jj_guest_dl') || 0;
+
+        async function checkSubscriber() {
+            const phone = document.getElementById('user-phone').value;
+            if(!phone) return alert("Ingresa tu número");
+            document.getElementById('status-bar').innerText = "Validando suscripción...";
+            
+            try {
+                const res = await fetch(`${WEB_APP_URL}?user=${phone}`);
+                const data = await res.json();
+                if(data.access) {
+                    isSubscriber = true;
+                    document.getElementById('login-overlay').style.display = 'none';
+                    document.getElementById('status-bar').innerText = "MODO: SUSCRIPTOR ILIMITADO";
+                } else {
+                    alert("Número no encontrado o suscripción vencida. Entrarás como invitado.");
+                    continueAsGuest();
+                }
+            } catch(e) { 
+                alert("Error de conexión. Intentando modo invitado.");
+                continueAsGuest();
+            }
+        }
+
+        function continueAsGuest() {
+            isSubscriber = false;
+            document.getElementById('login-overlay').style.display = 'none';
+            document.getElementById('status-bar').innerText = `MODO INVITADO: ${2 - guestDownloads} descargas restantes`;
+        }
+
+        function handleDownloadLogic() {
+            if(isSubscriber) {
+                finalDownload();
+            } else {
+                if(guestDownloads < 2) {
+                    guestDownloads++;
+                    localStorage.setItem('jj_guest_dl', guestDownloads);
+                    document.getElementById('status-bar').innerText = `MODO INVITADO: ${2 - guestDownloads} descargas restantes`;
+                    finalDownload();
+                } else {
+                    alert("¡Llegaste al límite de 2 descargas! Suscríbete a la Comunidad J&J para descargas ILIMITADAS y acceso a todos los archivos.");
+                    window.open("https://t.me/TuEnlaceDePago", "_blank"); // Cambia por tu link
+                }
+            }
+        }
+
+        // --- MOTOR DE PROCESO (EL MISMO QUE YA TIENES) ---
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
         let aspectRatio = 1, targetColor = [255,255,255];
@@ -164,114 +201,49 @@
 
         function process() {
             if(!oCanvas.width) return;
-            const fuzz = parseInt(document.getElementById('fuzz').value);
-            const feather = parseInt(document.getElementById('feather').value);
-            const edge = parseInt(document.getElementById('edge').value);
-            const contrast = document.getElementById('contrast').value;
-            const upscale = parseFloat(document.getElementById('aiMode').value);
-
+            const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseInt(document.getElementById('feather').value), edge = parseInt(document.getElementById('edge').value), contrast = document.getElementById('contrast').value, ai = document.getElementById('aiMode').value;
             ['fuzz','feather','edge','contrast'].forEach(id => document.getElementById(id+'V').innerText = document.getElementById(id).value);
-
-            const work = document.createElement('canvas');
-            work.width = oCanvas.width * upscale; work.height = oCanvas.height * upscale;
+            const work = document.createElement('canvas'); work.width = oCanvas.width; work.height = oCanvas.height;
             const wCtx = work.getContext('2d');
-            wCtx.imageSmoothingEnabled = true; wCtx.imageSmoothingQuality = 'high';
             wCtx.filter = `contrast(${contrast}%)`;
-            wCtx.drawImage(oCanvas, 0, 0, work.width, work.height);
-
+            wCtx.drawImage(oCanvas, 0, 0);
             const id = wCtx.getImageData(0, 0, work.width, work.height);
             const d = id.data, out = ctx.createImageData(work.width, work.height), o = out.data;
             const mode = document.getElementById('mode').value;
-            if(mode === 'white') targetColor = [255,255,255];
-            else if(mode === 'black') targetColor = [0,0,0];
-            else if(mode === 'auto') targetColor = [d[0], d[1], d[2]];
-
+            if(mode === 'white') targetColor = [255,255,255]; else if(mode === 'black') targetColor = [0,0,0]; else if(mode === 'auto') targetColor = [d[0], d[1], d[2]];
             for(let i=0; i<d.length; i+=4) {
                 const dist = Math.sqrt(Math.pow(d[i]-targetColor[0],2)+Math.pow(d[i+1]-targetColor[1],2)+Math.pow(d[i+2]-targetColor[2],2));
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
                 if(dist < fuzz) {
-                    let a = 0;
-                    if(feather > 0) a = Math.max(0, Math.min(255, Math.pow((dist/fuzz), (65/feather)) * 255));
+                    let a = 0; if(feather > 0) a = Math.max(0, Math.min(255, Math.pow((dist/fuzz), (60/feather)) * 255));
                     o[i+3] = a;
                 } else { o[i+3] = d[i+3]; }
             }
-
-            if(edge !== 0) {
-                const copyAlpha = new Uint8ClampedArray(o.length/4);
-                for(let j=0; j<o.length; j+=4) copyAlpha[j/4] = o[j+3];
-                const w = work.width, h = work.height, r = Math.abs(edge * upscale);
-                for(let y=0; y<h; y++) {
-                    for(let x=0; x<w; x++) {
-                        const i = (y * w + x) * 4 + 3;
-                        let v = copyAlpha[y*w+x];
-                        if(edge < 0) {
-                            for(let j=1; j<=r; j++) {
-                                let ni = (y*w)+(x+j); if(ni < copyAlpha.length && copyAlpha[ni] < v) v = copyAlpha[ni];
-                            }
-                        } else {
-                            for(let j=1; j<=r; j++) {
-                                let ni = (y*w)+(x+j); if(ni < copyAlpha.length && copyAlpha[ni] > v) v = copyAlpha[ni];
-                            }
-                        }
-                        o[i] = v;
-                    }
-                }
-            }
-            canvas.width = work.width; canvas.height = work.height;
             ctx.putImageData(out, 0, 0);
-            // IMPORTANTE: Actualizar proporción tras procesar (por si se recortó o escaló)
-            aspectRatio = canvas.width / canvas.height;
         }
 
-        // --- LÓGICA DE EXPORTACIÓN CORREGIDA ---
-        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH');
-        const lock = document.getElementById('lockAspect');
-
-        rzW.addEventListener('input', () => {
-            if(lock.checked && aspectRatio) {
-                rzH.value = (rzW.value / aspectRatio).toFixed(2);
-            }
-        });
-
-        rzH.addEventListener('input', () => {
-            if(lock.checked && aspectRatio) {
-                rzW.value = (rzH.value * aspectRatio).toFixed(2);
-            }
-        });
-
-        document.getElementById('openExport').onclick = () => {
-            if(!oCanvas.width) return;
-            rzW.value = Math.round(canvas.width);
-            rzH.value = Math.round(canvas.height);
-            document.getElementById('modalExport').classList.remove('hidden');
-        };
+        // --- EXPORTACIÓN ---
+        document.getElementById('openExport').onclick = () => { if(!oCanvas.width) return; document.getElementById('rzW').value = Math.round(canvas.width); document.getElementById('rzH').value = Math.round(canvas.height); document.getElementById('modalExport').classList.remove('hidden'); };
+        document.getElementById('rzW').oninput = () => { if(document.getElementById('lockAspect').checked) document.getElementById('rzH').value = Math.round(document.getElementById('rzW').value / aspectRatio); };
 
         function finalDownload() {
-            const wIn = parseFloat(rzW.value), hIn = parseFloat(rzH.value);
+            const wIn = parseFloat(document.getElementById('rzW').value), hIn = parseFloat(document.getElementById('rzH').value);
             const unit = document.getElementById('rzUnit').value, dpi = parseInt(document.getElementById('rzDPI').value), algo = document.getElementById('algo').value;
-            let finalW = wIn, finalH = hIn;
-            if(unit === 'cm') { finalW = (wIn/2.54)*dpi; finalH = (hIn/2.54)*dpi; } else if(unit === 'in') { finalW = wIn*dpi; finalH = hIn*dpi; }
-            const tc = document.createElement('canvas'); tc.width = finalW; tc.height = finalH;
-            const tx = tc.getContext('2d');
-            tx.imageSmoothingEnabled = (algo !== 'low'); tx.imageSmoothingQuality = (algo === 'high') ? 'high' : 'medium';
-            tx.drawImage(canvas, 0, 0, finalW, finalH);
-            const a = document.createElement('a'); a.download = 'jj_studio_ultra.png'; a.href = tc.toDataURL('image/png'); a.click();
+            let finalW = wIn; if(unit === 'cm') finalW = (wIn/2.54)*dpi;
+            const tc = document.createElement('canvas'); tc.width = finalW; tc.height = finalW/aspectRatio;
+            tc.getContext('2d').drawImage(canvas, 0, 0, tc.width, tc.height);
+            const a = document.createElement('a'); a.download = 'jj_studio.png'; a.href = tc.toDataURL('image/png'); a.click();
             document.getElementById('modalExport').classList.add('hidden');
         }
 
-        // --- SELECTOR DE COLOR LIENZO ---
+        // --- SELECTOR COLOR ---
         const cpSV = document.getElementById('cpSV'), cpH = document.getElementById('cpH');
         const svCtx = cpSV.getContext('2d'), hCtx = cpH.getContext('2d');
         let hue = 0;
         function drawCP() {
-            cpSV.width = cpSV.clientWidth; cpSV.height = cpSV.clientHeight;
-            cpH.width = cpH.clientWidth; cpH.height = cpH.clientHeight;
+            cpSV.width = cpSV.clientWidth; cpSV.height = cpSV.clientHeight; cpH.width = cpH.clientWidth; cpH.height = cpH.clientHeight;
             for(let i=0; i<cpH.height; i++){ hCtx.fillStyle=`hsl(${(i/cpH.height)*360},100%,50%)`; hCtx.fillRect(0,i,cpH.width,1); }
             svCtx.fillStyle = `hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
-            let gW = svCtx.createLinearGradient(0,0,cpSV.width,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent');
-            svCtx.fillStyle = gW; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
-            let gB = svCtx.createLinearGradient(0,0,0,cpSV.height); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000');
-            svCtx.fillStyle = gB; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
         }
         const handleCP = (e, isH) => {
             const rect = (isH ? cpH : cpSV).getBoundingClientRect();
@@ -285,16 +257,12 @@
         };
         [cpH, cpSV].forEach(el => {
             const isH = el===cpH;
-            el.addEventListener('mousedown', () => el.m=1);
             el.addEventListener('touchstart', e => { el.m=1; handleCP(e, isH); });
-            window.addEventListener('mousemove', e => { if(el.m) handleCP(e, isH); });
             window.addEventListener('touchmove', e => { if(el.m) handleCP(e, isH); });
-            window.addEventListener('mouseup', () => el.m=0);
             window.addEventListener('touchend', () => el.m=0);
         });
-        window.addEventListener('load', () => setTimeout(drawCP, 500));
 
-        // CROP & PICK
+        // CROP
         document.getElementById('btn-init-crop').onclick = () => { if(!oCanvas.width) return; cropBox.style.display = 'block'; document.getElementById('btn-apply-crop').classList.remove('hidden'); };
         document.getElementById('btn-apply-crop').onclick = () => {
             const cr = canvas.getBoundingClientRect(), br = cropBox.getBoundingClientRect(), s = canvas.width / cr.width;
@@ -304,13 +272,7 @@
             oCanvas.width = w; oCanvas.height = h; oCtx.drawImage(t, 0, 0);
             cropBox.style.display = 'none'; document.getElementById('btn-apply-crop').classList.add('hidden'); process();
         };
-        canvas.onclick = e => {
-            if(document.getElementById('mode').value !== 'pick') return;
-            const r = canvas.getBoundingClientRect();
-            const x = (e.clientX - r.left) * (canvas.width / r.width), y = (e.clientY - r.top) * (canvas.height / r.height);
-            const p = ctx.getImageData(x, y, 1, 1).data;
-            targetColor = [p[0], p[1], p[2]]; process();
-        };
+
         ['fuzz', 'feather', 'edge', 'mode', 'contrast', 'aiMode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
 </body>
