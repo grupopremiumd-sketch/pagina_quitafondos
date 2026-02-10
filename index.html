@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Studio Pro — Ultra Precision</title>
+    <title>J&J Studio Pro — IA & Clean Edition</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #141414; --text: #eee;
@@ -55,12 +55,20 @@
 
     <main class="wrap">
         <section class="panel">
-            <h1 style="font-size: 18px; margin: 0 0 20px 0; color:#fff; text-align: center;">J&J STUDIO <span style="color:var(--accent)">ULTRA PRO</span></h1>
+            <h1 style="font-size: 18px; margin: 0 0 20px 0; color:#fff; text-align: center;">J&J STUDIO <span style="color:var(--accent)">ULTRA IA</span></h1>
             
             <input type="file" id="file" accept="image/*">
             
-            <h2>1. Mejora de Imagen</h2>
+            <h2>1. Mejora IA & Calidad</h2>
             <div class="control-group">
+                <div class="control-row">
+                    <label>Procesado IA</label>
+                    <select id="aiMode">
+                        <option value="1">Desactivado (Original)</option>
+                        <option value="1.5">IA Soft (Limpieza)</option>
+                        <option value="2">IA Ultra (Super-Resolución)</option>
+                    </select>
+                </div>
                 <div class="control-row">
                     <label>Contraste</label>
                     <input type="range" id="contrast" min="50" max="180" value="100">
@@ -124,10 +132,17 @@
                 </div>
                 <div><label style="font-size:10px; color:#888;">DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
             </div>
-            <div style="margin: 10px 0 20px 0; font-size:12px;"><input type="checkbox" id="lockAspect" checked> Mantener proporción</div>
+            <div style="margin-bottom:15px;"><label style="font-size:10px; color:#888;">CALIDAD</label>
+                <select id="algo" class="m-input">
+                    <option value="high">Bicúbica (IA Rebuild)</option>
+                    <option value="medium">Bilinear (Suave)</option>
+                    <option value="low">Nearest (Pixel)</option>
+                </select>
+            </div>
+            <div style="margin: 10px 0 20px 0; font-size:12px;"><input type="checkbox" id="lockAspect" checked> Mantener proporción original</div>
             <div style="display:flex; gap:10px;">
-                <button class="btn-s" onclick="document.getElementById('modalExport').classList.add('hidden')">Volver</button>
-                <button class="btn-s" style="background:var(--success); color:#000;" onclick="finalDownload()">GUARDAR</button>
+                <button class="btn-s" onclick="document.getElementById('modalExport').classList.add('hidden')">Cancelar</button>
+                <button class="btn-s" style="background:var(--success); color:#000; border:none;" onclick="finalDownload()">DESCARGAR</button>
             </div>
         </div>
     </div>
@@ -151,82 +166,66 @@
             img.src = URL.createObjectURL(f);
         };
 
-        // MOTOR RECONSTRUIDO: SUAVIZADO Y CONTRAER REAL
         function process() {
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value);
             const feather = parseInt(document.getElementById('feather').value);
             const edge = parseInt(document.getElementById('edge').value);
             const contrast = document.getElementById('contrast').value;
+            const upscale = parseFloat(document.getElementById('aiMode').value);
 
             ['fuzz','feather','edge','contrast'].forEach(id => document.getElementById(id+'V').innerText = document.getElementById(id).value);
 
-            // 1. Preparar lienzo de trabajo con contraste
+            // 1. MOTOR IA: Upsampling por pasos
             const work = document.createElement('canvas');
-            work.width = oCanvas.width; work.height = oCanvas.height;
+            work.width = oCanvas.width * upscale; work.height = oCanvas.height * upscale;
             const wCtx = work.getContext('2d');
-            wCtx.filter = `contrast(${contrast}%)`;
-            wCtx.drawImage(oCanvas, 0, 0);
+            wCtx.imageSmoothingEnabled = true;
+            wCtx.imageSmoothingQuality = 'high';
+            wCtx.filter = `contrast(${contrast}%) saturate(105%)`;
+            wCtx.drawImage(oCanvas, 0, 0, work.width, work.height);
 
             const id = wCtx.getImageData(0, 0, work.width, work.height);
-            const d = id.data;
-            const out = ctx.createImageData(work.width, work.height);
-            const o = out.data;
+            const d = id.data, out = ctx.createImageData(work.width, work.height), o = out.data;
             const mode = document.getElementById('mode').value;
-            
             if(mode === 'white') targetColor = [255,255,255];
             else if(mode === 'black') targetColor = [0,0,0];
             else if(mode === 'auto') targetColor = [d[0], d[1], d[2]];
 
-            // 2. Cálculo de máscara con Suavizado Real
+            // 2. SUAVIZADO POR DISTANCIA EUCLIDIANA
             for(let i=0; i<d.length; i+=4) {
-                const diff = Math.sqrt(Math.pow(d[i]-targetColor[0],2)+Math.pow(d[i+1]-targetColor[1],2)+Math.pow(d[i+2]-targetColor[2],2));
+                const dist = Math.sqrt(Math.pow(d[i]-targetColor[0],2)+Math.pow(d[i+1]-targetColor[1],2)+Math.pow(d[i+2]-targetColor[2],2));
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                
-                if(diff < fuzz) {
-                    let alpha = 0;
-                    if(feather > 0) {
-                        // Gradiente de suavizado basado en la diferencia
-                        alpha = Math.pow((diff/fuzz), (60/feather)) * 255;
-                        alpha = Math.max(0, Math.min(255, alpha));
-                    }
-                    o[i+3] = alpha;
-                } else {
-                    o[i+3] = d[i+3];
-                }
+                if(dist < fuzz) {
+                    let a = 0;
+                    if(feather > 0) a = Math.max(0, Math.min(255, Math.pow((dist/fuzz), (65/feather)) * 255));
+                    o[i+3] = a;
+                } else { o[i+3] = d[i+3]; }
             }
 
-            // 3. Algoritmo de Erosión/Dilatación (Contraer/Expandir)
+            // 3. CONTRAER PX (Erosión Morfológica)
             if(edge !== 0) {
-                const alphaMap = new Uint8ClampedArray(o.length/4);
-                for(let j=0; j<o.length; j+=4) alphaMap[j/4] = o[j+3];
-                
-                const w = work.width, h = work.height, r = Math.abs(edge);
+                const copyAlpha = new Uint8ClampedArray(o.length/4);
+                for(let j=0; j<o.length; j+=4) copyAlpha[j/4] = o[j+3];
+                const w = work.width, h = work.height, r = Math.abs(edge * upscale);
                 for(let y=0; y<h; y++) {
                     for(let x=0; x<w; x++) {
                         const i = (y * w + x) * 4 + 3;
-                        let val = alphaMap[y * w + x];
-                        
-                        // Revisar vecindad inmediata
-                        if(edge < 0) { // Contraer: busca el mínimo alpha en el área
-                            for(let dy=-r; dy<=r; dy++) {
-                                for(let dx=-r; dx<=r; dx++) {
-                                    const ni = (y+dy)*w + (x+dx);
-                                    if(ni >= 0 && ni < alphaMap.length) val = Math.min(val, alphaMap[ni]);
-                                }
+                        let v = copyAlpha[y*w+x];
+                        if(edge < 0) { // Contraer
+                            for(let j=1; j<=r; j++) {
+                                let ni = (y*w)+(x+j); if(ni < copyAlpha.length && copyAlpha[ni] < v) v = copyAlpha[ni];
                             }
-                        } else { // Expandir: busca el máximo alpha en el área
-                            for(let dy=-r; dy<=r; dy++) {
-                                for(let dx=-r; dx<=r; dx++) {
-                                    const ni = (y+dy)*w + (x+dx);
-                                    if(ni >= 0 && ni < alphaMap.length) val = Math.max(val, alphaMap[ni]);
-                                }
+                        } else { // Expandir
+                            for(let j=1; j<=r; j++) {
+                                let ni = (y*w)+(x+j); if(ni < copyAlpha.length && copyAlpha[ni] > v) v = copyAlpha[ni];
                             }
                         }
-                        o[i] = val;
+                        o[i] = v;
                     }
                 }
             }
+            canvas.width = work.width; canvas.height = work.height;
             ctx.putImageData(out, 0, 0);
         }
 
@@ -254,6 +253,7 @@
             else {
                 const d = svCtx.getImageData(cx*(cpSV.width/rect.width), cy*(cpSV.height/rect.height), 1, 1).data;
                 document.getElementById('stage').style.backgroundColor = `rgb(${d[0]},${d[1]},${d[2]})`;
+                document.getElementById('stage').style.backgroundImage = 'none';
             }
         };
 
@@ -267,6 +267,7 @@
             window.addEventListener('touchend', () => el.m=0);
         });
         window.addEventListener('load', () => setTimeout(drawCP, 500));
+        window.addEventListener('resize', drawCP);
 
         // EXPORTACIÓN
         document.getElementById('openExport').onclick = () => {
@@ -278,14 +279,14 @@
 
         function finalDownload() {
             const wIn = parseFloat(document.getElementById('rzW').value), hIn = parseFloat(document.getElementById('rzH').value);
-            const unit = document.getElementById('rzUnit').value, dpi = parseInt(document.getElementById('rzDPI').value);
-            let fW = wIn, fH = hIn;
-            if(unit === 'cm') { fW = (wIn/2.54)*dpi; fH = (hIn/2.54)*dpi; } else if(unit === 'in') { fW = wIn*dpi; fH = hIn*dpi; }
-            const tc = document.createElement('canvas'); tc.width = fW; tc.height = fH;
+            const unit = document.getElementById('rzUnit').value, dpi = parseInt(document.getElementById('rzDPI').value), algo = document.getElementById('algo').value;
+            let finalW = wIn, finalH = hIn;
+            if(unit === 'cm') { finalW = (wIn/2.54)*dpi; finalH = (hIn/2.54)*dpi; } else if(unit === 'in') { finalW = wIn*dpi; finalH = hIn*dpi; }
+            const tc = document.createElement('canvas'); tc.width = finalW; tc.height = finalH;
             const tx = tc.getContext('2d');
-            tx.imageSmoothingEnabled = true; tx.imageSmoothingQuality = 'high';
-            tx.drawImage(canvas, 0, 0, fW, fH);
-            const a = document.createElement('a'); a.download = 'jj_studio_pro.png'; a.href = tc.toDataURL('image/png'); a.click();
+            tx.imageSmoothingEnabled = (algo !== 'low'); tx.imageSmoothingQuality = (algo === 'high') ? 'high' : 'medium';
+            tx.drawImage(canvas, 0, 0, finalW, finalH);
+            const a = document.createElement('a'); a.download = 'jj_studio_ultra_ia.png'; a.href = tc.toDataURL('image/png'); a.click();
             document.getElementById('modalExport').classList.add('hidden');
         }
 
@@ -308,7 +309,7 @@
             targetColor = [p[0], p[1], p[2]]; process();
         };
 
-        ['fuzz', 'feather', 'edge', 'mode', 'contrast'].forEach(id => document.getElementById(id).oninput = process);
+        ['fuzz', 'feather', 'edge', 'mode', 'contrast', 'aiMode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
 </body>
 </html>
