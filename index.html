@@ -3,63 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quita Fondos | Comunidad J&J VIP</title>
-    <link rel="stylesheet" href="estilos_jj.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+    <title>J&J VIP - Quitar Fondo</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    
+    <style>
+        /* ESTILO INSPIRADO EN URBAN CARTOON */
+        :root {
+            --bg-principal: #121212;
+            --bg-panel: #1e1e1e;
+            --accent: #3b82f6;
+            --text: #e5e7eb;
+        }
+
+        body {
+            background-color: var(--bg-principal);
+            color: var(--text);
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .header-vip {
+            text-align: center;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .status-vip {
+            color: #fbbf24;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Contenedores de herramientas */
+        .card {
+            background: var(--bg-panel);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        h2 { font-size: 1.1rem; margin-top: 0; color: var(--accent); }
+
+        select, input[type="number"] {
+            width: 100%;
+            background: #2d2d2d;
+            border: 1px solid #444;
+            color: white;
+            padding: 8px;
+            border-radius: 6px;
+            margin: 5px 0;
+        }
+
+        /* Sliders tipo Video Urban Cartoon */
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: #333;
+            border-radius: 5px;
+            accent-color: var(--accent);
+        }
+
+        .btn-main {
+            background: var(--accent);
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .drop-area {
+            border: 2px dashed #444;
+            padding: 30px;
+            text-align: center;
+            border-radius: 12px;
+            background: #1a1a1a;
+            margin: 15px 0;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+            background-image: linear-gradient(45deg, #222 25%, transparent 25%), 
+                              linear-gradient(-45deg, #222 25%, transparent 25%), 
+                              linear-gradient(45deg, transparent 75%, #222 75%), 
+                              linear-gradient(-45deg, transparent 75%, #222 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+        }
+    </style>
 </head>
 <body>
-    <div id="header-vip">
-        <div class="logo">MEMBRESÍA J&J VIP</div>
-        <div class="status-badge" id="vip-status">💎 MIEMBRO ACTIVO</div>
+
+    <div class="header-vip">
+        <div class="status-vip">💎 MIEMBRO ACTIVO</div>
+        <h1 style="margin: 5px 0; font-size: 1.4rem;">MEMBRESÍA J&J VIP</h1>
     </div>
 
-    <main class="container">
-        <aside class="sidebar">
-            <section class="tool-box">
-                <h3>Eliminador de Fondo</h3>
-                <div class="input-group">
-                    <label>Modo de recorte:</label>
-                    <select id="recorte-modo">
-                        <option value="blanco">Quitar Blanco (Sublimación)</option>
-                        <option value="negro">Quitar Negro (DTF)</option>
-                        <option value="especifico">Color Específico</option>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label>Tolerancia: <span id="tol-val">20</span></label>
-                    <input type="range" id="tolerancia" min="1" max="100" value="20">
-                </div>
-            </section>
+    <div class="card">
+        <h2>Configuración</h2>
+        <label>Modo:</label>
+        <select id="modo">
+            <option>Quitar fondo blanco</option>
+            <option>Quitar fondo negro</option>
+        </select>
+        
+        <label style="display:block; margin-top:10px;">Tolerancia</label>
+        <input type="range" id="tolerancia" min="1" max="100" value="56">
+        
+        <label style="display:block; margin-top:10px;">Suavizado (px)</label>
+        <input type="range" id="suavizado" min="0" max="10" step="0.1" value="3.9">
+    </div>
 
-            <section class="tool-box">
-                <h3>Redimensionar (Exportar)</h3>
-                <div class="size-inputs">
-                    <input type="number" id="img-width" placeholder="Ancho (px)">
-                    <input type="number" id="img-height" placeholder="Alto (px)">
-                </div>
-                <button class="btn-action" onclick="aplicarTamano()">Ajustar Medida</button>
-            </section>
+    <div class="card">
+        <h2>Exportar - Redimensionar</h2>
+        <div style="display: flex; gap: 10px;">
+            <input type="number" placeholder="Ancho" id="w">
+            <input type="number" placeholder="Alto" id="h">
+        </div>
+        <select>
+            <option>px (píxeles)</option>
+            <option>in (pulgadas)</option>
+            <option>cm (centímetros)</option>
+        </select>
+        <button class="btn-main" style="background: #333;">Ajustar Medida</button>
+    </div>
 
-            <section class="tool-box">
-                <h3>Simulador Multiproducto</h3>
-                <button class="btn-secondary" onclick="abrirSimulador()">Vista Previa Taza/Polo</button>
-            </section>
-        </aside>
+    <div class="drop-area" id="dropArea">
+        Pega tu imagen o arrástrala aquí
+    </div>
 
-        <section class="canvas-area">
-            <div id="drop-zone" class="drop-zone">
-                <p>Pega tu imagen (Ctrl + V) o arrástrala aquí</p>
-                <input type="file" id="file-input" hidden>
-            </div>
-            <canvas id="main-canvas"></canvas>
-            
-            <div class="bottom-actions">
-                <button class="btn-reset" onclick="resetCanvas()">Limpiar</button>
-                <button class="btn-download" onclick="descargarPNG()">DESCARGAR PNG SIN FONDO</button>
-            </div>
-        </section>
-    </main>
+    <div style="text-align: center;">
+        <canvas id="c"></canvas>
+    </div>
 
-    <script src="motor_procesamiento.js"></script>
+    <button class="btn-main">DESCARGAR PNG SIN FONDO</button>
+
+    <script>
+        // Aquí iría la lógica que ya tienes de procesamiento
+        // Al estar todo en el mismo archivo, el celular cargará
+        // el diseño y la funcionalidad al mismo tiempo.
+    </script>
 </body>
 </html>
