@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Studio Pro — Versión Definitiva</title>
+    <title>J&J Studio Pro — Lienzo Puro</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #141414; --text: #eee; --muted: #9ca3af;
@@ -39,13 +39,13 @@
         #cpSV { flex: 1; border-radius: 6px; border: 1px solid #333; cursor: crosshair; background: #000; }
         #cpH { width: 30px; border-radius: 6px; border: 1px solid #333; cursor: ns-resize; }
 
-        /* ESCENARIO */
+        /* ESCENARIO (LIENZO PURO) */
         .stage { flex: 1; background: #0f0f0f; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; }
         #canvas-container { position: relative; margin: auto; }
         canvas#canvas { 
             display: block; max-width: 92vw; max-height: 80vh; 
-            background-image: linear-gradient(45deg, #1a1a1a 25%, transparent 25%), linear-gradient(-45deg, #1a1a1a 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #1a1a1a 75%), linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
-            background-size: 14px 14px;
+            /* SE ELIMINÓ EL PATRÓN DE CUADRADOS AQUÍ */
+            background: transparent; 
         }
 
         #crop-box { position: absolute; border: 2px dashed #00d2ff; display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); z-index: 50; }
@@ -93,7 +93,7 @@
                 <canvas id="cpH"></canvas>
             </div>
 
-            <button class="btn-dl" id="openExport">DESCARGAR ARCHIVO</button>
+            <button class="btn-dl" id="openExport">EXPORTAR ARCHIVO</button>
         </section>
 
         <section class="stage" id="stage">
@@ -148,7 +148,6 @@
         let aspectRatio = 1, targetColor = [255,255,255], isResizing = false, isDragging = false;
         const cropBox = document.getElementById('crop-box');
 
-        // CARGA DE IMAGEN
         document.getElementById('file').onchange = e => {
             const f = e.target.files[0];
             if(!f) return;
@@ -163,7 +162,6 @@
             img.src = URL.createObjectURL(f);
         };
 
-        // MOTOR DE PROCESAMIENTO MEJORADO (SUAVIZADO Y CONTRAER REAL)
         function process() {
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value);
@@ -184,37 +182,29 @@
             else if(mode === 'black') targetColor = [0,0,0];
             else if(mode === 'auto') targetColor = [d[0], d[1], d[2]];
 
-            // Fase 1: Transparencia y Suavizado
             for(let i=0; i<d.length; i+=4) {
                 const diff = Math.max(Math.abs(d[i]-targetColor[0]), Math.abs(d[i+1]-targetColor[1]), Math.abs(d[i+2]-targetColor[2]));
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                
                 if(diff < fuzz) {
                     let alpha = 0;
-                    if(feather > 0) {
-                        alpha = Math.max(0, Math.min(255, ((diff - (fuzz - feather)) / feather) * 255));
-                    }
+                    if(feather > 0) alpha = Math.max(0, Math.min(255, ((diff - (fuzz - feather)) / feather) * 255));
                     o[i+3] = alpha;
-                } else {
-                    o[i+3] = d[i+3];
-                }
+                } else { o[i+3] = d[i+3]; }
             }
 
-            // Fase 2: Contraer / Expandir (Erosión/Dilatación de Alpha)
             if(edge !== 0) {
                 const copy = new Uint8ClampedArray(o);
-                const w = oCanvas.width, h = oCanvas.height;
-                const offset = Math.abs(edge);
+                const w = oCanvas.width, h = oCanvas.height, offset = Math.abs(edge);
                 for(let y=0; y<h; y++) {
                     for(let x=0; x<w; x++) {
                         const idx = (y * w + x) * 4 + 3;
                         let val = copy[idx];
-                        if(edge < 0) { // Contraer
+                        if(edge < 0) {
                             for(let i=-offset; i<=offset; i++) {
                                 let ni = idx + (i*4);
                                 if(ni >= 0 && ni < copy.length) val = Math.min(val, copy[ni]);
                             }
-                        } else { // Expandir
+                        } else {
                             for(let i=-offset; i<=offset; i++) {
                                 let ni = idx + (i*4);
                                 if(ni >= 0 && ni < copy.length) val = Math.max(val, copy[ni]);
@@ -227,7 +217,6 @@
             ctx.putImageData(out, 0, 0);
         }
 
-        // SELECTOR DE COLOR LIENZO (REPARADO TOTALMENTE)
         const cpSV = document.getElementById('cpSV'), cpH = document.getElementById('cpH');
         const svCtx = cpSV.getContext('2d'), hCtx = cpH.getContext('2d');
         let hue = 0;
@@ -263,11 +252,8 @@
             const clientY = e.touches ? e.touches[0].clientY : e.clientY;
             const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
             const y = Math.max(0, Math.min(clientY - rect.top, rect.height));
-            
-            if(isHue) {
-                hue = (y / rect.height) * 360;
-                drawCP();
-            } else {
+            if(isHue) { hue = (y / rect.height) * 360; drawCP(); }
+            else {
                 const data = svCtx.getImageData(x * (cpSV.width/rect.width), y * (cpSV.height/rect.height), 1, 1).data;
                 document.getElementById('stage').style.backgroundColor = `rgb(${data[0]},${data[1]},${data[2]})`;
                 document.getElementById('stage').style.backgroundImage = 'none';
@@ -284,7 +270,6 @@
             window.addEventListener('touchend', () => el.moving = false);
         });
 
-        // MODAL Y EXPORTACIÓN (RESTAURADO CON TODAS LAS OPCIONES)
         document.getElementById('openExport').onclick = () => {
             if(!oCanvas.width) return;
             document.getElementById('rzW').value = Math.round(oCanvas.width);
@@ -301,32 +286,18 @@
             const w = parseInt(document.getElementById('rzW').value);
             const h = parseInt(document.getElementById('rzH').value);
             const algo = document.getElementById('algo').value;
-            const unit = document.getElementById('rzUnit').value;
-            const dpi = parseInt(document.getElementById('rzDPI').value);
-
-            let finalW = w, finalH = h;
-            if(unit === 'cm') { finalW = (w / 2.54) * dpi; finalH = (h / 2.54) * dpi; }
-            if(unit === 'in') { finalW = w * dpi; finalH = h * dpi; }
-
             const tc = document.createElement('canvas'); 
-            tc.width = finalW; tc.height = finalH;
+            tc.width = w; tc.height = h;
             const tx = tc.getContext('2d');
             tx.imageSmoothingEnabled = (algo !== 'low');
             tx.imageSmoothingQuality = (algo === 'high') ? 'high' : 'medium';
-            tx.drawImage(canvas, 0, 0, finalW, finalH);
-            
+            tx.drawImage(canvas, 0, 0, w, h);
             const a = document.createElement('a'); a.download = 'jj_studio_pro.png';
             a.href = tc.toDataURL('image/png'); a.click();
             document.getElementById('modalExport').classList.add('hidden');
         }
 
-        // HERRAMIENTA RECORTE
-        document.getElementById('btn-init-crop').onclick = () => {
-            if(!oCanvas.width) return;
-            cropBox.style.display = 'block';
-            document.getElementById('btn-apply-crop').classList.remove('hidden');
-        };
-
+        document.getElementById('btn-init-crop').onclick = () => { if(!oCanvas.width) return; cropBox.style.display = 'block'; document.getElementById('btn-apply-crop').classList.remove('hidden'); };
         document.getElementById('btn-apply-crop').onclick = () => {
             const cr = canvas.getBoundingClientRect(), br = cropBox.getBoundingClientRect(), s = oCanvas.width / cr.width;
             const w = br.width * s, h = br.height * s;
