@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro — Herramienta Definitiva</title>
+    <title>J&J Studio Pro — Quitafondos</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
@@ -11,258 +11,246 @@
             --vip: #00d2ff;
         }
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
 
-        /* --- HEADER --- */
-        header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: #0b0b0b; display: flex; align-items: center; justify-content: space-between; height: 60px; }
-        .logo-text { font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, var(--vip), #0081ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        #status-tag { font-size: 11px; padding: 4px 10px; border-radius: 20px; background: #222; color: #888; font-weight: bold; border: 1px solid #333; }
+        header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: #0b0b0b; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 1000; }
+        .logo-text { font-size: 1.2rem; font-weight: 800; background: linear-gradient(to right, var(--vip), #0081ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        #status-tag { font-size: 10px; padding: 4px 10px; border-radius: 20px; background: #222; color: #888; font-weight: bold; border: 1px solid #333; }
         .status-vip { background: #052e1a !important; color: var(--success) !important; border-color: var(--success) !important; }
 
-        /* --- ESTRUCTURA --- */
         .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
-        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; z-index: 100; }
-        h2 { font-size: 13px; color: var(--muted); margin-bottom: 15px; font-weight: 700; text-transform: uppercase; }
-        .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
-        label { font-size: 13px; color: #ddd; width: 120px; }
-        input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
-        .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 50px; text-align: center; font-size: 12px; }
-        
-        /* SELECTOR COLOR LIENZO MEJORADO */
-        .cp-container { display: flex; gap: 10px; height: 120px; margin-top: 10px; user-select: none; }
-        #cpSV { flex: 1; border-radius: 6px; border: 1px solid #2a2a2a; cursor: crosshair; background: white; }
-        #cpH { width: 25px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: ns-resize; }
+        @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; height: auto; } .panel { border-right: none; border-bottom: 1px solid var(--border); } }
 
-        /* HERRAMIENTAS */
-        .btn-group { display: flex; gap: 8px; margin-top: 15px; }
-        .btn-s { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; }
+        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; z-index: 100; }
+        h2 { font-size: 11px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
+        
+        .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; gap: 10px; }
+        label { font-size: 12px; color: #ddd; width: 100px; }
+        input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
+        .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 45px; text-align: center; font-size: 11px; }
+        
+        .cp-container { display: flex; gap: 10px; height: 100px; margin-top: 10px; }
+        #cpSV { flex: 1; border-radius: 6px; border: 1px solid #2a2a2a; cursor: crosshair; }
+        #cpH { width: 20px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: ns-resize; }
+
+        .btn-group { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
+        .btn-s { flex: 1; min-width: 80px; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; transition: 0.2s; text-align: center; }
         .btn-dl { width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 20px; font-weight: 900; cursor: pointer; font-size: 14px; }
 
-        /* ESCENARIO */
-        .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; height: 100%; transition: background 0.1s; }
-        #canvas-container { position: relative; display: inline-block; }
-        canvas#canvas { display: block; max-height: 85vh; }
-        #crop-box { position: absolute; border: 2px dashed #fff; cursor: move; display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); z-index: 50; }
-        .resizer { width: 12px; height: 12px; background: #fff; border: 2px solid var(--accent); position: absolute; right: -6px; bottom: -6px; cursor: nwse-resize; border-radius: 50%; }
-
+        .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; min-height: 400px; padding: 20px; }
+        #canvas-container { position: relative; display: inline-block; max-width: 100%; }
+        canvas#canvas { display: block; max-width: 100%; height: auto; max-height: 70vh; }
+        
         /* MODALES */
-        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 520px; border: 1px solid #262626; box-shadow: 0 25px 60px rgba(0,0,0,.5); text-align: center; }
-        .m-input { background: #fffbe6; color: #333; border: 1px solid #d4b106; padding: 6px 10px; border-radius: 4px; font-weight: bold; width: 110px; }
+        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
+        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 100%; max-width: 450px; border: 1px solid #262626; text-align: center; }
+        .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; }
         .hidden { display: none !important; }
 
-        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 20px; border-radius: 12px; cursor: pointer; transition: 0.3s; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; text-align: left; width: 100%; }
-        .choice-card:hover { border-color: var(--vip); background: #222; transform: scale(1.02); }
-        .wa-float { position: fixed; bottom: 20px; right: 20px; background: var(--wa); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
+        .choice-card:hover { border-color: var(--vip); }
+        .wa-float { position: fixed; bottom: 20px; right: 20px; background: var(--wa); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
     </style>
 </head>
 <body>
 
-    <a href="https://wa.me/51916689969" class="wa-float" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="30"></a>
+    <a href="https://wa.me/51916689969" class="wa-float" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="25"></a>
 
-    <div id="choice-modal" class="modal-back hidden">
+    <div id="access-modal" class="modal-back hidden">
         <div class="modal">
-            <h3 style="margin-top:0; color:var(--vip)">¡Casi listo!</h3>
-            <p style="color:var(--muted); font-size:14px; margin-bottom:25px;">Para descargar este diseño en alta calidad elige una opción:</p>
+            <h3 style="color:var(--vip)">¡Descarga tu Diseño!</h3>
+            <p id="trial-msg" style="font-size:13px; color:var(--muted)">Te queda 1 descarga de prueba gratuita.</p>
+            
+            <button class="btn-dl" id="btn-free-dl" onclick="useFreeTrial()">DESCARGA GRATUITA (1)</button>
+            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
+            
             <div class="choice-card" onclick="openLogin()">
-                <div style="font-size:24px;">💎</div>
-                <div><div style="font-weight:bold; color:white;">Soy Suscriptor VIP</div><div style="font-size:12px; color:var(--muted)">Inicia sesión para descargar sin límites.</div></div>
+                <div style="font-size:20px;">💎</div>
+                <div><b>Soy Socio VIP</b><br><small style="color:#666">Ingresa con tu número.</small></div>
             </div>
-            <div class="choice-card" onclick="window.open('https://wa.me/51916689969?text=Hola,%20quiero%20adquirir%20la%20suscripción%20de%20J&J%20Studio%20para%20descargar%20mis%20diseños','_blank')">
-                <div style="font-size:24px;">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">No tengo suscripción</div><div style="font-size:12px; color:var(--muted)">Habla con nosotros para activar tu cuenta.</div></div>
+            <div class="choice-card" onclick="window.open('https://wa.me/51916689969','_blank')">
+                <div style="font-size:20px;">📲</div>
+                <div><b>Quiero ser VIP</b><br><small style="color:#666">Descargas ilimitadas y Proporción.</small></div>
             </div>
-            <button onclick="closeChoice()" style="background:none; border:none; color:var(--muted); margin-top:10px; cursor:pointer; font-size:12px;">Cerrar ventana</button>
+            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer;">Cerrar</button>
         </div>
     </div>
 
     <div id="login-modal" class="modal-back hidden">
-        <div class="modal" style="max-width:380px;">
-            <h3 style="margin-top:0">Validar Membresía</h3>
-            <input type="text" id="user-id" placeholder="📱 Celular" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
-            <input type="password" id="access-key" placeholder="🔑 Contraseña" style="width:100%; padding:12px; margin-bottom:20px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
-            <button class="btn-dl" onclick="validateAccess()" style="margin:0;">VERIFICAR Y ENTRAR</button>
-            <button onclick="closeLogin()" style="background:none; border:none; color:var(--muted); margin-top:15px; cursor:pointer;">Regresar</button>
+        <div class="modal" style="max-width:350px;">
+            <h3>Validar Socio</h3>
+            <input type="text" id="user-id" placeholder="Número de Celular" class="m-input">
+            <input type="password" id="access-key" placeholder="Contraseña J&J" class="m-input">
+            <button class="btn-dl" onclick="validateAccess()" style="margin-top:10px;">ENTRAR AHORA</button>
+            <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer;">Volver</button>
         </div>
     </div>
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="margin-top:0">Configurar Descarga PNG</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; text-align:left;">
-                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Ancho</label><div style="display:flex;gap:5px;"><input type="number" id="rzW" class="m-input"><span id="utW" style="font-size:11px;color:#666">cm</span></div></div>
-                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Alto</label><div style="display:flex;gap:5px;"><input type="number" id="rzH" class="m-input"><span id="utH" style="font-size:11px;color:#666">cm</span></div></div>
-                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Unidad</label><select id="rzUnit" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:6px; border-radius:6px; width:110px;"><option value="cm">cm</option><option value="in">in</option><option value="px">px</option></select></div>
-                <div style="display:flex; justify-content:space-between; align-items:center;"><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
-                <div style="grid-column: span 2; display:flex; justify-content:space-between; align-items:center;">
-                    <label>Método</label>
-                    <select id="rzMethod" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:6px; border-radius:6px; width:220px;">
-                        <option value="high">Alta calidad (Bicúbica)</option>
-                        <option value="medium">Bueno (Bilinear)</option>
-                        <option value="low">Rápido (Nearest Neighbor)</option>
-                    </select>
-                </div>
-                <div style="grid-column: span 2;"><input type="checkbox" id="lockAspect" checked> <span style="font-size:12px; color:#888;">Mantener proporción de aspecto</span></div>
+            <h3 style="margin-top:0">Ajuste de Impresión (VIP)</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align:left;">
+                <div><label>Ancho (cm)</label><input type="number" id="rzW" class="m-input" style="margin:0"></div>
+                <div><label>Alto (cm)</label><input type="number" id="rzH" class="m-input" style="margin:0"></div>
+                <div style="grid-column: span 2;"><input type="checkbox" id="lockAspect" checked> <span style="font-size:11px; color:#888;">Mantener Proporción Vinculada</span></div>
             </div>
-            <div style="display:flex; gap:10px; margin-top:20px; justify-content:flex-end;">
-                <button class="btn-s" onclick="closeExport()">Cancelar</button>
-                <button class="btn-s" style="background:#222; color:var(--vip); border-color:var(--vip);" onclick="finalDownload()">DESCARGAR AHORA</button>
-            </div>
+            <button class="btn-dl" onclick="finalDownload()">DESCARGAR PNG PRO</button>
+            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer;">Cancelar</button>
         </div>
     </div>
 
-    <header><div class="logo-text">J&J STUDIO PRO</div><div id="status-tag">MODO INVITADO</div></header>
+    <header>
+        <div class="logo-text">J&J STUDIO PRO</div>
+        <div id="status-tag">INVITADO</div>
+    </header>
 
     <main class="wrap">
         <section class="panel">
-            <h2>Cargar imagen</h2>
-            <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:12px; margin-bottom:20px;">
-            <h2>Limpieza</h2>
-            <div class="control-row"><select id="mode" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; flex:1;"><option value="white">Quitar blanco</option><option value="black">Quitar negro</option><option value="pick">Elegir color...</option><option value="auto">Auto (esquinas)</option></select></div>
+            <button class="btn-s" style="background: var(--vip); color: #000; width: 100%; margin-bottom: 20px;" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR 3D</button>
+            
+            <h2>1. Cargar Imagen</h2>
+            <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:12px;">
+
+            <h2>2. Quitar Fondo</h2>
+            <div class="control-row">
+                <select id="mode" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; flex:1;">
+                    <option value="white">Quitar Blanco</option>
+                    <option value="black">Quitar Negro</option>
+                </select>
+            </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
-            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
-            <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" step="1" value="0"><div class="val-box" id="contractV">0</div></div>
 
-            <h2>Herramientas</h2>
-            <div class="btn-group"><button class="btn-s" id="btn-init-crop">✂️ Recortar</button><button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000;">✓ Aplicar</button><button class="btn-s" onclick="location.reload()">Reiniciar</button></div>
-
-            <label style="margin-top:20px; display:block; font-size:12px; font-weight: bold;">COLOR DEL LIENZO</label>
-            <div class="cp-container">
-                <canvas id="cpSV" width="220" height="120"></canvas>
-                <canvas id="cpH" width="25" height="120"></canvas>
+            <h2>3. Edición</h2>
+            <div class="btn-group">
+                <button class="btn-s" onclick="initCrop()">✂️ Recortar</button>
+                <button class="btn-s" onclick="location.reload()">🔄 Reiniciar</button>
             </div>
 
-            <button class="btn-dl" onclick="handleDownloadClick()">DESCARGAR PNG</button>
+            <h2>4. Color del Lienzo</h2>
+            <div class="cp-container">
+                <canvas id="cpSV" width="220" height="100"></canvas>
+                <canvas id="cpH" width="20" height="100"></canvas>
+            </div>
+
+            <button class="btn-dl" onclick="checkDownload()">DESCARGAR DISEÑO</button>
         </section>
-        <section class="stage" id="stage"><div id="canvas-container"><canvas id="canvas"></canvas><div id="crop-box"><div class="resizer"></div></div></div></section>
+
+        <section class="stage" id="stage">
+            <div id="canvas-container">
+                <canvas id="canvas"></canvas>
+            </div>
+        </section>
     </main>
 
     <script>
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec";
-        let isVip = false;
-
-        function handleDownloadClick() { if (isVip) { openExport(); } else { document.getElementById('choice-modal').classList.remove('hidden'); } }
-        function openLogin() { closeChoice(); document.getElementById('login-modal').classList.remove('hidden'); }
-        function closeChoice() { document.getElementById('choice-modal').classList.add('hidden'); }
-        function closeLogin() { document.getElementById('login-modal').classList.add('hidden'); }
-        function openExport() { if(!oCanvas.width) return; updateUnits(); document.getElementById('modalExport').classList.remove('hidden'); }
-        function closeExport() { document.getElementById('modalExport').classList.add('hidden'); }
-
-        async function validateAccess() {
-            const u = document.getElementById('user-id').value, p = document.getElementById('access-key').value;
-            if(!u || !p) return;
-            try {
-                const res = await fetch(`${WEB_APP_URL}?user=${u}&pass=${p}`);
-                const data = await res.json();
-                if(data.access) { isVip = true; document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO"; document.getElementById('status-tag').classList.add('status-vip'); closeLogin(); alert("¡Membresía validada!"); }
-                else { alert("Suscripción no encontrada."); }
-            } catch(e) { alert("Error de conexión"); }
-        }
-
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
-        let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
-        let aspectRatio = 1, targetColor = [255,255,255], isResizing = false, isDragging = false;
-        const cropBox = document.getElementById('crop-box');
+        let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d'), aspectRatio = 1;
+        
+        let isVip = localStorage.getItem('jj_session') === 'active';
+        let freeUsed = localStorage.getItem('jj_free_trial') === 'used';
 
+        window.onload = () => {
+            if(isVip) {
+                document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO";
+                document.getElementById('status-tag').classList.add('status-vip');
+            }
+            drawCP();
+        };
+
+        // --- CARGA Y PROCESO ---
         document.getElementById('file').onchange = e => {
             const f = e.target.files[0];
             const img = new Image();
-            img.onload = () => { oCanvas.width = img.width; oCanvas.height = img.height; aspectRatio = img.width/img.height; oCtx.drawImage(img,0,0); process(); };
+            img.onload = () => {
+                oCanvas.width = img.width; oCanvas.height = img.height;
+                aspectRatio = img.width / img.height;
+                oCtx.drawImage(img, 0, 0);
+                process();
+            };
             img.src = URL.createObjectURL(f);
         };
 
         function process() {
             if(!oCanvas.width) return;
-            const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value), contract = parseInt(document.getElementById('contract').value), mode = document.getElementById('mode').value;
-            document.getElementById('fuzzV').innerText = fuzz; document.getElementById('featherV').innerText = feather; document.getElementById('contractV').innerText = contract;
+            const fuzz = parseInt(document.getElementById('fuzz').value), mode = document.getElementById('mode').value;
+            document.getElementById('fuzzV').innerText = fuzz;
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data, out = ctx.createImageData(oCanvas.width,oCanvas.height), o = out.data;
-            if(mode === 'white') targetColor = [255,255,255]; else if(mode === 'black') targetColor = [0,0,0]; else if(mode === 'auto') targetColor = [d[0], d[1], d[2]];
-            const threshold = (fuzz*2.5)+(contract*10), soft = (feather*15)+1;
             for(let i=0; i<d.length; i+=4) {
-                const dist = Math.sqrt((d[i]-targetColor[0])**2 + (d[i+1]-targetColor[1])**2 + (d[i+2]-targetColor[2])**2);
-                o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                if(dist < threshold-soft) o[i+3]=0; else if(dist < threshold) o[i+3]=((dist-(threshold-soft))/soft)*d[i+3]; else o[i+3]=d[i+3];
+                const isBg = mode === 'white' ? (d[i]>255-fuzz && d[i+1]>255-fuzz && d[i+2]>255-fuzz) : (d[i]<fuzz && d[i+1]<fuzz && d[i+2]<fuzz);
+                o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2]; o[i+3] = isBg ? 0 : d[i+3];
             }
-            canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out,0,0);
+            canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out, 0, 0);
         }
 
-        // --- CROP ---
-        document.getElementById('btn-init-crop').onclick = () => { if(!oCanvas.width) return; cropBox.style.display='block'; cropBox.style.width='200px'; cropBox.style.height='200px'; document.getElementById('btn-apply-crop').classList.remove('hidden'); };
-        cropBox.onmousedown = (e) => { if(!e.target.classList.contains('resizer')) isDragging = true; };
-        document.querySelector('.resizer').onmousedown = (e) => { isResizing=true; e.preventDefault(); };
-        window.onmousemove = (e) => {
-            if(!oCanvas.width) return;
-            const rect = document.getElementById('canvas-container').getBoundingClientRect();
-            if(isResizing) { cropBox.style.width = (e.clientX-cropBox.getBoundingClientRect().left)+'px'; cropBox.style.height = (e.clientY-cropBox.getBoundingClientRect().top)+'px'; }
-            else if(isDragging) { cropBox.style.left = (e.clientX-rect.left-cropBox.offsetWidth/2)+'px'; cropBox.style.top = (e.clientY-rect.top-cropBox.offsetHeight/2)+'px'; }
-        };
-        window.onmouseup = () => { isResizing=false; isDragging=false; };
-        document.getElementById('btn-apply-crop').onclick = () => {
-            const canvRect = canvas.getBoundingClientRect(), boxRect = cropBox.getBoundingClientRect(), scale = oCanvas.width/canvRect.width;
-            const x = (boxRect.left-canvRect.left)*scale, y = (boxRect.top-canvRect.top)*scale, w = boxRect.width*scale, h = boxRect.height*scale;
-            const temp = document.createElement('canvas'); temp.width=w; temp.height=h; temp.getContext('2d').drawImage(oCanvas,x,y,w,h,0,0,w,h);
-            oCanvas.width=w; oCanvas.height=h; aspectRatio=w/h; oCtx.clearRect(0,0,w,h); oCtx.drawImage(temp,0,0);
-            cropBox.style.display='none'; document.getElementById('btn-apply-crop').classList.add('hidden'); process();
-        };
+        // --- DESCARGA Y SEGURIDAD ---
+        function checkDownload() {
+            if (isVip) { 
+                openExport(); 
+            } else if (!freeUsed) {
+                document.getElementById('access-modal').classList.remove('hidden');
+                document.getElementById('btn-free-dl').style.display = 'block';
+            } else {
+                document.getElementById('access-modal').classList.remove('hidden');
+                document.getElementById('btn-free-dl').style.display = 'none';
+                document.getElementById('trial-msg').innerText = "Has agotado tu prueba gratuita. ¡Únete a los VIP!";
+            }
+        }
 
-        // --- SELECTOR DE COLOR DE LIENZO (ARREGLADO) ---
+        function useFreeTrial() {
+            localStorage.setItem('jj_free_trial', 'used');
+            finalDownload();
+            location.reload();
+        }
+
+        async function validateAccess() {
+            const u = document.getElementById('user-id').value.trim();
+            const p = document.getElementById('access-key').value.trim();
+            const res = await fetch(`https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec?user=${u}&pass=${p}`);
+            const data = await res.json();
+            if(data.access) { 
+                localStorage.setItem('jj_session', 'active'); 
+                location.reload(); 
+            } else { alert("Número o contraseña incorrectos"); }
+        }
+
+        // --- PROPORCIÓN VINCULADA ---
+        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect');
+        rzW.oninput = () => { if(lock.checked) rzH.value = (rzW.value / aspectRatio).toFixed(2); };
+        rzH.oninput = () => { if(lock.checked) rzW.value = (rzH.value * aspectRatio).toFixed(2); };
+
+        function openExport() {
+            const dpi = 300;
+            rzW.value = (oCanvas.width/dpi*2.54).toFixed(2);
+            rzH.value = (oCanvas.height/dpi*2.54).toFixed(2);
+            document.getElementById('modalExport').classList.remove('hidden');
+        }
+
+        function finalDownload() {
+            const a = document.createElement('a'); a.download = 'jj_design.png';
+            a.href = canvas.toDataURL(); a.click();
+            closeModal('modalExport');
+        }
+
+        // --- COLOR LIENZO ---
         const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
         let hue=0, svDragging=false, hDragging=false;
-
         function drawCP() {
-            // Dibujar Barra de Tonos (Hue)
-            hCtx.clearRect(0,0,cpH.width,cpH.height);
-            const gH=hCtx.createLinearGradient(0,0,0,cpH.height);
-            for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`);
-            hCtx.fillStyle=gH; hCtx.fillRect(0,0,cpH.width,cpH.height);
-
-            // Dibujar Cuadrado Saturación/Brillo
-            svCtx.fillStyle=`hsl(${hue},100%,50%)`;
-            svCtx.fillRect(0,0,cpSV.width,cpSV.height);
-            const gW=svCtx.createLinearGradient(0,0,cpSV.width,0);
-            gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent');
-            svCtx.fillStyle=gW; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
-            const gB=svCtx.createLinearGradient(0,0,0,cpSV.height);
-            gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000');
-            svCtx.fillStyle=gB; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
+            hCtx.clearRect(0,0,20,100); const gH=hCtx.createLinearGradient(0,0,0,100); for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`); hCtx.fillStyle=gH; hCtx.fillRect(0,0,20,100);
+            svCtx.fillStyle=`hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,220,100);
+            const gW=svCtx.createLinearGradient(0,0,220,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent'); svCtx.fillStyle=gW; svCtx.fillRect(0,0,220,100);
+            const gB=svCtx.createLinearGradient(0,0,0,100); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000'); svCtx.fillStyle=gB; svCtx.fillRect(0,0,220,100);
         }
+        cpH.onmousedown = () => hDragging=true; cpSV.onmousedown = () => svDragging=true;
+        window.onmousemove = e => {
+            if(hDragging) { const r = cpH.getBoundingClientRect(); hue = (Math.max(0, Math.min(e.clientY-r.top, r.height))/r.height)*360; drawCP(); }
+            if(svDragging) { const r = cpSV.getBoundingClientRect(), x = Math.max(0, Math.min(e.clientX-r.left, r.width)), y = Math.max(0, Math.min(e.clientY-r.top, r.height)); const id=svCtx.getImageData(x,y,1,1).data; document.getElementById('stage').style.backgroundColor=`rgb(${id[0]},${id[1]},${id[2]})`; }
+        };
+        window.onmouseup = () => { hDragging=false; svDragging=false; };
 
-        function updateStageColor(x, y) {
-            const id=svCtx.getImageData(x, y, 1, 1).data;
-            const color = `rgb(${id[0]},${id[1]},${id[2]})`;
-            document.getElementById('stage').style.backgroundColor = color;
-        }
-
-        cpH.onmousedown = (e) => { hDragging=true; handleH(e); };
-        cpSV.onmousedown = (e) => { svDragging=true; handleSV(e); };
-
-        window.addEventListener('mousemove', (e) => {
-            if(hDragging) handleH(e);
-            if(svDragging) handleSV(e);
-        });
-
-        window.addEventListener('mouseup', () => { hDragging=false; svDragging=false; });
-
-        function handleH(e) {
-            const rect = cpH.getBoundingClientRect();
-            let y = e.clientY - rect.top;
-            y = Math.max(0, Math.min(y, rect.height - 1));
-            hue = (y / rect.height) * 360;
-            drawCP();
-        }
-
-        function handleSV(e) {
-            const rect = cpSV.getBoundingClientRect();
-            let x = e.clientX - rect.left;
-            let y = e.clientY - rect.top;
-            x = Math.max(0, Math.min(x, rect.width - 1));
-            y = Math.max(0, Math.min(y, rect.height - 1));
-            updateStageColor(x, y);
-        }
-
-        drawCP(); // Inicializar
-
-        // --- EXPORT ---
-        const rzW=document.getElementById('rzW'), rzH=document.getElementById('rzH'), lock=document.getElementById('lockAspect'), rzUnit=document.getElementById('rzUnit'), rzDPI=document.getElementById('rzDPI');
-        function updateUnits() {
-        
+        function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        document.getElementById('fuzz').oninput = process;
+        document.getElementById('mode').onchange = process;
+    </script>
+</body>
+</html>
