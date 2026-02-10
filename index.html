@@ -24,6 +24,7 @@
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
         label { font-size: 12px; color: #ddd; width: 120px; }
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
+        .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 50px; text-align: center; font-size: 11px; }
         
         .cp-container { display: flex; gap: 10px; height: 120px; margin-top: 10px; user-select: none; }
         #cpSV { flex: 1; border-radius: 6px; border: 1px solid #2a2a2a; cursor: crosshair; }
@@ -36,16 +37,16 @@
         .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; height: 100%; }
         #canvas-container { position: relative; display: inline-block; }
         canvas#canvas { display: block; max-height: 85vh; }
+        
+        /* CROP BOX */
         #crop-box { position: absolute; border: 2px dashed #fff; cursor: move; display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); z-index: 50; }
-        .resizer { width: 12px; height: 12px; background: #fff; border: 2px solid var(--accent); position: absolute; right: -6px; bottom: -6px; cursor: nwse-resize; border-radius: 50%; }
+        .resizer { width: 14px; height: 14px; background: #fff; border: 2px solid var(--accent); position: absolute; right: -7px; bottom: -7px; cursor: nwse-resize; border-radius: 50%; }
 
         /* MODALES */
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
         .modal { background: #121212; padding: 25px; border-radius: 18px; width: 520px; border: 1px solid #262626; text-align: center; }
-        .m-input { background: #fffbe6; color: #333; border: 1px solid #d4b106; padding: 6px 10px; border-radius: 4px; font-weight: bold; width: 110px; }
+        .m-input { background: #fffbe6; color: #333; border: 1px solid #d4b106; padding: 8px 10px; border-radius: 4px; font-weight: bold; width: 110px; }
         .hidden { display: none !important; }
-
-        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 20px; border-radius: 12px; cursor: pointer; transition: 0.3s; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; text-align: left; width: 100%; }
         .wa-float { position: fixed; bottom: 20px; right: 20px; background: var(--wa); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000; }
     </style>
 </head>
@@ -53,39 +54,19 @@
 
     <a href="https://wa.me/51916689969" class="wa-float" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="30"></a>
 
-    <div id="choice-modal" class="modal-back hidden">
-        <div class="modal">
-            <h3 style="margin-top:0; color:var(--vip)">¡Casi listo!</h3>
-            <p style="color:var(--muted); font-size:14px; margin-bottom:25px;">Para descargar elige una opción:</p>
-            <div class="choice-card" onclick="openLogin()"><div style="font-size:24px;">💎</div><div><div style="font-weight:bold; color:white;">Soy Suscriptor VIP</div><div style="font-size:12px; color:var(--muted)">Inicia sesión para descargar.</div></div></div>
-            <div class="choice-card" onclick="window.open('https://wa.me/51916689969','_blank')"><div style="font-size:24px;">📲</div><div><div style="font-weight:bold; color:var(--wa);">No tengo suscripción</div><div style="font-size:12px; color:var(--muted)">Activa tu cuenta por WhatsApp.</div></div></div>
-            <button onclick="closeChoice()" style="background:none; border:none; color:var(--muted); margin-top:10px; cursor:pointer;">Cerrar</button>
-        </div>
-    </div>
-
-    <div id="login-modal" class="modal-back hidden">
-        <div class="modal" style="max-width:380px;">
-            <h3>Validar Membresía</h3>
-            <input type="text" id="user-id" placeholder="📱 Número de Celular" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
-            <input type="password" id="access-key" placeholder="🔑 Contraseña" style="width:100%; padding:12px; margin-bottom:20px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
-            <button class="btn-dl" onclick="validateAccess()" style="margin:0;">VERIFICAR Y ENTRAR</button>
-            <button onclick="closeLogin()" style="background:none; border:none; color:var(--muted); margin-top:15px; cursor:pointer;">Regresar</button>
-        </div>
-    </div>
-
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="margin-top:0">Descarga Proporcional PNG</h3>
+            <h3 style="margin-top:0; color:var(--vip)">Exportación Proporcional</h3>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; text-align:left;">
-                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Ancho</label><input type="number" id="rzW" class="m-input"><span id="utW" style="font-size:11px;color:#666">cm</span></div>
-                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Alto</label><input type="number" id="rzH" class="m-input"><span id="utH" style="font-size:11px;color:#666">cm</span></div>
+                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
+                <div style="display:flex; justify-content:space-between; align-items:center;"><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
                 <div style="display:flex; justify-content:space-between; align-items:center;"><label>Unidad</label><select id="rzUnit" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:6px; border-radius:6px; width:110px;"><option value="cm">cm</option><option value="in">in</option><option value="px">px</option></select></div>
                 <div style="display:flex; justify-content:space-between; align-items:center;"><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
-                <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;"><input type="checkbox" id="lockAspect" checked> <span style="font-size:12px; color:#888;">Mantener proporción (Vinculado)</span></div>
+                <div style="grid-column: span 2; display:flex; gap:10px; align-items:center; margin-top:10px;"><input type="checkbox" id="lockAspect" checked> <span style="font-size:12px; color:#888;">Mantener proporción (Vinculado)</span></div>
             </div>
             <div style="display:flex; gap:10px; margin-top:20px; justify-content:flex-end;">
-                <button class="btn-s" onclick="closeExport()">Cancelar</button>
-                <button class="btn-s" style="background:#222; color:var(--vip); border-color:var(--vip);" onclick="finalDownload()">DESCARGAR AHORA</button>
+                <button class="btn-s" onclick="document.getElementById('modalExport').classList.add('hidden')">Cancelar</button>
+                <button class="btn-s" style="background:var(--success); color:#000; border:none;" onclick="finalDownload()">DESCARGAR AHORA</button>
             </div>
         </div>
     </div>
@@ -96,24 +77,35 @@
     </header>
 
     <main class="wrap">
-        <section class="panel">
-            <button class="btn-s" style="background: #00d2ff; color: #000; margin-bottom: 20px;" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR</button>
-            <h2>1. Imagen</h2>
+        <aside class="panel">
+            <button class="btn-s" style="background: var(--vip); color: #000; margin-bottom: 20px;" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR</button>
+            
+            <h2>1. Cargar Archivo</h2>
             <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:12px; margin-bottom:10px;">
             
-            <h2>2. Quitar Fondo</h2>
-            <div class="control-row"><select id="mode" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; flex:1;"><option value="white">Blanco</option><option value="black">Negro</option><option value="auto">Auto</option></select></div>
+            <h2>2. Limpieza de Fondo</h2>
+            <div class="control-row"><select id="mode" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; flex:1;"><option value="white">Quitar Blanco</option><option value="black">Quitar Negro</option><option value="auto">Auto (Esquinas)</option></select></div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"></div>
             
             <h2>3. Herramientas</h2>
-            <div class="btn-group"><button class="btn-s" id="btn-init-crop">✂️ Recortar</button><button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000;">Aplicar</button><button class="btn-s" onclick="location.reload()">Reiniciar</button></div>
-            
-            <label style="margin-top:20px; display:block; font-size:11px;">COLOR LIENZO</label>
+            <div class="btn-group">
+                <button class="btn-s" id="btn-init-crop">✂️ Recortar</button>
+                <button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000;">Aplicar</button>
+                <button class="btn-s" onclick="location.reload()">Reiniciar</button>
+            </div>
+
+            <h2>4. Color Lienzo</h2>
             <div class="cp-container"><canvas id="cpSV" width="220" height="120"></canvas><canvas id="cpH" width="20" height="120"></canvas></div>
-            
-            <button class="btn-dl" onclick="handleDownloadClick()">DESCARGAR PNG</button>
+
+            <button class="btn-dl" onclick="handleExportOpen()">CONFIGURAR DESCARGA</button>
+        </aside>
+
+        <section class="stage">
+            <div id="canvas-container">
+                <canvas id="canvas"></canvas>
+                <div id="crop-box"><div class="resizer"></div></div>
+            </div>
         </section>
-        <section class="stage" id="stage"><div id="canvas-container"><canvas id="canvas"></canvas><div id="crop-box"><div class="resizer"></div></div></div></section>
     </main>
 
     <script>
@@ -121,66 +113,54 @@
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d'), aspectRatio = 1;
         const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect'), rzUnit = document.getElementById('rzUnit'), rzDPI = document.getElementById('rzDPI');
         let isVip = localStorage.getItem('jj_session') === 'active';
-        
-        window.onload = () => { if(isVip) { document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO"; document.getElementById('status-tag').classList.add('status-vip'); } };
-        
+
+        // CARGA DE IMAGEN
         document.getElementById('file').onchange = e => {
             const f = e.target.files[0]; const img = new Image();
-            img.onload = () => { oCanvas.width = img.width; oCanvas.height = img.height; aspectRatio = img.width/img.height; oCtx.drawImage(img,0,0); process(); };
+            img.onload = () => {
+                oCanvas.width = img.width; oCanvas.height = img.height;
+                aspectRatio = img.width / img.height;
+                oCtx.drawImage(img, 0, 0);
+                process();
+            };
             img.src = URL.createObjectURL(f);
         };
 
+        // LÓGICA DE LIMPIEZA
         function process() {
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value), mode = document.getElementById('mode').value;
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data, out = ctx.createImageData(oCanvas.width,oCanvas.height), o = out.data;
             for(let i=0; i<d.length; i+=4) {
-                const isBg = mode === 'white' ? (d[i]>255-fuzz && d[i+1]>255-fuzz && d[i+2]>255-fuzz) : (d[i]<fuzz && d[i+1]<fuzz && d[i+2]<fuzz);
+                let isBg = false;
+                if(mode==='white') isBg = d[i]>255-fuzz && d[i+1]>255-fuzz && d[i+2]>255-fuzz;
+                else if(mode==='black') isBg = d[i]<fuzz && d[i+1]<fuzz && d[i+2]<fuzz;
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2]; o[i+3] = isBg ? 0 : d[i+3];
             }
-            canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out,0,0);
+            canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out, 0, 0);
         }
 
-        rzW.oninput = () => { if(lock.checked) rzH.value = (rzW.value / aspectRatio).toFixed(2); };
-        rzH.oninput = () => { if(lock.checked) rzW.value = (rzH.value * aspectRatio).toFixed(2); };
-        rzUnit.onchange = updateUnits;
-
-        function updateUnits() {
+        // LÓGICA DE PROPORCIÓN VINCULADA
+        rzW.oninput = () => { if(lock.checked && aspectRatio) rzH.value = (rzW.value / aspectRatio).toFixed(2); };
+        rzH.oninput = () => { if(lock.checked && aspectRatio) rzW.value = (rzH.value * aspectRatio).toFixed(2); };
+        
+        function handleExportOpen() {
+            if(!oCanvas.width) return;
             const dpi = parseInt(rzDPI.value);
-            if(rzUnit.value === 'cm') { rzW.value = (oCanvas.width/dpi*2.54).toFixed(2); rzH.value = (oCanvas.height/dpi*2.54).toFixed(2); }
-            else { rzW.value = oCanvas.width; rzH.value = oCanvas.height; }
-        }
-
-        function handleDownloadClick() { if (isVip) { updateUnits(); document.getElementById('modalExport').classList.remove('hidden'); } else { document.getElementById('choice-modal').classList.remove('hidden'); } }
-        function openLogin() { document.getElementById('choice-modal').classList.add('hidden'); document.getElementById('login-modal').classList.remove('hidden'); }
-        function closeChoice() { document.getElementById('choice-modal').classList.add('hidden'); }
-        function closeLogin() { document.getElementById('login-modal').classList.add('hidden'); }
-        function closeExport() { document.getElementById('modalExport').classList.add('hidden'); }
-
-        async function validateAccess() {
-            const u = document.getElementById('user-id').value, p = document.getElementById('access-key').value;
-            const res = await fetch(`https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec?user=${u}&pass=${p}`);
-            const data = await res.json();
-            if(data.access) { isVip = true; localStorage.setItem('jj_session', 'active'); location.reload(); } else { alert("Socio no válido"); }
+            rzW.value = (oCanvas.width / dpi * 2.54).toFixed(2);
+            rzH.value = (oCanvas.height / dpi * 2.54).toFixed(2);
+            document.getElementById('modalExport').classList.remove('hidden');
         }
 
         function finalDownload() {
-            const link = document.createElement('a'); link.download = 'jj_studio.png';
-            link.href = canvas.toDataURL(); link.click(); closeExport();
+            const link = document.createElement('a');
+            link.download = 'comunidad_jj_design.png';
+            link.href = canvas.toDataURL();
+            link.click();
+            document.getElementById('modalExport').classList.add('hidden');
         }
 
-        // RECORTE
-        const cropBox = document.getElementById('crop-box');
-        document.getElementById('btn-init-crop').onclick = () => { if(!oCanvas.width) return; cropBox.style.display='block'; cropBox.style.width='200px'; cropBox.style.height='200px'; document.getElementById('btn-apply-crop').classList.remove('hidden'); };
-        document.getElementById('btn-apply-crop').onclick = () => {
-            const canvRect = canvas.getBoundingClientRect(), boxRect = cropBox.getBoundingClientRect(), scale = oCanvas.width/canvRect.width;
-            const x = (boxRect.left-canvRect.left)*scale, y = (boxRect.top-canvRect.top)*scale, w = boxRect.width*scale, h = boxRect.height*scale;
-            const temp = document.createElement('canvas'); temp.width=w; temp.height=h; temp.getContext('2d').drawImage(oCanvas,x,y,w,h,0,0,w,h);
-            oCanvas.width=w; oCanvas.height=h; aspectRatio=w/h; oCtx.clearRect(0,0,w,h); oCtx.drawImage(temp,0,0);
-            cropBox.style.display='none'; document.getElementById('btn-apply-crop').classList.add('hidden'); process();
-        };
-
-        // LIENZO COLOR
+        // SELECTOR DE COLOR LIENZO
         const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
         let hue=0, svDragging=false, hDragging=false;
         function drawCP() {
@@ -193,11 +173,22 @@
         cpH.onmousedown = () => hDragging=true; cpSV.onmousedown = () => svDragging=true;
         window.addEventListener('mousemove', (e) => {
             if(hDragging) { const r = cpH.getBoundingClientRect(); hue = (Math.max(0, Math.min(e.clientY-r.top, r.height))/r.height)*360; drawCP(); }
-            if(svDragging) { const r = cpSV.getBoundingClientRect(), x = Math.max(0, Math.min(e.clientX-r.left, r.width)), y = Math.max(0, Math.min(e.clientY-r.top, r.height)); const id=svCtx.getImageData(x,y,1,1).data; document.getElementById('stage').style.backgroundColor=`rgb(${id[0]},${id[1]},${id[2]})`; }
+            if(svDragging) { const r = cpSV.getBoundingClientRect(), x = Math.max(0, Math.min(e.clientX-r.left, r.width)), y = Math.max(0, Math.min(e.clientY-r.top, r.height)); const id=svCtx.getImageData(x,y,1,1).data; document.querySelector('.stage').style.backgroundColor=`rgb(${id[0]},${id[1]},${id[2]})`; }
         });
         window.addEventListener('mouseup', () => { hDragging=false; svDragging=false; });
 
-        ['fuzz','mode'].forEach(id => document.getElementById(id).oninput = process);
+        // CROP
+        const cropBox = document.getElementById('crop-box');
+        document.getElementById('btn-init-crop').onclick = () => { if(!oCanvas.width) return; cropBox.style.display='block'; cropBox.style.width='200px'; cropBox.style.height='200px'; document.getElementById('btn-apply-crop').classList.remove('hidden'); };
+        document.getElementById('btn-apply-crop').onclick = () => {
+            const canvRect = canvas.getBoundingClientRect(), boxRect = cropBox.getBoundingClientRect(), scale = oCanvas.width/canvRect.width;
+            const x = (boxRect.left-canvRect.left)*scale, y = (boxRect.top-canvRect.top)*scale, w = boxRect.width*scale, h = boxRect.height*scale;
+            const temp = document.createElement('canvas'); temp.width=w; temp.height=h; temp.getContext('2d').drawImage(oCanvas,x,y,w,h,0,0,w,h);
+            oCanvas.width=w; oCanvas.height=h; aspectRatio=w/h; oCtx.clearRect(0,0,w,h); oCtx.drawImage(temp,0,0);
+            cropBox.style.display='none'; document.getElementById('btn-apply-crop').classList.add('hidden'); process();
+        };
+
+        document.getElementById('fuzz').oninput = process;
     </script>
 </body>
 </html>
