@@ -2,184 +2,73 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro — Herramienta Definitiva</title>
-    <style>
-        :root {
-            --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
-            --accent: #f87171; --border: #1f1f1f; --success: #10b981; --wa: #25d366;
-            --vip: #00d2ff;
-        }
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
-
-        header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: #0b0b0b; display: flex; align-items: center; justify-content: space-between; height: 60px; }
-        .logo-text { font-size: 1.5rem; font-weight: 800; background: linear-gradient(to right, var(--vip), #0081ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        #status-tag { font-size: 11px; padding: 4px 10px; border-radius: 20px; background: #222; color: #888; font-weight: bold; border: 1px solid #333; }
-        .status-vip { background: #052e1a !important; color: var(--success) !important; border-color: var(--success) !important; }
-
-        .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
-        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; z-index: 100; }
-        h2 { font-size: 11px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
-        .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; }
-        label { font-size: 12px; color: #ddd; width: 120px; }
-        input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
-        .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 50px; text-align: center; font-size: 11px; }
-        
-        /* CROMÁTICO */
-        .cp-container { display: flex; gap: 10px; height: 120px; margin-top: 10px; user-select: none; }
-        #cpSV { flex: 1; border-radius: 6px; border: 1px solid #2a2a2a; cursor: crosshair; }
-        #cpH { width: 20px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: ns-resize; }
-
-        .btn-group { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
-        .btn-s { flex: 1; min-width: 100px; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; transition: 0.2s; }
-        .btn-dl { width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 20px; font-weight: 900; cursor: pointer; }
-
-        .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; height: 100%; }
-        #canvas-container { position: relative; display: inline-block; }
-        canvas#canvas { display: block; max-height: 85vh; }
-        
-        #crop-box { position: absolute; border: 2px dashed #fff; cursor: move; display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); z-index: 50; }
-        .resizer { width: 12px; height: 12px; background: #fff; border: 2px solid var(--accent); position: absolute; right: -6px; bottom: -6px; cursor: nwse-resize; border-radius: 50%; }
-
-        /* MODALES */
-        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000; }
-        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 520px; border: 1px solid #262626; text-align: center; }
-        .m-input { background: #fffbe6; color: #333; border: 1px solid #d4b106; padding: 6px 10px; border-radius: 4px; font-weight: bold; width: 110px; }
-        .hidden { display: none !important; }
-        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 20px; border-radius: 12px; cursor: pointer; transition: 0.3s; margin-bottom: 12px; display: flex; align-items: center; gap: 15px; text-align: left; width: 100%; }
-        .wa-float { position: fixed; bottom: 20px; right: 20px; background: var(--wa); width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000; }
-    </style>
+    <title>Quitar Fondo - Comunidad J&J VIP</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <header>
+        <div class="logo">COMUNIDAD J&J</div>
+        <div id="vip-status" class="status-badge">Cargando suscripción...</div>
+    </header>
 
-    <a href="https://wa.me/51916689969" class="wa-float" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="30"></a>
+    <main class="editor-container">
+        <aside class="sidebar">
+            <section class="tool-section">
+                <h2>Membresía J&J VIP</h2>
+                <div class="vip-tools">
+                    <button onclick="toggleSimulador()">Simulador Multiproducto</button>
+                    <a href="https://t.me/TuGrupoTelegram" target="_blank">Acceso a Diseños</a>
+                </div>
+            </section>
 
-    <div id="choice-modal" class="modal-back hidden">
-        <div class="modal">
-            <h3 style="margin-top:0; color:var(--vip)">Acceso Requerido</h3>
-            <div class="choice-card" onclick="openLogin()">💎 Soy Suscriptor VIP</div>
-            <div class="choice-card" onclick="window.open('https://wa.me/51916689969','_blank')">📲 No tengo suscripción</div>
-            <button onclick="closeChoice()" style="background:none; border:none; color:var(--muted); margin-top:10px; cursor:pointer;">Cerrar</button>
-        </div>
-    </div>
+            <section class="tool-section">
+                <h2>Quitar Fondo Automático</h2>
+                <select id="remove-mode">
+                    <option value="white">Quitar fondo blanco</option>
+                    <option value="black">Quitar fondo negro</option>
+                    <option value="auto">Auto (esquinas)</option>
+                </select>
+                <div class="control-group">
+                    <label>Tolerancia</label>
+                    <input type="range" min="0" max="100" value="20">
+                </div>
+            </section>
 
-    <div id="login-modal" class="modal-back hidden">
-        <div class="modal" style="max-width:380px;">
-            <h3>Validar Membresía</h3>
-            <input type="text" id="user-id" placeholder="Número Celular" style="width:100%; padding:12px; margin-bottom:10px; background:#000; color:#fff; border:1px solid #333; border-radius:8px;">
-            <input type="password" id="access-key" placeholder="Contraseña" style="width:100%; padding:12px; margin-bottom:20px; background:#000; color:#fff; border:1px solid #333; border-radius:8px;">
-            <button class="btn-dl" onclick="validateAccess()" style="margin:0;">ENTRAR</button>
-            <button onclick="closeLogin()" style="background:none; border:none; color:var(--muted); margin-top:15px; cursor:pointer;">Regresar</button>
-        </div>
-    </div>
-
-    <div id="modalExport" class="modal-back hidden">
-        <div class="modal">
-            <h3>Configurar Exportación</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; text-align:left;">
-                <div><label>Ancho</label><input type="number" id="rzW" class="m-input"><span style="font-size:10px;color:#666">cm</span></div>
-                <div><label>Alto</label><input type="number" id="rzH" class="m-input"><span style="font-size:10px;color:#666">cm</span></div>
-                <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
-                <div><input type="checkbox" id="lockAspect" checked> <span style="font-size:11px; color:#888;">Mantener Proporción</span></div>
-            </div>
-            <div style="display:flex; gap:10px; margin-top:20px; justify-content:flex-end;">
-                <button class="btn-s" onclick="closeExport()">Cerrar</button>
-                <button class="btn-s" style="background:#222; color:var(--vip);" onclick="finalDownload()">DESCARGAR</button>
-            </div>
-        </div>
-    </div>
-
-    <header><div class="logo-text">J&J STUDIO PRO</div><div id="status-tag">MODO INVITADO</div></header>
-
-    <main class="wrap">
-        <aside class="panel">
-            <button class="btn-s" style="background: #00d2ff; color: #000; margin-bottom: 20px;" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR</button>
-            <h2>1. Imagen</h2>
-            <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:12px; margin-bottom:10px;">
-            <h2>2. Quitar Fondo</h2>
-            <div class="control-row"><select id="mode" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; flex:1;"><option value="white">Blanco</option><option value="black">Negro</option></select></div>
-            <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"></div>
-            <h2>3. Herramientas</h2>
-            <div class="btn-group"><button class="btn-s" id="btn-init-crop">✂️ Recortar</button><button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000;">Aplicar</button><button class="btn-s" onclick="location.reload()">Reiniciar</button></div>
-            <h2>4. Color Lienzo</h2>
-            <div class="cp-container"><canvas id="cpSV" width="220" height="120"></canvas><canvas id="cpH" width="20" height="120"></canvas></div>
-            <button class="btn-dl" onclick="handleDownloadClick()">DESCARGAR PNG</button>
+            <section class="tool-section" id="resizer">
+                <h2>Redimensionar</h2>
+                <div class="input-grid">
+                    <input type="number" placeholder="Ancho">
+                    <input type="number" placeholder="Alto">
+                </div>
+                <button class="btn-apply">Aplicar Tamaño</button>
+            </section>
         </aside>
-        <section class="stage" id="stage"><div id="canvas-container"><canvas id="canvas"></canvas><div id="crop-box"><div class="resizer"></div></div></div></section>
+
+        <section class="canvas-area">
+            <div id="drop-zone">
+                Arrastra tu imagen aquí o pega (Ctrl+V)
+            </div>
+            <canvas id="main-canvas"></canvas>
+            
+            <div id="simulador-overlay" class="hidden">
+                <div class="controls-3d">
+                    <label>Eje X: <input type="range" id="posX"></label>
+                    <label>Eje Y: <input type="range" id="posY"></label>
+                    <select id="product-type">
+                        <option value="taza">Taza</option>
+                        <option value="polo">Camiseta</option>
+                        <option value="gorra">Gorra</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <footer class="actions-bar">
+            <button class="btn-reset">Reiniciar</button>
+            <button class="btn-download">DESCARGAR PNG</button>
+        </footer>
     </main>
 
-    <script>
-        const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
-        let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d'), aspectRatio = 1;
-        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect'), rzDPI = document.getElementById('rzDPI');
-        let isVip = localStorage.getItem('jj_session') === 'active';
-
-        document.getElementById('file').onchange = e => {
-            const f = e.target.files[0]; const img = new Image();
-            img.onload = () => { oCanvas.width = img.width; oCanvas.height = img.height; aspectRatio = img.width/img.height; oCtx.drawImage(img,0,0); process(); };
-            img.src = URL.createObjectURL(f);
-        };
-
-        function process() {
-            if(!oCanvas.width) return;
-            const fuzz = parseInt(document.getElementById('fuzz').value), mode = document.getElementById('mode').value;
-            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data, out = ctx.createImageData(oCanvas.width,oCanvas.height), o = out.data;
-            for(let i=0; i<d.length; i+=4) {
-                const isBg = mode === 'white' ? (d[i]>255-fuzz && d[i+1]>255-fuzz && d[i+2]>255-fuzz) : (d[i]<fuzz && d[i+1]<fuzz && d[i+2]<fuzz);
-                o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2]; o[i+3] = isBg ? 0 : d[i+3];
-            }
-            canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out,0,0);
-        }
-
-        // LÓGICA PROPORCIÓN
-        rzW.oninput = () => { if(lock.checked) rzH.value = (rzW.value / aspectRatio).toFixed(2); };
-        rzH.oninput = () => { if(lock.checked) rzW.value = (rzH.value * aspectRatio).toFixed(2); };
-
-        function handleDownloadClick() { 
-            if (isVip) { 
-                const dpi = parseInt(rzDPI.value);
-                rzW.value = (oCanvas.width/dpi*2.54).toFixed(2);
-                rzH.value = (oCanvas.height/dpi*2.54).toFixed(2);
-                document.getElementById('modalExport').classList.remove('hidden'); 
-            } else { document.getElementById('choice-modal').classList.remove('hidden'); } 
-        }
-
-        async function validateAccess() {
-            const u = document.getElementById('user-id').value, p = document.getElementById('access-key').value;
-            const res = await fetch(`https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec?user=${u}&pass=${p}`);
-            const data = await res.json();
-            if(data.access) { isVip = true; localStorage.setItem('jj_session', 'active'); location.reload(); } else { alert("Acceso denegado"); }
-        }
-
-        function finalDownload() {
-            const a = document.createElement('a'); a.download = 'jj_studio.png';
-            a.href = canvas.toDataURL(); a.click();
-        }
-
-        // SELECTOR COLOR
-        const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
-        let hue=0, svDragging=false, hDragging=false;
-        function drawCP() {
-            hCtx.clearRect(0,0,20,120); const gH=hCtx.createLinearGradient(0,0,0,120); for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`); hCtx.fillStyle=gH; hCtx.fillRect(0,0,20,120);
-            svCtx.fillStyle=`hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,220,120);
-            const gW=svCtx.createLinearGradient(0,0,220,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent'); svCtx.fillStyle=gW; svCtx.fillRect(0,0,220,120);
-            const gB=svCtx.createLinearGradient(0,0,0,120); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000'); svCtx.fillStyle=gB; svCtx.fillRect(0,0,220,120);
-        }
-        drawCP();
-        cpH.onmousedown = () => hDragging=true; cpSV.onmousedown = () => svDragging=true;
-        window.addEventListener('mousemove', (e) => {
-            if(hDragging) { const r = cpH.getBoundingClientRect(); hue = (Math.max(0, Math.min(e.clientY-r.top, r.height))/r.height)*360; drawCP(); }
-            if(svDragging) { const r = cpSV.getBoundingClientRect(), x = Math.max(0, Math.min(e.clientX-r.left, r.width)), y = Math.max(0, Math.min(e.clientY-r.top, r.height)); const id=svCtx.getImageData(x,y,1,1).data; document.querySelector('.stage').style.backgroundColor=`rgb(${id[0]},${id[1]},${id[2]})`; }
-        });
-        window.addEventListener('mouseup', () => { hDragging=false; svDragging=false; });
-
-        function closeChoice() { document.getElementById('choice-modal').classList.add('hidden'); }
-        function openLogin() { closeChoice(); document.getElementById('login-modal').classList.remove('hidden'); }
-        function closeLogin() { document.getElementById('login-modal').classList.add('hidden'); }
-        function closeExport() { document.getElementById('modalExport').classList.add('hidden'); }
-
-        document.getElementById('fuzz').oninput = process;
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
