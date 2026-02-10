@@ -2,8 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro — Full Control</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>J&J Studio Pro — Versión Definitiva</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #141414; --text: #eee; --muted: #9ca3af;
@@ -15,7 +15,7 @@
         .wrap { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
         @media (min-width: 900px) { .wrap { flex-direction: row; } }
 
-        /* PANEL */
+        /* PANEL IZQUIERDO */
         .panel { 
             padding: 15px; background: var(--panel); border-right: 1px solid var(--border); 
             overflow-y: auto; z-index: 100; width: 100%; max-height: 48vh; flex-shrink: 0;
@@ -34,10 +34,10 @@
         .btn-s { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: #eee; cursor: pointer; font-size: 11px; font-weight: bold; }
         .btn-dl { width: 100%; padding: 14px; background: linear-gradient(135deg, #00d2ff, #0081ff); color: #fff; border: none; border-radius: 8px; margin-top: 15px; font-weight: 900; cursor: pointer; }
 
-        /* COLOR PICKER LIENZO */
-        .cp-container { display: flex; gap: 10px; height: 100px; margin-top: 5px; }
-        #cpSV { flex: 1; border-radius: 6px; border: 1px solid #333; cursor: crosshair; touch-action: none; }
-        #cpH { width: 30px; border-radius: 6px; border: 1px solid #333; cursor: ns-resize; touch-action: none; }
+        /* SELECTOR COLOR LIENZO */
+        .cp-container { display: flex; gap: 10px; height: 100px; margin-top: 5px; position: relative; }
+        #cpSV { flex: 1; border-radius: 6px; border: 1px solid #333; cursor: crosshair; background: #000; }
+        #cpH { width: 30px; border-radius: 6px; border: 1px solid #333; cursor: ns-resize; }
 
         /* ESCENARIO */
         .stage { flex: 1; background: #0f0f0f; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; }
@@ -51,9 +51,11 @@
         #crop-box { position: absolute; border: 2px dashed #00d2ff; display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); z-index: 50; }
         .resizer { width: 24px; height: 24px; background: #fff; position: absolute; right: -12px; bottom: -12px; border-radius: 50%; border: 4px solid #0081ff; }
 
-        /* MODAL */
+        /* MODAL EXPORT */
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; backdrop-filter: blur(5px); }
-        .modal { background: #181818; padding: 25px; border-radius: 12px; width: 100%; max-width: 420px; border: 1px solid #333; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .modal { background: #181818; padding: 25px; border-radius: 12px; width: 100%; max-width: 440px; border: 1px solid #333; }
+        .m-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .m-field { display: flex; flex-direction: column; gap: 5px; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -75,8 +77,8 @@
                 </select>
             </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="250" value="50"><div class="val-box" id="fuzzV">50</div></div>
-            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="20" value="2"><div class="val-box" id="featherV">2</div></div>
-            <div class="control-row"><label>Contraer</label><input type="range" id="edge" min="-10" max="10" value="0" step="1"><div class="val-box" id="edgeV">0</div></div>
+            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="40" value="5"><div class="val-box" id="featherV">5</div></div>
+            <div class="control-row"><label>Borde +/-</label><input type="range" id="edge" min="-15" max="15" value="0" step="1"><div class="val-box" id="edgeV">0</div></div>
 
             <h2>Herramientas</h2>
             <div class="btn-group">
@@ -85,13 +87,13 @@
                 <button class="btn-s" onclick="location.reload()">Reset</button>
             </div>
 
-            <h2>Color de Lienzo</h2>
-            <div class="cp-container">
+            <h2>Color del Lienzo</h2>
+            <div class="cp-container" id="cp-parent">
                 <canvas id="cpSV"></canvas>
                 <canvas id="cpH"></canvas>
             </div>
 
-            <button class="btn-dl" id="openExport">EXPORTAR ARCHIVO</button>
+            <button class="btn-dl" id="openExport">DESCARGAR ARCHIVO</button>
         </section>
 
         <section class="stage" id="stage">
@@ -104,35 +106,38 @@
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="margin:0 0 20px 0; color:var(--accent);">Ajustes de Exportación</h3>
+            <h3 style="margin:0 0 10px 0; color:var(--accent);">Configurar Exportación</h3>
             
-            <div class="control-row">
-                <label>Ancho (px)</label>
-                <input type="number" id="rzW" class="m-input">
+            <div class="m-grid">
+                <div class="m-field"><label>Ancho (px)</label><input type="number" id="rzW" class="m-input"></div>
+                <div class="m-field"><label>Alto (px)</label><input type="number" id="rzH" class="m-input"></div>
+                <div class="m-field"><label>Resolución (DPI)</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
+                <div class="m-field">
+                    <label>Unidad</label>
+                    <select id="rzUnit" class="m-input">
+                        <option value="px">Píxeles</option>
+                        <option value="cm">Centímetros</option>
+                        <option value="in">Pulgadas</option>
+                    </select>
+                </div>
             </div>
-            <div class="control-row">
-                <label>Alto (px)</label>
-                <input type="number" id="rzH" class="m-input">
-            </div>
-            <div class="control-row">
-                <label>Algoritmo</label>
-                <select id="algo" style="background:#222;">
-                    <option value="high">Bicúbica (Nítida)</option>
-                    <option value="medium">Bilinear (Media)</option>
-                    <option value="low">Nearest (Pixelada)</option>
+
+            <div class="m-field" style="margin-top:15px;">
+                <label>Algoritmo de Escalado</label>
+                <select id="algo" class="m-input">
+                    <option value="high">Bicúbica (Alta Calidad)</option>
+                    <option value="medium">Bilinear (Estándar)</option>
+                    <option value="low">Nearest (Pixel Art)</option>
                 </select>
             </div>
-            <div class="control-row">
-                <label>DPI</label>
-                <input type="number" id="rzDPI" class="m-input" value="300">
-            </div>
-            <div style="margin: 10px 0 20px 0; font-size: 11px; color: #888;">
+
+            <div style="margin: 15px 0; font-size: 12px; color: #888;">
                 <input type="checkbox" id="lockAspect" checked> Mantener proporción original
             </div>
 
             <div style="display:flex; gap:10px;">
                 <button class="btn-s" style="flex:1" onclick="document.getElementById('modalExport').classList.add('hidden')">Cancelar</button>
-                <button class="btn-s" style="flex:2; background:var(--success); color:#000; border:none;" onclick="finalDownload()">DESCARGAR PNG</button>
+                <button class="btn-s" style="flex:2; background:var(--success); color:#000; border:none;" onclick="finalDownload()">GUARDAR PNG</button>
             </div>
         </div>
     </div>
@@ -158,7 +163,7 @@
             img.src = URL.createObjectURL(f);
         };
 
-        // MOTOR DE PROCESO
+        // MOTOR DE PROCESAMIENTO MEJORADO (SUAVIZADO Y CONTRAER REAL)
         function process() {
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value);
@@ -171,30 +176,65 @@
             document.getElementById('edgeV').innerText = edge;
 
             const id = oCtx.getImageData(0, 0, oCanvas.width, oCanvas.height);
-            const d = id.data, out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
+            const d = id.data;
+            const out = ctx.createImageData(oCanvas.width, oCanvas.height);
+            const o = out.data;
 
             if(mode === 'white') targetColor = [255,255,255];
             else if(mode === 'black') targetColor = [0,0,0];
             else if(mode === 'auto') targetColor = [d[0], d[1], d[2]];
 
+            // Fase 1: Transparencia y Suavizado
             for(let i=0; i<d.length; i+=4) {
                 const diff = Math.max(Math.abs(d[i]-targetColor[0]), Math.abs(d[i+1]-targetColor[1]), Math.abs(d[i+2]-targetColor[2]));
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
+                
                 if(diff < fuzz) {
-                    o[i+3] = diff < (fuzz - feather) ? 0 : ((diff - (fuzz - feather)) / Math.max(1, feather)) * 255;
-                } else { o[i+3] = d[i+3]; }
+                    let alpha = 0;
+                    if(feather > 0) {
+                        alpha = Math.max(0, Math.min(255, ((diff - (fuzz - feather)) / feather) * 255));
+                    }
+                    o[i+3] = alpha;
+                } else {
+                    o[i+3] = d[i+3];
+                }
+            }
+
+            // Fase 2: Contraer / Expandir (Erosión/Dilatación de Alpha)
+            if(edge !== 0) {
+                const copy = new Uint8ClampedArray(o);
+                const w = oCanvas.width, h = oCanvas.height;
+                const offset = Math.abs(edge);
+                for(let y=0; y<h; y++) {
+                    for(let x=0; x<w; x++) {
+                        const idx = (y * w + x) * 4 + 3;
+                        let val = copy[idx];
+                        if(edge < 0) { // Contraer
+                            for(let i=-offset; i<=offset; i++) {
+                                let ni = idx + (i*4);
+                                if(ni >= 0 && ni < copy.length) val = Math.min(val, copy[ni]);
+                            }
+                        } else { // Expandir
+                            for(let i=-offset; i<=offset; i++) {
+                                let ni = idx + (i*4);
+                                if(ni >= 0 && ni < copy.length) val = Math.max(val, copy[ni]);
+                            }
+                        }
+                        o[idx] = val;
+                    }
+                }
             }
             ctx.putImageData(out, 0, 0);
         }
 
-        // SELECTOR DE COLOR LIENZO CORREGIDO
+        // SELECTOR DE COLOR LIENZO (REPARADO TOTALMENTE)
         const cpSV = document.getElementById('cpSV'), cpH = document.getElementById('cpH');
         const svCtx = cpSV.getContext('2d'), hCtx = cpH.getContext('2d');
         let hue = 0;
 
-        function initCP() {
-            cpSV.width = cpSV.offsetWidth; cpSV.height = cpSV.offsetHeight;
-            cpH.width = cpH.offsetWidth; cpH.height = cpH.offsetHeight;
+        function resizeCP() {
+            cpSV.width = cpSV.clientWidth; cpSV.height = cpSV.clientHeight;
+            cpH.width = cpH.clientWidth; cpH.height = cpH.clientHeight;
             drawCP();
         }
 
@@ -214,41 +254,37 @@
             svCtx.fillStyle = gB; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
         }
 
-        window.onload = initCP;
+        window.addEventListener('resize', resizeCP);
+        setTimeout(resizeCP, 100);
 
-        function getCPColor(e, canvasElement, context) {
-            const rect = canvasElement.getBoundingClientRect();
-            const x = (e.clientX || e.touches[0].clientX) - rect.left;
-            const y = (e.clientY || e.touches[0].clientY) - rect.top;
-            return context.getImageData(Math.min(x, canvasElement.width-1), Math.min(y, canvasElement.height-1), 1, 1).data;
-        }
-
-        cpH.onmousedown = cpH.ontouchstart = (e) => {
-            const move = (ev) => {
-                const rect = cpH.getBoundingClientRect();
-                const y = (ev.clientY || ev.touches[0].clientY) - rect.top;
-                hue = (Math.max(0, Math.min(y, cpH.height)) / cpH.height) * 360;
+        const handleCP = (e, isHue) => {
+            const rect = (isHue ? cpH : cpSV).getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+            const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+            const y = Math.max(0, Math.min(clientY - rect.top, rect.height));
+            
+            if(isHue) {
+                hue = (y / rect.height) * 360;
                 drawCP();
-            };
-            const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('touchmove', move); };
-            window.addEventListener('mousemove', move); window.addEventListener('touchmove', move);
-            window.addEventListener('mouseup', up); window.addEventListener('touchend', up);
-            move(e);
-        };
-
-        cpSV.onmousedown = cpSV.ontouchstart = (e) => {
-            const move = (ev) => {
-                const p = getCPColor(ev, cpSV, svCtx);
-                document.getElementById('stage').style.backgroundColor = `rgb(${p[0]},${p[1]},${p[2]})`;
+            } else {
+                const data = svCtx.getImageData(x * (cpSV.width/rect.width), y * (cpSV.height/rect.height), 1, 1).data;
+                document.getElementById('stage').style.backgroundColor = `rgb(${data[0]},${data[1]},${data[2]})`;
                 document.getElementById('stage').style.backgroundImage = 'none';
-            };
-            const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('touchmove', move); };
-            window.addEventListener('mousemove', move); window.addEventListener('touchmove', move);
-            window.addEventListener('mouseup', up); window.addEventListener('touchend', up);
-            move(e);
+            }
         };
 
-        // EXPORTACIÓN CON TODAS LAS OPCIONES
+        [cpH, cpSV].forEach(el => {
+            const isH = el === cpH;
+            el.addEventListener('mousedown', () => { el.moving = true; });
+            el.addEventListener('touchstart', (e) => { el.moving = true; handleCP(e, isH); });
+            window.addEventListener('mousemove', (e) => { if(el.moving) handleCP(e, isH); });
+            window.addEventListener('touchmove', (e) => { if(el.moving) handleCP(e, isH); });
+            window.addEventListener('mouseup', () => el.moving = false);
+            window.addEventListener('touchend', () => el.moving = false);
+        });
+
+        // MODAL Y EXPORTACIÓN (RESTAURADO CON TODAS LAS OPCIONES)
         document.getElementById('openExport').onclick = () => {
             if(!oCanvas.width) return;
             document.getElementById('rzW').value = Math.round(oCanvas.width);
@@ -264,21 +300,23 @@
         function finalDownload() {
             const w = parseInt(document.getElementById('rzW').value);
             const h = parseInt(document.getElementById('rzH').value);
-            const quality = document.getElementById('algo').value;
-            
+            const algo = document.getElementById('algo').value;
+            const unit = document.getElementById('rzUnit').value;
+            const dpi = parseInt(document.getElementById('rzDPI').value);
+
+            let finalW = w, finalH = h;
+            if(unit === 'cm') { finalW = (w / 2.54) * dpi; finalH = (h / 2.54) * dpi; }
+            if(unit === 'in') { finalW = w * dpi; finalH = h * dpi; }
+
             const tc = document.createElement('canvas'); 
-            tc.width = w; tc.height = h;
+            tc.width = finalW; tc.height = finalH;
             const tx = tc.getContext('2d');
+            tx.imageSmoothingEnabled = (algo !== 'low');
+            tx.imageSmoothingQuality = (algo === 'high') ? 'high' : 'medium';
+            tx.drawImage(canvas, 0, 0, finalW, finalH);
             
-            tx.imageSmoothingEnabled = (quality !== 'low');
-            tx.imageSmoothingQuality = quality; // high (bicubic), medium (bilinear), low (nearest)
-            
-            tx.drawImage(canvas, 0, 0, w, h);
-            
-            const a = document.createElement('a'); 
-            a.download = `JJ_Studio_${Date.now()}.png`;
-            a.href = tc.toDataURL('image/png'); 
-            a.click();
+            const a = document.createElement('a'); a.download = 'jj_studio_pro.png';
+            a.href = tc.toDataURL('image/png'); a.click();
             document.getElementById('modalExport').classList.add('hidden');
         }
 
@@ -286,30 +324,24 @@
         document.getElementById('btn-init-crop').onclick = () => {
             if(!oCanvas.width) return;
             cropBox.style.display = 'block';
-            cropBox.style.width = '150px'; cropBox.style.height = '150px';
             document.getElementById('btn-apply-crop').classList.remove('hidden');
         };
 
         document.getElementById('btn-apply-crop').onclick = () => {
-            const cr = canvas.getBoundingClientRect();
-            const br = cropBox.getBoundingClientRect();
-            const s = oCanvas.width / cr.width;
+            const cr = canvas.getBoundingClientRect(), br = cropBox.getBoundingClientRect(), s = oCanvas.width / cr.width;
             const w = br.width * s, h = br.height * s;
             const t = document.createElement('canvas'); t.width = w; t.height = h;
             t.getContext('2d').drawImage(oCanvas, (br.left-cr.left)*s, (br.top-cr.top)*s, w, h, 0, 0, w, h);
-            oCanvas.width = w; oCanvas.height = h;
-            canvas.width = w; canvas.height = h;
+            oCanvas.width = w; oCanvas.height = h; canvas.width = w; canvas.height = h;
             oCtx.drawImage(t, 0, 0);
-            cropBox.style.display = 'none';
-            document.getElementById('btn-apply-crop').classList.add('hidden');
+            cropBox.style.display = 'none'; document.getElementById('btn-apply-crop').classList.add('hidden');
             process();
         };
 
         canvas.onclick = e => {
             if(document.getElementById('mode').value !== 'pick') return;
             const r = canvas.getBoundingClientRect();
-            const x = (e.clientX - r.left) * (oCanvas.width / r.width);
-            const y = (e.clientY - r.top) * (oCanvas.height / r.height);
+            const x = (e.clientX - r.left) * (oCanvas.width / r.width), y = (e.clientY - r.top) * (oCanvas.height / r.height);
             const p = oCtx.getImageData(x, y, 1, 1).data;
             targetColor = [p[0], p[1], p[2]]; process();
         };
