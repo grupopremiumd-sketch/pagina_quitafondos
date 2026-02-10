@@ -23,6 +23,7 @@
         .status-warning { background: #451a03 !important; color: var(--warning) !important; border-color: var(--warning) !important; }
         
         .btn-logout { background: transparent; border: 1px solid #333; color: #666; font-size: 10px; padding: 4px 8px; border-radius: 4px; cursor: pointer; display: none; }
+        .btn-logout:hover { border-color: var(--accent); color: var(--accent); }
 
         /* --- LAYOUT --- */
         .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
@@ -66,13 +67,13 @@
         <div class="modal">
             <h3 style="color:var(--vip)">Opciones de Descarga</h3>
             <p id="trial-msg" style="font-size:13px; color:var(--muted)">Prueba gratuita: 1 descarga técnica permitida.</p>
-            <button class="btn-dl" onclick="useFreeTrial()">DESCARGA GRATUITA (1)</button>
+            <button class="btn-dl" id="btn-free-dl" onclick="useFreeTrial()">DESCARGA GRATUITA (1)</button>
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
             <div class="choice-card" onclick="openLogin()">
-                <div>💎</div><div><b>Soy Socio Comunidad J&J</b><br><small>Ingresa con tu número.</small></div>
+                <div>💎</div><div><b>Acceso Socio J&J</b><br><small>Ingresa con tu número.</small></div>
             </div>
             <div class="choice-card" onclick="window.open('https://wa.me/51916689969','_blank')">
-                <div>📲</div><div><b>Activar VIP</b><br><small>Acceso ilimitado y Soporte.</small></div>
+                <div>📲</div><div><b>Activar VIP</b><br><small>Membresías y Soporte.</small></div>
             </div>
             <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cerrar</button>
         </div>
@@ -80,39 +81,35 @@
 
     <div id="login-modal" class="modal-back hidden">
         <div class="modal" style="max-width:350px;">
-            <h3>Validar Membresía</h3>
+            <h3>Ingreso de Socio</h3>
             <input type="text" id="user-id" placeholder="📱 Número Celular" class="m-input" style="margin-bottom:12px">
             <div class="pass-container">
                 <input type="password" id="access-key" placeholder="🔑 Contraseña" class="m-input">
                 <button type="button" class="eye-btn" onclick="togglePass()">👁️</button>
             </div>
-            <button class="btn-dl" onclick="validateAccess()" id="btn-login-text">ENTRAR</button>
+            <button class="btn-dl" onclick="validateAccess()" id="btn-login-text">VERIFICAR ACCESO</button>
             <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Volver</button>
         </div>
     </div>
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="margin-top:0; color:var(--vip)">Ajuste de Salida Técnica</h3>
+            <h3 style="margin-top:0; color:var(--vip)">Configuración de Salida Pro</h3>
             <div class="grid-export">
                 <div><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
                 <div><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="cm">cm</option><option value="in">in</option><option value="px">px</option></select></div>
                 <div style="grid-column: span 2">
-                    <label>Interpolación (Calidad)</label>
-                    <select id="rzMethod" class="m-input">
-                        <option value="high">Bicúbica (Alta)</option>
-                        <option value="medium">Bilinear</option>
-                        <option value="low">Nearest (Rápido)</option>
-                    </select>
+                    <label>Calidad (Interpolación)</label>
+                    <select id="rzMethod" class="m-input"><option value="high">Bicúbica (Alta)</option><option value="medium">Bilinear</option></select>
                 </div>
                 <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
                     <input type="checkbox" id="lockAspect" checked> <small>Bloquear Proporción</small>
                 </div>
             </div>
             <button class="btn-dl" onclick="finalDownload()">DESCARGAR PNG</button>
-            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer">Cancelar</button>
+            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:15px; cursor:pointer">Cancelar</button>
         </div>
     </div>
 
@@ -127,9 +124,9 @@
     <main class="wrap">
         <aside class="panel">
             <button class="btn-s" style="background:var(--vip); color:#000; margin-bottom: 20px;" onclick="location.href='simulador.html'">✨ SIMULADOR 3D</button>
-            <h2>1. Origen</h2>
+            <h2>1. Carga</h2>
             <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:11px;">
-            <h2>2. Limpieza</h2>
+            <h2>2. Limpieza Técnica</h2>
             <div class="control-row"><select id="mode" class="m-input" style="flex:1; margin:0"><option value="white">Blanco</option><option value="black">Negro</option><option value="pick">🎨 Gotero Manual</option></select></div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
@@ -148,6 +145,7 @@
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d'), aspectRatio = 1;
         
+        // SESIÓN VOLÁTIL (Cierre automático)
         let isVip = sessionStorage.getItem('jj_session') === 'active';
         let freeUsed = localStorage.getItem('jj_free_trial') === 'used';
         let targetColor = [255,255,255], currentMode = 'vip';
@@ -181,17 +179,18 @@
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value), contract = parseInt(document.getElementById('contract').value);
             document.getElementById('fuzzV').innerText = fuzz; document.getElementById('featherV').innerText = feather; document.getElementById('contractV').innerText = contract;
-            if(document.getElementById('mode').value==='white') targetColor=[255,255,255]; else if(document.getElementById('mode').value==='black') targetColor=[0,0,0];
+            let tc = (document.getElementById('mode').value==='white') ? [255,255,255] : (document.getElementById('mode').value==='black' ? [0,0,0] : targetColor);
             const id=oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d=id.data, out=ctx.createImageData(oCanvas.width,oCanvas.height), o=out.data;
             const threshold = (fuzz*2.5)+(contract*10), soft = (feather*15)+1;
             for(let i=0; i<d.length; i+=4) {
-                const dist = Math.sqrt((d[i]-targetColor[0])**2 + (d[i+1]-targetColor[1])**2 + (d[i+2]-targetColor[2])**2);
+                const dist = Math.sqrt((d[i]-tc[0])**2 + (d[i+1]-tc[1])**2 + (d[i+2]-tc[2])**2);
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
                 if(dist < threshold-soft) o[i+3]=0; else if(dist < threshold) o[i+3]=((dist-(threshold-soft))/soft)*d[i+3]; else o[i+3]=d[i+3];
             }
             canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out,0,0);
         }
 
+        // VALIDACIÓN DE SOCIO (URL ACTUALIZADA)
         async function validateAccess() {
             const u = document.getElementById('user-id').value.trim().replace(/\D/g,'');
             const p = document.getElementById('access-key').value.trim();
@@ -199,7 +198,7 @@
             if(!u || !p) return alert("Ingresa tus datos completos.");
             btn.innerText = "VERIFICANDO...";
             try {
-                const res = await fetch(`https://script.google.com/macros/s/AKfycbxYUQZExNC60qYUq_scakUIazAHjlQgYqgDFIwev_JsNkiv5AzkCiYz3lEPPqh3Z6xn/exec?user=${u}&pass=${p}`);
+                const res = await fetch(`https://script.google.com/macros/s/AKfycbwCEMZlneRGgZwRPBW7__NDCgyIUVcMdwonRG-A-m9c9LTi-4985AydGUzlD0Q36xxC/exec?user=${u}&pass=${p}`);
                 const data = await res.json();
                 const statusClean = data.status ? data.status.toLowerCase().trim() : "";
                 if(data.access && (statusClean === 'vigente' || statusClean === 'por vencer')) {
@@ -211,6 +210,7 @@
 
         function handleDownload() { if(isVip) { currentMode='vip'; openExport(); } else if(!freeUsed) { document.getElementById('access-modal').classList.remove('hidden'); } else { alert("Prueba agotada."); document.getElementById('access-modal').classList.remove('hidden'); } }
         function useFreeTrial() { localStorage.setItem('jj_free_trial', 'used'); currentMode='free'; closeModal('access-modal'); openExport(); }
+        
         function openExport() { if(!oCanvas.width) return; rzW.value=(oCanvas.width/300*2.54).toFixed(2); rzH.value=(oCanvas.height/300*2.54).toFixed(2); document.getElementById('modalExport').classList.remove('hidden'); }
         
         const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect'), rzUnit = document.getElementById('rzUnit'), rzDPI = document.getElementById('rzDPI');
@@ -229,6 +229,7 @@
             closeModal('modalExport'); if(currentMode==='free') location.reload();
         }
 
+        // SELECTOR DE COLOR
         const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
         let hue=0, svD=false, hD=false;
         function drawCP() {
@@ -238,9 +239,9 @@
             const gB=svCtx.createLinearGradient(0,0,0,100); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000'); svCtx.fillStyle=gB; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
         }
         const handleH = e => { const r=cpH.getBoundingClientRect(); const y=(e.touches?e.touches[0].clientY:e.clientY)-r.top; hue=Math.max(0,Math.min(y/r.height*360,360)); drawCP(); };
-        const handleSV = e => { const r=cpSV.getBoundingClientRect(); const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left, y=(e.touches?e.touches[0].clientY:e.clientY)-r.top; const id=svCtx.getImageData(Math.max(0,Math.min(x,219)),Math.max(0,Math.min(y,99)),1,1).data; document.getElementById('stage').style.backgroundColor=`rgb(${id[0]},${id[1]},${id[2]})`; };
+        const handleSV = e => { const r=cpSV.getBoundingClientRect(); const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left, y=(e.touches?e.touches[0].clientY:e.clientY)-r.top; const id=svCtx.getImageData(Math.max(0,Math.min(x,cpSV.width-1)),Math.max(0,Math.min(y,cpSV.height-1)),1,1).data; document.getElementById('stage').style.backgroundColor=`rgb(${id[0]},${id[1]},${id[2]})`; };
         cpH.onmousedown = cpH.ontouchstart = e => { hD=true; handleH(e); }; cpSV.onmousedown = cpSV.ontouchstart = e => { svD=true; handleSV(e); };
-        window.onmousemove = window.ontouchmove = e => { if(hD) handleH(e); if(svD) handleSV(e); if(hD || svD) e.preventDefault(); };
+        window.onmousemove = window.ontouchmove = e => { if(hD) handleH(e); if(svD) handleSV(e); };
         window.onmouseup = window.ontouchend = () => { hD=false; svD=false; };
 
         function togglePass() { const x=document.getElementById('access-key'); x.type=x.type==='password'?'text':'password'; }
@@ -249,4 +250,5 @@
         ['fuzz','feather','contract','mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
 </body>
-</html>
+    </html>
+    
