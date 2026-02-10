@@ -1,40 +1,65 @@
-<header class="jj-header">
-    <div class="logo-container">
-        <h1>COMUNIDAD J&J <span class="beta-tag">VIP</span></h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quita Fondos | Comunidad J&J VIP</title>
+    <link rel="stylesheet" href="estilos_jj.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+</head>
+<body>
+    <div id="header-vip">
+        <div class="logo">MEMBRESÍA J&J VIP</div>
+        <div class="status-badge" id="vip-status">💎 MIEMBRO ACTIVO</div>
     </div>
-    <div class="user-access">
-        <button id="btn-vip" class="gold-button">ACCESO VIP PLATINUM</button>
-    </div>
-</header>
 
-<main class="editor-grid">
-    <section class="upload-panel">
-        <div class="drop-zone" id="dropZone">
-            <p>Arrastra tu diseño o presiona <strong>Ctrl+V</strong></p>
-            <input type="file" id="fileInput" hidden>
-            <button onclick="document.getElementById('fileInput').click()">Seleccionar Archivo</button>
-        </div>
-    </section>
+    <main class="container">
+        <aside class="sidebar">
+            <section class="tool-box">
+                <h3>Eliminador de Fondo</h3>
+                <div class="input-group">
+                    <label>Modo de recorte:</label>
+                    <select id="recorte-modo">
+                        <option value="blanco">Quitar Blanco (Sublimación)</option>
+                        <option value="negro">Quitar Negro (DTF)</option>
+                        <option value="especifico">Color Específico</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Tolerancia: <span id="tol-val">20</span></label>
+                    <input type="range" id="tolerancia" min="1" max="100" value="20">
+                </div>
+            </section>
 
-    <section class="settings-panel">
-        <h3>Configuración de Remoción</h3>
-        <div class="control-group">
-            <label>Modo:</label>
-            <select id="mode-select">
-                <option value="white">Quitar fondo blanco</option>
-                <option value="black">Quitar fondo negro</option>
-                <option value="custom">Elegir color...</option>
-                <option value="auto">Auto (esquinas)</option>
-            </select>
-        </div>
-        
-        <div class="slider-group">
-            <label>Tolerancia</label>
-            <input type="range" id="tolerance" min="0" max="100" value="50">
-            <label>Suavizado (px)</label>
-            <input type="range" id="smooth" min="0" max="10" step="0.1" value="0.8">
-            <label>Contraer / Expandir</label>
-            <input type="range" id="spread" min="-5" max="5" value="1">
-        </div>
-    </section>
-</main>
+            <section class="tool-box">
+                <h3>Redimensionar (Exportar)</h3>
+                <div class="size-inputs">
+                    <input type="number" id="img-width" placeholder="Ancho (px)">
+                    <input type="number" id="img-height" placeholder="Alto (px)">
+                </div>
+                <button class="btn-action" onclick="aplicarTamano()">Ajustar Medida</button>
+            </section>
+
+            <section class="tool-box">
+                <h3>Simulador Multiproducto</h3>
+                <button class="btn-secondary" onclick="abrirSimulador()">Vista Previa Taza/Polo</button>
+            </section>
+        </aside>
+
+        <section class="canvas-area">
+            <div id="drop-zone" class="drop-zone">
+                <p>Pega tu imagen (Ctrl + V) o arrástrala aquí</p>
+                <input type="file" id="file-input" hidden>
+            </div>
+            <canvas id="main-canvas"></canvas>
+            
+            <div class="bottom-actions">
+                <button class="btn-reset" onclick="resetCanvas()">Limpiar</button>
+                <button class="btn-download" onclick="descargarPNG()">DESCARGAR PNG SIN FONDO</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="motor_procesamiento.js"></script>
+</body>
+</html>
