@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro — Quitafondos</title>
+    <title>J&J Studio Pro — Herramienta Definitiva</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
@@ -19,13 +19,13 @@
         .status-vip { background: #052e1a !important; color: var(--success) !important; border-color: var(--success) !important; }
 
         .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
-        @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; height: auto; } .panel { border-right: none; border-bottom: 1px solid var(--border); } }
+        @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; height: auto; } }
 
-        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; z-index: 100; }
+        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; }
         h2 { font-size: 11px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
         
-        .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; gap: 10px; }
-        label { font-size: 12px; color: #ddd; width: 100px; }
+        .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 10px; }
+        label { font-size: 12px; color: #ddd; width: 110px; }
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
         .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 45px; text-align: center; font-size: 11px; }
         
@@ -34,22 +34,20 @@
         #cpH { width: 20px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: ns-resize; }
 
         .btn-group { display: flex; gap: 8px; margin-top: 15px; flex-wrap: wrap; }
-        .btn-s { flex: 1; min-width: 80px; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; transition: 0.2s; text-align: center; }
+        .btn-s { flex: 1; min-width: 80px; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; }
         .btn-dl { width: 100%; padding: 15px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 20px; font-weight: 900; cursor: pointer; font-size: 14px; }
 
-        .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; min-height: 400px; padding: 20px; }
-        #canvas-container { position: relative; display: inline-block; max-width: 100%; }
-        canvas#canvas { display: block; max-width: 100%; height: auto; max-height: 70vh; }
-        
-        /* MODALES */
-        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
-        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 100%; max-width: 450px; border: 1px solid #262626; text-align: center; }
-        .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 8px; width: 100%; margin-bottom: 10px; }
+        .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; min-height: 400px; padding: 20px; }
+        canvas#canvas { display: block; max-width: 100%; height: auto; max-height: 80vh; background-image: linear-gradient(45deg, #151515 25%, transparent 25%), linear-gradient(-45deg, #151515 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #151515 75%), linear-gradient(-45deg, transparent 75%, #151515 75%); background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px; }
+
+        /* MODALES TÉCNICOS */
+        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
+        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 100%; max-width: 500px; border: 1px solid #262626; }
+        .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 6px; width: 100%; font-size: 14px; }
         .hidden { display: none !important; }
 
-        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; transition: 0.3s; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
-        .choice-card:hover { border-color: var(--vip); }
-        .wa-float { position: fixed; bottom: 20px; right: 20px; background: var(--wa); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.4); }
+        .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left; }
+        .wa-float { position: fixed; bottom: 20px; right: 20px; background: var(--wa); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000; }
     </style>
 </head>
 <body>
@@ -57,45 +55,49 @@
     <a href="https://wa.me/51916689969" class="wa-float" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" width="25"></a>
 
     <div id="access-modal" class="modal-back hidden">
-        <div class="modal">
-            <h3 style="color:var(--vip)">¡Descarga tu Diseño!</h3>
-            <p id="trial-msg" style="font-size:13px; color:var(--muted)">Te queda 1 descarga de prueba gratuita.</p>
-            
+        <div class="modal" style="text-align:center">
+            <h3 style="color:var(--vip)">Descarga de Diseño</h3>
+            <p id="trial-msg">Te queda 1 descarga de prueba gratuita.</p>
             <button class="btn-dl" id="btn-free-dl" onclick="useFreeTrial()">DESCARGA GRATUITA (1)</button>
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-            
-            <div class="choice-card" onclick="openLogin()">
-                <div style="font-size:20px;">💎</div>
-                <div><b>Soy Socio VIP</b><br><small style="color:#666">Ingresa con tu número.</small></div>
-            </div>
-            <div class="choice-card" onclick="window.open('https://wa.me/51916689969','_blank')">
-                <div style="font-size:20px;">📲</div>
-                <div><b>Quiero ser VIP</b><br><small style="color:#666">Descargas ilimitadas y Proporción.</small></div>
-            </div>
-            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer;">Cerrar</button>
+            <button class="btn-s" style="width:100%; margin-bottom:10px" onclick="openLogin()">💎 SOY SOCIO VIP</button>
+            <button class="btn-s" style="width:100%; color:var(--wa)" onclick="window.open('https://wa.me/51916689969')">📲 ACTIVAR SUSCRIPCIÓN</button>
+            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Cerrar</button>
         </div>
     </div>
 
     <div id="login-modal" class="modal-back hidden">
-        <div class="modal" style="max-width:350px;">
-            <h3>Validar Socio</h3>
-            <input type="text" id="user-id" placeholder="Número de Celular" class="m-input">
-            <input type="password" id="access-key" placeholder="Contraseña J&J" class="m-input">
-            <button class="btn-dl" onclick="validateAccess()" style="margin-top:10px;">ENTRAR AHORA</button>
-            <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer;">Volver</button>
+        <div class="modal" style="max-width:350px; text-align:center">
+            <h3>Validar Membresía</h3>
+            <input type="text" id="user-id" placeholder="📱 Número de Celular" class="m-input" style="margin-bottom:10px">
+            <input type="password" id="access-key" placeholder="🔑 Contraseña" class="m-input">
+            <button class="btn-dl" onclick="validateAccess()">ENTRAR</button>
+            <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Volver</button>
         </div>
     </div>
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="margin-top:0">Ajuste de Impresión (VIP)</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align:left;">
-                <div><label>Ancho (cm)</label><input type="number" id="rzW" class="m-input" style="margin:0"></div>
-                <div><label>Alto (cm)</label><input type="number" id="rzH" class="m-input" style="margin:0"></div>
-                <div style="grid-column: span 2;"><input type="checkbox" id="lockAspect" checked> <span style="font-size:11px; color:#888;">Mantener Proporción Vinculada</span></div>
+            <h3 style="margin-top:0; color:var(--vip)">Configuración de Salida</h3>
+            <div class="grid-export">
+                <div><label>Ancho</label><div style="display:flex;gap:5px"><input type="number" id="rzW" class="m-input"><span id="utW" style="font-size:11px;color:#666;align-self:center">cm</span></div></div>
+                <div><label>Alto</label><div style="display:flex;gap:5px"><input type="number" id="rzH" class="m-input"><span id="utH" style="font-size:11px;color:#666;align-self:center">cm</span></div></div>
+                <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="cm">Centímetros (cm)</option><option value="in">Pulgadas (in)</option><option value="px">Píxeles (px)</option></select></div>
+                <div><label>DPI (Resolución)</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
+                <div style="grid-column: span 2">
+                    <label>Método de Redimensionado</label>
+                    <select id="rzMethod" class="m-input">
+                        <option value="high">Bicúbica (Alta Calidad)</option>
+                        <option value="medium">Bilinear (Estándar)</option>
+                        <option value="low">Nearest Neighbor (Rápido)</option>
+                    </select>
+                </div>
+                <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
+                    <input type="checkbox" id="lockAspect" checked> <span style="font-size:12px; color:var(--muted);">Vincular Proporciones (Aspect Ratio)</span>
+                </div>
             </div>
-            <button class="btn-dl" onclick="finalDownload()">DESCARGAR PNG PRO</button>
-            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer;">Cancelar</button>
+            <button class="btn-dl" onclick="finalDownload()">GENERAR Y DESCARGAR PNG</button>
+            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer">Cancelar</button>
         </div>
     </div>
 
@@ -106,132 +108,108 @@
 
     <main class="wrap">
         <section class="panel">
-            <button class="btn-s" style="background: var(--vip); color: #000; width: 100%; margin-bottom: 20px;" onclick="location.href='simulador.html'">✨ IR AL SIMULADOR 3D</button>
+            <button class="btn-s" style="background:var(--vip); color:#000; width:100%; margin-bottom:20px" onclick="location.href='simulador.html'">✨ SIMULADOR 3D</button>
             
-            <h2>1. Cargar Imagen</h2>
-            <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:12px;">
+            <h2>1. Origen</h2>
+            <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:11px;">
 
-            <h2>2. Quitar Fondo</h2>
+            <h2>2. Procesamiento de Fondo</h2>
             <div class="control-row">
                 <select id="mode" style="background:#1a1a1a; color:#fff; border:1px solid #333; padding:8px; border-radius:8px; flex:1;">
                     <option value="white">Quitar Blanco</option>
                     <option value="black">Quitar Negro</option>
+                    <option value="pick">Color Personalizado</option>
                 </select>
             </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
+            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
+            <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"><div class="val-box" id="contractV">0</div></div>
 
-            <h2>3. Edición</h2>
-            <div class="btn-group">
-                <button class="btn-s" onclick="initCrop()">✂️ Recortar</button>
-                <button class="btn-s" onclick="location.reload()">🔄 Reiniciar</button>
-            </div>
+            <h2>3. Color del Lienzo</h2>
+            <div class="cp-container"><canvas id="cpSV" width="220" height="100"></canvas><canvas id="cpH" width="20" height="100"></canvas></div>
 
-            <h2>4. Color del Lienzo</h2>
-            <div class="cp-container">
-                <canvas id="cpSV" width="220" height="100"></canvas>
-                <canvas id="cpH" width="20" height="100"></canvas>
-            </div>
-
-            <button class="btn-dl" onclick="checkDownload()">DESCARGAR DISEÑO</button>
+            <button class="btn-dl" onclick="checkDownload()">DESCARGAR RESULTADO</button>
         </section>
 
         <section class="stage" id="stage">
-            <div id="canvas-container">
-                <canvas id="canvas"></canvas>
-            </div>
+            <canvas id="canvas"></canvas>
         </section>
     </main>
 
     <script>
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d'), aspectRatio = 1;
-        
         let isVip = localStorage.getItem('jj_session') === 'active';
         let freeUsed = localStorage.getItem('jj_free_trial') === 'used';
 
         window.onload = () => {
-            if(isVip) {
-                document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO";
-                document.getElementById('status-tag').classList.add('status-vip');
-            }
+            if(isVip) { document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO"; document.getElementById('status-tag').classList.add('status-vip'); }
             drawCP();
         };
 
-        // --- CARGA Y PROCESO ---
         document.getElementById('file').onchange = e => {
-            const f = e.target.files[0];
-            const img = new Image();
-            img.onload = () => {
-                oCanvas.width = img.width; oCanvas.height = img.height;
-                aspectRatio = img.width / img.height;
-                oCtx.drawImage(img, 0, 0);
-                process();
-            };
+            const f = e.target.files[0]; const img = new Image();
+            img.onload = () => { oCanvas.width = img.width; oCanvas.height = img.height; aspectRatio = img.width/img.height; oCtx.drawImage(img,0,0); process(); };
             img.src = URL.createObjectURL(f);
         };
 
         function process() {
             if(!oCanvas.width) return;
-            const fuzz = parseInt(document.getElementById('fuzz').value), mode = document.getElementById('mode').value;
-            document.getElementById('fuzzV').innerText = fuzz;
+            const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value), contract = parseInt(document.getElementById('contract').value), mode = document.getElementById('mode').value;
+            document.getElementById('fuzzV').innerText = fuzz; document.getElementById('featherV').innerText = feather; document.getElementById('contractV').innerText = contract;
+            
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data, out = ctx.createImageData(oCanvas.width,oCanvas.height), o = out.data;
+            const threshold = (fuzz*2.5)+(contract*10), soft = (feather*15)+1;
+            
             for(let i=0; i<d.length; i+=4) {
-                const isBg = mode === 'white' ? (d[i]>255-fuzz && d[i+1]>255-fuzz && d[i+2]>255-fuzz) : (d[i]<fuzz && d[i+1]<fuzz && d[i+2]<fuzz);
-                o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2]; o[i+3] = isBg ? 0 : d[i+3];
+                const dist = mode === 'white' ? Math.sqrt((d[i]-255)**2 + (d[i+1]-255)**2 + (d[i+2]-255)**2) : Math.sqrt(d[i]**2 + d[i+1]**2 + d[i+2]**2);
+                o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
+                if(dist < threshold-soft) o[i+3]=0; 
+                else if(dist < threshold) o[i+3]=((dist-(threshold-soft))/soft)*d[i+3]; 
+                else o[i+3]=d[i+3];
             }
             canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out, 0, 0);
         }
 
-        // --- DESCARGA Y SEGURIDAD ---
+        // --- SEGURIDAD Y DESCARGA ---
         function checkDownload() {
-            if (isVip) { 
-                openExport(); 
-            } else if (!freeUsed) {
-                document.getElementById('access-modal').classList.remove('hidden');
-                document.getElementById('btn-free-dl').style.display = 'block';
-            } else {
-                document.getElementById('access-modal').classList.remove('hidden');
+            if (isVip) openExport(); 
+            else if (!freeUsed) document.getElementById('access-modal').classList.remove('hidden');
+            else { 
+                document.getElementById('trial-msg').innerText = "Prueba agotada. Únete a Comunidad J&J.";
                 document.getElementById('btn-free-dl').style.display = 'none';
-                document.getElementById('trial-msg').innerText = "Has agotado tu prueba gratuita. ¡Únete a los VIP!";
+                document.getElementById('access-modal').classList.remove('hidden');
             }
         }
 
-        function useFreeTrial() {
-            localStorage.setItem('jj_free_trial', 'used');
-            finalDownload();
-            location.reload();
-        }
+        function useFreeTrial() { localStorage.setItem('jj_free_trial', 'used'); finalDownload(); }
 
-        async function validateAccess() {
-            const u = document.getElementById('user-id').value.trim();
-            const p = document.getElementById('access-key').value.trim();
-            const res = await fetch(`https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec?user=${u}&pass=${p}`);
-            const data = await res.json();
-            if(data.access) { 
-                localStorage.setItem('jj_session', 'active'); 
-                location.reload(); 
-            } else { alert("Número o contraseña incorrectos"); }
-        }
-
-        // --- PROPORCIÓN VINCULADA ---
-        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect');
-        rzW.oninput = () => { if(lock.checked) rzH.value = (rzW.value / aspectRatio).toFixed(2); };
-        rzH.oninput = () => { if(lock.checked) rzW.value = (rzH.value * aspectRatio).toFixed(2); };
-
+        // --- MODAL TÉCNICO ---
+        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect'), rzUnit = document.getElementById('rzUnit'), rzDPI = document.getElementById('rzDPI');
+        
         function openExport() {
-            const dpi = 300;
+            const dpi = parseInt(rzDPI.value);
             rzW.value = (oCanvas.width/dpi*2.54).toFixed(2);
             rzH.value = (oCanvas.height/dpi*2.54).toFixed(2);
             document.getElementById('modalExport').classList.remove('hidden');
         }
 
+        rzW.oninput = () => { if(lock.checked) rzH.value = (rzW.value / aspectRatio).toFixed(2); };
+        rzH.oninput = () => { if(lock.checked) rzW.value = (rzH.value * aspectRatio).toFixed(2); };
+
         function finalDownload() {
-            const a = document.createElement('a'); a.download = 'jj_design.png';
-            a.href = canvas.toDataURL(); a.click();
+            const dpi = parseInt(rzDPI.value), method = document.getElementById('rzMethod').value;
+            const temp = document.createElement('canvas');
+            temp.width = (rzUnit.value === 'cm') ? (rzW.value/2.54*dpi) : rzW.value;
+            temp.height = temp.width / aspectRatio;
+            const tCtx = temp.getContext('2d');
+            tCtx.imageSmoothingQuality = method;
+            tCtx.drawImage(canvas, 0, 0, temp.width, temp.height);
+            const a = document.createElement('a'); a.download = 'jj_studio_pro.png'; a.href = temp.toDataURL(); a.click();
             closeModal('modalExport');
         }
 
-        // --- COLOR LIENZO ---
+        // --- SELECTOR COLOR ---
         const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
         let hue=0, svDragging=false, hDragging=false;
         function drawCP() {
@@ -247,10 +225,16 @@
         };
         window.onmouseup = () => { hDragging=false; svDragging=false; };
 
+        async function validateAccess() {
+            const u = document.getElementById('user-id').value.trim(), p = document.getElementById('access-key').value.trim();
+            const res = await fetch(`https://script.google.com/macros/s/AKfycbxkuP3Sov5C0q0yVGrnFjj9kO1yO-QkA2niydkUBjQMDHQWFCVTyLmlwd2B1puHb6Z-/exec?user=${u}&pass=${p}`);
+            const data = await res.json();
+            if(data.access) { localStorage.setItem('jj_session', 'active'); location.reload(); } else { alert("Número o clave incorrecta"); }
+        }
+
         function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        document.getElementById('fuzz').oninput = process;
-        document.getElementById('mode').onchange = process;
+        ['fuzz','feather','contract','mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
 </body>
 </html>
