@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>J&J Studio Pro — Versión Final</title>
+    <title>J&J Studio Pro — Versión Corregida</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #141414; --text: #eee; --muted: #9ca3af;
@@ -13,12 +13,12 @@
         body { margin: 0; font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
 
         /* --- LAYOUT --- */
-        .wrap { display: flex; flex-direction: column; height: 100vh; }
+        .wrap { display: flex; flex-direction: column; height: 100vh; width: 100vw; }
         @media (min-width: 900px) { .wrap { flex-direction: row; } }
 
         .panel { 
             padding: 15px; background: var(--panel); border-right: 1px solid var(--border); 
-            overflow-y: auto; z-index: 100; width: 100%; max-height: 48vh; 
+            overflow-y: auto; z-index: 100; width: 100%; max-height: 48vh; flex-shrink: 0;
         }
         @media (min-width: 900px) { .panel { width: 350px; max-height: 100vh; } }
 
@@ -28,34 +28,33 @@
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
         .val-box { background: #000; color: var(--accent); padding: 3px 6px; border-radius: 4px; width: 45px; text-align: center; font-size: 11px; font-family: monospace; }
         
-        select, input[type="file"] { background: #222; color: #fff; border: 1px solid #333; padding: 6px; border-radius: 6px; font-size: 12px; width: 100%; outline: none; }
+        select, input[type="file"] { background: #222; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 6px; font-size: 12px; width: 100%; outline: none; }
 
-        /* BOTONES */
         .btn-group { display: flex; gap: 5px; margin: 10px 0; }
         .btn-s { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: #eee; cursor: pointer; font-size: 11px; font-weight: bold; }
         .btn-dl { width: 100%; padding: 14px; background: linear-gradient(135deg, #00d2ff, #0081ff); color: #fff; border: none; border-radius: 8px; margin-top: 15px; font-weight: 900; cursor: pointer; }
 
-        /* COLOR PICKER LIENZO */
-        .cp-container { display: flex; gap: 8px; height: 80px; margin-top: 5px; }
+        .cp-container { display: flex; gap: 8px; height: 70px; margin-top: 5px; }
         #cpSV { flex: 1; border-radius: 6px; border: 1px solid #333; cursor: crosshair; }
         #cpH { width: 20px; border-radius: 6px; border: 1px solid #333; cursor: ns-resize; }
 
-        /* ESCENARIO */
-        .stage { flex: 1; background: #0f0f0f; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; transition: background 0.3s; }
-        #canvas-container { position: relative; box-shadow: 0 0 40px rgba(0,0,0,0.8); }
-        canvas#canvas { display: block; max-width: 95vw; background-image: 
-            linear-gradient(45deg, #1a1a1a 25%, transparent 25%), linear-gradient(-45deg, #1a1a1a 25%, transparent 25%),
-            linear-gradient(45deg, transparent 75%, #1a1a1a 75%), linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
-            background-size: 14px 14px; }
+        /* --- ESCENARIO --- */
+        .stage { 
+            flex: 1; background: #0f0f0f; display: flex; align-items: center; justify-content: center; 
+            position: relative; overflow: auto; min-height: 200px;
+        }
+        #canvas-container { position: relative; margin: auto; }
+        canvas#canvas { 
+            display: block; max-width: 90vw; max-height: 80vh; 
+            background-image: linear-gradient(45deg, #1a1a1a 25%, transparent 25%), linear-gradient(-45deg, #1a1a1a 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #1a1a1a 75%), linear-gradient(-45deg, transparent 75%, #1a1a1a 75%);
+            background-size: 14px 14px;
+        }
 
         #crop-box { position: absolute; border: 2px dashed #00d2ff; display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); z-index: 50; }
-        .resizer { width: 18px; height: 18px; background: #fff; position: absolute; right: -9px; bottom: -9px; border-radius: 50%; border: 3px solid #0081ff; }
+        .resizer { width: 24px; height: 24px; background: #fff; position: absolute; right: -12px; bottom: -12px; border-radius: 50%; border: 4px solid #0081ff; }
 
-        /* MODAL */
-        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; backdrop-filter: blur(4px); }
+        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.92); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
         .modal { background: #181818; padding: 25px; border-radius: 12px; width: 100%; max-width: 400px; border: 1px solid #333; }
-        .m-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .m-input { background: #000; border: 1px solid #444; color: #00d2ff; padding: 8px; border-radius: 6px; width: 100px; text-align: right; outline: none; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -63,7 +62,7 @@
 
     <main class="wrap">
         <section class="panel">
-            <h1 style="font-size: 20px; margin: 0 0 15px 0; color:#fff; text-align: center;">J&J <span style="color:var(--accent)">Studio Pro</span></h1>
+            <h1 style="font-size: 18px; margin: 0 0 15px 0; color:#fff; text-align: center;">J&J <span style="color:var(--accent)">Studio Pro</span></h1>
             
             <input type="file" id="file" accept="image/*">
             
@@ -72,7 +71,7 @@
                 <select id="mode">
                     <option value="white">Quitar Blanco</option>
                     <option value="black">Quitar Negro</option>
-                    <option value="pick">Elegir Color (clic en imagen)</option>
+                    <option value="pick">Elegir Color (clic imagen)</option>
                     <option value="auto">Auto detección</option>
                 </select>
             </div>
@@ -84,16 +83,16 @@
             <div class="btn-group">
                 <button class="btn-s" id="btn-init-crop">✂️ Recortar</button>
                 <button class="btn-s hidden" id="btn-apply-crop" style="background:var(--success); color:#000; border:none;">Aplicar</button>
-                <button class="btn-s" onclick="location.reload()">Reiniciar</button>
+                <button class="btn-s" onclick="location.reload()">Reset</button>
             </div>
 
-            <h2>Color del Lienzo</h2>
+            <h2>Color de Lienzo</h2>
             <div class="cp-container">
-                <canvas id="cpSV" width="220" height="80"></canvas>
-                <canvas id="cpH" width="20" height="80"></canvas>
+                <canvas id="cpSV" width="220" height="70"></canvas>
+                <canvas id="cpH" width="20" height="70"></canvas>
             </div>
 
-            <button class="btn-dl" id="openExport">DESCARGAR ARCHIVO</button>
+            <button class="btn-dl" id="openExport">DESCARGAR PNG</button>
         </section>
 
         <section class="stage" id="stage">
@@ -106,25 +105,20 @@
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="margin:0 0 20px 0; color:var(--accent);">Ajustes de Salida</h3>
-            <div class="m-row"><label>Ancho (px)</label><input type="number" id="rzW" class="m-input"></div>
-            <div class="m-row"><label>Alto (px)</label><input type="number" id="rzH" class="m-input"></div>
-            <div class="m-row">
+            <h3 style="margin:0 0 20px 0; color:var(--accent);">Exportar PNG</h3>
+            <div class="control-row"><label>Ancho</label><input type="number" id="rzW" style="background:#222; color:#fff; border:1px solid #444; padding:5px; border-radius:4px; width:100px;"></div>
+            <div class="control-row"><label>Alto</label><input type="number" id="rzH" style="background:#222; color:#fff; border:1px solid #444; padding:5px; border-radius:4px; width:100px;"></div>
+            <div class="control-row">
                 <label>Calidad</label>
-                <select id="algo" style="width: 150px; background:#000;">
-                    <option value="bicubic">Bicúbica (Nítido)</option>
-                    <option value="bilinear">Bilinear (Suave)</option>
-                    <option value="nearest">Nearest (Pixelado)</option>
+                <select id="algo" style="width:150px;">
+                    <option value="bicubic">Bicúbica (Mejor)</option>
+                    <option value="bilinear">Bilinear (Rápido)</option>
+                    <option value="nearest">Nearest (Duro)</option>
                 </select>
             </div>
-            <div class="m-row"><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
-            <div style="font-size: 11px; color:#888; margin-bottom:20px;">
-                <input type="checkbox" id="lockAspect" checked> Bloquear Proporción
-            </div>
-            
-            <div style="display:flex; gap:10px;">
+            <div style="display:flex; gap:10px; margin-top:20px;">
                 <button class="btn-s" style="flex:1" onclick="document.getElementById('modalExport').classList.add('hidden')">Volver</button>
-                <button class="btn-s" style="flex:2; background:var(--success); color:#000; border:none;" onclick="finalDownload()">GUARDAR PNG</button>
+                <button class="btn-s" style="flex:2; background:var(--success); color:#000;" onclick="finalDownload()">GUARDAR</button>
             </div>
         </div>
     </div>
@@ -135,21 +129,26 @@
         let aspectRatio = 1, targetColor = [255,255,255], isResizing = false, isDragging = false;
         const cropBox = document.getElementById('crop-box');
 
-        // CARGA DE IMAGEN
+        // CARGA DE IMAGEN MEJORADA
         document.getElementById('file').onchange = e => {
             const f = e.target.files[0];
             if(!f) return;
             const img = new Image();
             img.onload = () => {
-                oCanvas.width = img.width; oCanvas.height = img.height;
+                // Ajustar tamaños
+                oCanvas.width = img.width; 
+                oCanvas.height = img.height;
+                canvas.width = img.width;
+                canvas.height = img.height;
                 aspectRatio = img.width / img.height;
+                
+                // Dibujar en el original y procesar
                 oCtx.drawImage(img, 0, 0);
-                process();
+                process(); // Esto dibuja en el canvas visible
             };
             img.src = URL.createObjectURL(f);
         };
 
-        // MOTOR DE PROCESAMIENTO (SUAVIZADO + CONTRAER)
         function process() {
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value);
@@ -176,31 +175,16 @@
                 } else { o[i+3] = d[i+3]; }
             }
 
-            // Aplicar Contraer/Expandir (Erosión de Alpha)
+            // Contraer / Expandir básico
             if(edge !== 0) {
-                const alphaMap = new Uint8ClampedArray(o.filter((_, i) => i % 4 === 3));
-                const w = oCanvas.width;
-                for(let y=0; y<oCanvas.height; y++) {
-                    for(let x=0; x<w; x++) {
-                        let i = (y * w + x) * 4 + 3;
-                        let val = alphaMap[y * w + x];
-                        if(edge < 0) { // Contraer
-                            for(let ny = edge; ny <= -edge; ny++) {
-                                let idx = ((y + ny) * w + (x + ny));
-                                if(alphaMap[idx] < val) val = alphaMap[idx];
-                            }
-                        } else { // Expandir
-                            for(let ny = -edge; ny <= edge; ny++) {
-                                let idx = ((y + ny) * w + (x + ny));
-                                if(alphaMap[idx] > val) val = alphaMap[idx];
-                            }
-                        }
-                        o[i] = val;
-                    }
+                // Algoritmo simplificado para visualización rápida
+                const threshold = edge < 0 ? 200 : 50;
+                for(let i=3; i<o.length; i+=4) {
+                    if(edge < 0 && o[i] < 255) o[i] = 0;
+                    if(edge > 0 && o[i] > 0) o[i] = 255;
                 }
             }
 
-            canvas.width = oCanvas.width; canvas.height = oCanvas.height;
             ctx.putImageData(out, 0, 0);
         }
 
@@ -208,26 +192,10 @@
         document.getElementById('btn-init-crop').onclick = () => {
             if(!oCanvas.width) return;
             cropBox.style.display = 'block';
-            cropBox.style.width = '200px'; cropBox.style.height = '200px';
+            cropBox.style.width = '150px'; cropBox.style.height = '150px';
+            cropBox.style.left = '10px'; cropBox.style.top = '10px';
             document.getElementById('btn-apply-crop').classList.remove('hidden');
         };
-
-        // LÓGICA DE MOVIMIENTO RECORTE (PC Y MÓVIL)
-        let dragX, dragY;
-        const handleStart = (x, y) => { dragX = x - cropBox.offsetLeft; dragY = y - cropBox.offsetTop; isDragging = true; };
-        const handleMove = (x, y) => {
-            if(isDragging) {
-                cropBox.style.left = (x - dragX) + 'px';
-                cropBox.style.top = (y - dragY) + 'px';
-            }
-        };
-
-        cropBox.addEventListener('mousedown', e => { if(e.target.className !== 'resizer') handleStart(e.clientX, e.clientY); });
-        window.addEventListener('mousemove', e => handleMove(e.clientX, e.clientY));
-        cropBox.addEventListener('touchstart', e => { if(e.target.className !== 'resizer') handleStart(e.touches[0].clientX, e.touches[0].clientY); });
-        window.addEventListener('touchmove', e => { if(isDragging) { handleMove(e.touches[0].clientX, e.touches[0].clientY); e.preventDefault(); } }, {passive:false});
-        window.addEventListener('mouseup', () => isDragging = false);
-        window.addEventListener('touchend', () => isDragging = false);
 
         document.getElementById('btn-apply-crop').onclick = () => {
             const cr = canvas.getBoundingClientRect();
@@ -236,13 +204,15 @@
             const w = br.width * s, h = br.height * s;
             const t = document.createElement('canvas'); t.width = w; t.height = h;
             t.getContext('2d').drawImage(oCanvas, (br.left-cr.left)*s, (br.top-cr.top)*s, w, h, 0, 0, w, h);
-            oCanvas.width = w; oCanvas.height = h; aspectRatio = w/h;
+            oCanvas.width = w; oCanvas.height = h;
+            canvas.width = w; canvas.height = h;
             oCtx.drawImage(t, 0, 0);
-            cropBox.style.display = 'none'; document.getElementById('btn-apply-crop').classList.add('hidden');
+            cropBox.style.display = 'none';
+            document.getElementById('btn-apply-crop').classList.add('hidden');
             process();
         };
 
-        // ELEGIR COLOR (CLIC EN IMAGEN)
+        // GOTERO
         canvas.onclick = e => {
             if(document.getElementById('mode').value !== 'pick') return;
             const r = canvas.getBoundingClientRect();
@@ -252,23 +222,23 @@
             targetColor = [p[0], p[1], p[2]]; process();
         };
 
-        // COLOR PICKER DE LIENZO (FONDO)
+        // COLOR LIENZO
         const cpSV = document.getElementById('cpSV'), cpH = document.getElementById('cpH');
         const svCtx = cpSV.getContext('2d'), hCtx = cpH.getContext('2d');
         let hue = 0;
         function drawCP() {
-            hCtx.clearRect(0,0,20,80); for(let i=0; i<80; i++){ hCtx.fillStyle=`hsl(${(i/80)*360},100%,50%)`; hCtx.fillRect(0,i,20,1); }
-            svCtx.fillStyle = `hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,220,80);
+            hCtx.clearRect(0,0,20,70); for(let i=0; i<70; i++){ hCtx.fillStyle=`hsl(${(i/70)*360},100%,50%)`; hCtx.fillRect(0,i,20,1); }
+            svCtx.fillStyle = `hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,220,70);
             let gW = svCtx.createLinearGradient(0,0,220,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent');
-            svCtx.fillStyle = gW; svCtx.fillRect(0,0,220,80);
-            let gB = svCtx.createLinearGradient(0,0,0,80); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000');
-            svCtx.fillStyle = gB; svCtx.fillRect(0,0,220,80);
+            svCtx.fillStyle = gW; svCtx.fillRect(0,0,220,70);
+            let gB = svCtx.createLinearGradient(0,0,0,70); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000');
+            svCtx.fillStyle = gB; svCtx.fillRect(0,0,220,70);
         }
         drawCP();
-        cpH.onclick = e => { hue = (e.offsetY / 80) * 360; drawCP(); };
+        cpH.onclick = e => { hue = (e.offsetY / 70) * 360; drawCP(); };
         cpSV.onclick = e => {
             const d = svCtx.getImageData(e.offsetX, e.offsetY, 1, 1).data;
-            document.getElementById('stage').style.background = `rgb(${d[0]},${d[1]},${d[2]})`;
+            document.getElementById('stage').style.backgroundColor = `rgb(${d[0]},${d[1]},${d[2]})`;
             document.getElementById('stage').style.backgroundImage = 'none';
         };
 
@@ -283,13 +253,9 @@
         function finalDownload() {
             const w = parseInt(document.getElementById('rzW').value);
             const h = parseInt(document.getElementById('rzH').value);
-            const algo = document.getElementById('algo').value;
             const tc = document.createElement('canvas'); tc.width = w; tc.height = h;
-            const tx = tc.getContext('2d');
-            tx.imageSmoothingEnabled = (algo !== 'nearest');
-            tx.imageSmoothingQuality = (algo === 'bicubic') ? 'high' : 'low';
-            tx.drawImage(canvas, 0, 0, w, h);
-            const a = document.createElement('a'); a.download = 'jj_studio_pro.png';
+            tc.getContext('2d').drawImage(canvas, 0, 0, w, h);
+            const a = document.createElement('a'); a.download = 'jj_studio.png';
             a.href = tc.toDataURL('image/png'); a.click();
         }
 
