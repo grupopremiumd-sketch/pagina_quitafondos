@@ -3,92 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J VIP - Quitar Fondo Automático</title>
+    <title>J&J VIP - QUITAR FONDO AUTOMÁTICO</title>
     <style>
         :root {
-            --bg-grad: linear-gradient(180deg, #3d0000 0%, #000000 100%);
-            --panel-bg: rgba(28, 28, 28, 0.95);
-            --accent-red: #ff3131;
+            --bg-gradient: linear-gradient(180deg, #4b0000 0%, #000000 100%);
+            --panel-bg: #1c1c1c;
             --accent-blue: #0084ff;
-            --input-bg: #1a1a1a;
-            --text: #ffffff;
-            --border: #333;
+            --accent-orange: #ff6a00;
+            --text-color: #ffffff;
+            --input-bg: #2a2a2a;
         }
 
         body {
-            margin: 0;
-            background: var(--bg-grad);
+            background: var(--bg-gradient);
             background-attachment: fixed;
-            color: var(--text);
-            font-family: 'Inter', -apple-system, sans-serif;
-            font-size: 14px;
+            color: var(--text-color);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 10px;
+            font-size: 13px;
         }
 
         header {
-            padding: 15px;
             display: flex;
             align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 5px;
+            gap: 10px;
         }
 
-        .brand { font-weight: 900; font-size: 1.2rem; letter-spacing: -1px; margin-right: 10px; }
-        .sub-title { color: #888; font-size: 12px; }
+        .logo {
+            font-weight: 900;
+            font-size: 1.3rem;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+        }
 
-        .container { padding: 15px; max-width: 500px; margin: auto; }
+        .version-tag {
+            color: #888;
+            font-size: 11px;
+        }
 
-        /* PANEL DE CARGA */
+        /* CONTENEDOR PRINCIPAL */
         .card {
             background: var(--panel-bg);
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
 
-        .section-title { font-weight: bold; margin-bottom: 15px; display: block; }
-
-        input[type="file"] {
-            background: var(--input-bg);
-            border: 1px solid var(--border);
-            padding: 10px;
-            width: 100%;
-            border-radius: 6px;
-            color: #ccc;
+        .title {
+            font-weight: bold;
+            margin-bottom: 12px;
+            display: block;
         }
 
-        .hint { font-size: 11px; color: #666; margin-top: 10px; }
-        .kbd { background: #ff4500; color: #fff; padding: 2px 5px; border-radius: 4px; font-weight: bold; }
-
-        /* PANEL EXPORTAR - REDIMENSIONAR */
-        .grid-inputs {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        input[type="number"], input[type="text"] {
+        /* CARGAR IMAGEN */
+        .upload-btn {
             background: #fff;
             color: #000;
             border: none;
-            padding: 8px;
+            padding: 8px 12px;
             border-radius: 4px;
-            width: 80px;
+            font-weight: bold;
+            cursor: pointer;
         }
 
-        /* SLIDERS ESTILO UCX26 */
-        .slider-row {
+        .shortcuts {
+            color: #666;
+            font-size: 11px;
+            margin-top: 8px;
+        }
+
+        .key {
+            background: #ff5e00;
+            color: #fff;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        /* EXPORTAR - REDIMENSIONAR */
+        .input-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-bottom: 18px;
+            gap: 8px;
+            margin-bottom: 20px;
         }
 
-        .slider-label { width: 120px; font-size: 13px; }
-        
-        .range-container {
+        .input-text {
+            background: #fff;
+            border: none;
+            padding: 6px;
+            border-radius: 3px;
+            width: 70px;
+            color: #000;
+            font-weight: bold;
+        }
+
+        /* SLIDERS UCX26 */
+        .slider-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .slider-label {
+            width: 130px;
+        }
+
+        .range-wrap {
             flex-grow: 1;
-            margin: 0 15px;
         }
 
         input[type="range"] {
@@ -101,150 +127,154 @@
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 18px;
             height: 18px;
-            background: var(--accent-blue);
+            width: 18px;
             border-radius: 50%;
+            background: var(--accent-blue);
             cursor: pointer;
         }
 
-        .val-box {
+        .val-display {
             background: #252525;
-            padding: 5px 10px;
-            border-radius: 6px;
-            min-width: 40px;
+            min-width: 35px;
             text-align: center;
+            padding: 4px;
+            border-radius: 4px;
+            border: 1px solid #333;
         }
 
-        /* SELECTOR DE COLOR Y LIENZO */
-        .canvas-color-box {
-            height: 80px;
-            background: linear-gradient(to right, #333, #666);
-            border-radius: 8px;
+        /* COLOR PICKER Y PREVIEW */
+        .canvas-selector {
+            display: flex;
+            gap: 10px;
             margin-top: 10px;
         }
 
-        /* BOTONES ACCIÓN */
-        .actions {
+        .color-preview {
+            flex-grow: 1;
+            height: 80px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #000, #444, #888, #fff, red, yellow, green, cyan, blue, magenta);
+        }
+
+        /* BOTONES DE ACCIÓN */
+        .btn-group {
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
+            gap: 8px;
+            margin-top: 15px;
         }
 
         button {
-            padding: 12px 15px;
-            border-radius: 8px;
             border: none;
+            border-radius: 5px;
+            padding: 10px;
             font-weight: bold;
             cursor: pointer;
+            font-size: 12px;
         }
 
-        .btn-gray { background: #333; color: white; }
-        .btn-orange { background: #ff6a00; color: white; flex-grow: 1; }
-        .btn-download { background: rgba(255,255,255,0.1); border: 1px solid #444; color: #fff; flex-grow: 2; }
+        .btn-dark { background: #333; color: #fff; }
+        .btn-cancel { background: #3d1515; color: #ff8a8a; }
+        .btn-apply { background: var(--accent-orange); color: #fff; flex-grow: 1; }
+        .btn-download { 
+            background: rgba(255,255,255,0.05); 
+            border: 1px solid #333; 
+            color: #fff; 
+            flex-grow: 1; 
+            font-size: 14px;
+            margin-top: 10px;
+        }
 
-        /* VISUALIZADOR DE TRANSPARENCIA */
-        .preview-area {
-            height: 200px;
-            background-image: conic-gradient(#222 90deg, #111 90deg 180deg, #222 180deg 270deg, #111 270deg);
+        /* ÁREA DE VISUALIZACIÓN */
+        .transparent-bg {
+            height: 180px;
+            margin-top: 15px;
+            border-radius: 8px;
+            background-image: conic-gradient(#251010 90deg, #000 90deg 180deg, #251010 180deg 270deg, #000 270deg);
             background-size: 20px 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-            border: 1px solid #3d0000;
+            border: 1px solid #4b0000;
         }
     </style>
 </head>
 <body>
 
-<header>
-    <div class="brand">URBAN CARTOON <span style="color:var(--accent-red)">J&J</span></div>
-    <div class="sub-title">Quitar Fondo Automático (beta)</div>
-</header>
+    <header>
+        <div class="logo">URBAN CARTOON <span style="color:red">J&J</span></div>
+        <div class="version-tag">Quitar Fondo Automático (beta)</div>
+    </header>
 
-<div class="container">
     <div class="card">
-        <span class="section-title">Cargar imagen</span>
-        <input type="file" id="fileInput">
-        <div class="hint">
-            Arrastra, pega con <span class="kbd">Ctrl/Cmd+V</span> o abre con <span class="kbd">Ctrl/Cmd+O</span>
+        <span class="title">Cargar imagen</span>
+        <button class="upload-btn">Seleccionar archivo</button>
+        <span style="margin-left:10px; color:#888;">Sin archivos seleccionados</span>
+        <div class="shortcuts">
+            Arrastra, pega con <span class="key">Ctrl/Cmd+V</span> o abre con <span class="key">Ctrl/Cmd+O</span>
         </div>
     </div>
 
     <div class="card">
-        <span class="section-title">Exportar — Redimensionar</span>
+        <span class="title">Exportar — Redimensionar</span>
         
-        <div class="grid-inputs">
-            <label>Ancho</label>
-            <input type="number" value="300" id="width">
-            <span>px</span>
-            <label>Alto</label>
-            <input type="number" value="150" id="height">
+        <div class="input-row">
+            <span>Ancho</span>
+            <input type="text" value="300" class="input-text">
+            <span style="color:#666">px</span>
+            <span>Alto</span>
+            <input type="text" value="150" class="input-text">
+            <button class="btn-dark" style="padding: 4px 10px;">—</button>
         </div>
 
-        <div class="slider-row">
-            <span class="slider-label">Tolerancia</span>
-            <div class="range-container">
-                <input type="range" min="0" max="100" value="60" id="tol">
-            </div>
-            <div class="val-box" id="tol-val">60</div>
+        <div class="slider-item">
+            <div class="slider-label">Tolerancia</div>
+            <div class="range-wrap"><input type="range" id="t1" min="0" max="100" value="60"></div>
+            <div class="val-display" id="v1">60</div>
         </div>
 
-        <div class="slider-row">
-            <span class="slider-label">Suavizado (px)</span>
-            <div class="range-container">
-                <input type="range" min="0" max="10" step="0.1" value="0.8" id="sua">
-            </div>
-            <div class="val-box" id="sua-val">0.8</div>
+        <div class="slider-item">
+            <div class="slider-label">Suavizado (px)</div>
+            <div class="range-wrap"><input type="range" id="t2" min="0" max="10" step="0.1" value="0.8"></div>
+            <div class="val-display" id="v2">0.8</div>
         </div>
 
-        <div class="slider-row">
-            <span class="slider-label">Contraer / Expandir (px)</span>
-            <div class="range-container">
-                <input type="range" min="-10" max="10" value="1" id="exp">
-            </div>
-            <div class="val-box" id="exp-val">1</div>
+        <div class="slider-item">
+            <div class="slider-label">Contraer / Expandir (px)</div>
+            <div class="range-wrap"><input type="range" id="t3" min="-10" max="10" value="1"></div>
+            <div class="val-display" id="v3">1</div>
         </div>
 
-        <div class="slider-row" style="margin-bottom: 5px;">
-            <span class="slider-label">Color del lienzo</span>
-            <div class="canvas-color-box" style="flex-grow: 1;"></div>
+        <div class="slider-label">Color del lienzo</div>
+        <div class="canvas-selector">
+            <div class="color-preview"></div>
         </div>
-        <div class="hint" style="margin-bottom: 15px;">Tamaño actual: 300 x 150 px · ppi (meta): 300</div>
+        
+        <p style="color:#666; font-size:11px; margin: 10px 0;">Tamaño actual: 300 x 150 px · ppi (meta): 300</p>
 
-        <div style="display: flex; gap: 10px;">
-            <button class="btn-gray" style="flex: 1;">Usar tamaño actual</button>
-            <button class="btn-gray" style="background:#421111; color:#ff8a8a;">Cancelar</button>
-            <button class="btn-orange">Aplicar</button>
+        <div class="btn-group">
+            <button class="btn-dark">Usar tamaño actual</button>
+            <button class="btn-cancel">Cancelar</button>
+            <button class="btn-apply">Aplicar</button>
         </div>
     </div>
 
-    <div class="actions">
-        <button class="btn-gray">Reiniciar</button>
-        <button class="btn-gray">Recortar</button>
+    <div class="btn-group">
+        <button class="btn-dark" style="flex:1">Reiniciar</button>
+        <button class="btn-dark" style="flex:1">Recortar</button>
         <button class="btn-download">DESCARGAR PNG</button>
     </div>
 
-    <div class="preview-area"></div>
-</div>
+    <div class="transparent-bg"></div>
 
-<script>
-    // Sincronización de valores de sliders
-    const sliders = [
-        {id: 'tol', val: 'tol-val'},
-        {id: 'sua', val: 'sua-val'},
-        {id: 'exp', val: 'exp-val'}
-    ];
+    <script>
+        // Sincronizar números de los sliders
+        const setupSlider = (id, valId) => {
+            const slider = document.getElementById(id);
+            const display = document.getElementById(valId);
+            slider.oninput = () => display.innerText = slider.value;
+        };
 
-    sliders.forEach(s => {
-        const input = document.getElementById(s.id);
-        const display = document.getElementById(s.val);
-        input.addEventListener('input', () => {
-            display.innerText = input.value;
-        });
-    });
-
-    // La lógica de procesamiento de imagen se integra aquí
-</script>
-
+        setupSlider('t1', 'v1');
+        setupSlider('t2', 'v2');
+        setupSlider('t3', 'v3');
+    </script>
 </body>
 </html>
