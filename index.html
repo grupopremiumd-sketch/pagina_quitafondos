@@ -1,74 +1,40 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Quitar Fondo - Comunidad J&J VIP</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <header>
-        <div class="logo">COMUNIDAD J&J</div>
-        <div id="vip-status" class="status-badge">Cargando suscripción...</div>
-    </header>
+<header class="jj-header">
+    <div class="logo-container">
+        <h1>COMUNIDAD J&J <span class="beta-tag">VIP</span></h1>
+    </div>
+    <div class="user-access">
+        <button id="btn-vip" class="gold-button">ACCESO VIP PLATINUM</button>
+    </div>
+</header>
 
-    <main class="editor-container">
-        <aside class="sidebar">
-            <section class="tool-section">
-                <h2>Membresía J&J VIP</h2>
-                <div class="vip-tools">
-                    <button onclick="toggleSimulador()">Simulador Multiproducto</button>
-                    <a href="https://t.me/TuGrupoTelegram" target="_blank">Acceso a Diseños</a>
-                </div>
-            </section>
+<main class="editor-grid">
+    <section class="upload-panel">
+        <div class="drop-zone" id="dropZone">
+            <p>Arrastra tu diseño o presiona <strong>Ctrl+V</strong></p>
+            <input type="file" id="fileInput" hidden>
+            <button onclick="document.getElementById('fileInput').click()">Seleccionar Archivo</button>
+        </div>
+    </section>
 
-            <section class="tool-section">
-                <h2>Quitar Fondo Automático</h2>
-                <select id="remove-mode">
-                    <option value="white">Quitar fondo blanco</option>
-                    <option value="black">Quitar fondo negro</option>
-                    <option value="auto">Auto (esquinas)</option>
-                </select>
-                <div class="control-group">
-                    <label>Tolerancia</label>
-                    <input type="range" min="0" max="100" value="20">
-                </div>
-            </section>
-
-            <section class="tool-section" id="resizer">
-                <h2>Redimensionar</h2>
-                <div class="input-grid">
-                    <input type="number" placeholder="Ancho">
-                    <input type="number" placeholder="Alto">
-                </div>
-                <button class="btn-apply">Aplicar Tamaño</button>
-            </section>
-        </aside>
-
-        <section class="canvas-area">
-            <div id="drop-zone">
-                Arrastra tu imagen aquí o pega (Ctrl+V)
-            </div>
-            <canvas id="main-canvas"></canvas>
-            
-            <div id="simulador-overlay" class="hidden">
-                <div class="controls-3d">
-                    <label>Eje X: <input type="range" id="posX"></label>
-                    <label>Eje Y: <input type="range" id="posY"></label>
-                    <select id="product-type">
-                        <option value="taza">Taza</option>
-                        <option value="polo">Camiseta</option>
-                        <option value="gorra">Gorra</option>
-                    </select>
-                </div>
-            </div>
-        </section>
-
-        <footer class="actions-bar">
-            <button class="btn-reset">Reiniciar</button>
-            <button class="btn-download">DESCARGAR PNG</button>
-        </footer>
-    </main>
-
-    <script src="script.js"></script>
-</body>
-</html>
+    <section class="settings-panel">
+        <h3>Configuración de Remoción</h3>
+        <div class="control-group">
+            <label>Modo:</label>
+            <select id="mode-select">
+                <option value="white">Quitar fondo blanco</option>
+                <option value="black">Quitar fondo negro</option>
+                <option value="custom">Elegir color...</option>
+                <option value="auto">Auto (esquinas)</option>
+            </select>
+        </div>
+        
+        <div class="slider-group">
+            <label>Tolerancia</label>
+            <input type="range" id="tolerance" min="0" max="100" value="50">
+            <label>Suavizado (px)</label>
+            <input type="range" id="smooth" min="0" max="10" step="0.1" value="0.8">
+            <label>Contraer / Expandir</label>
+            <input type="range" id="spread" min="-5" max="5" value="1">
+        </div>
+    </section>
+</main>
