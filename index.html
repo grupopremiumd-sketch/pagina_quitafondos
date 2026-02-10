@@ -3,81 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editor Pro VIP - J&J</title>
+    <title>Remover Fondo Pro - Comunidad J&J</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --bg: #0a0a0a; --panel: #161616; --accent: #00ff88; --border: #2a2a2a; }
         body { margin: 0; background: var(--bg); color: white; font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
         
-        .sidebar { width: 320px; background: var(--panel); border-right: 1px solid var(--border); overflow-y: auto; padding: 15px; display: flex; flex-direction: column; }
-        .vip-card { background: #222; border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        .btn-gold { background: linear-gradient(90deg, #d4af37, #f2d472); color: black; width: 100%; border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-bottom: 10px; }
+        /* Sidebar */
+        .sidebar { width: 320px; background: var(--panel); border-right: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; }
+        .vip-section { padding: 15px; border-bottom: 1px solid var(--border); background: #111; }
+        .btn-gold { background: linear-gradient(90deg, #d4af37, #f2d472); color: black; width: 100%; border: none; padding: 12px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-bottom: 8px; }
+        .btn-free { background: #444; color: white; width: 100%; border: none; padding: 10px; border-radius: 6px; cursor: pointer; margin-bottom: 8px; font-weight: 600; }
         .btn-ws { background: #25d366; color: white; text-decoration: none; display: block; text-align: center; padding: 12px; border-radius: 6px; font-weight: bold; }
         
+        .panel-content { padding: 15px; flex: 1; }
         .section-title { font-size: 11px; color: #666; text-transform: uppercase; margin: 15px 0 10px; border-bottom: 1px solid var(--border); padding-bottom: 5px; letter-spacing: 1px; }
-        .control-group { margin-bottom: 15px; }
-        label { display: flex; justify-content: space-between; font-size: 12px; color: #aaa; margin-bottom: 8px; }
-        label span { color: var(--accent); font-weight: bold; }
+        
+        /* Controles Estilo Photoshop */
+        .group { margin-bottom: 15px; }
+        label { display: flex; justify-content: space-between; font-size: 12px; color: #aaa; margin-bottom: 6px; }
+        label span { color: var(--accent); }
         
         input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
-        input[type="number"], select { width: 100%; background: #111; border: 1px solid var(--border); color: white; padding: 8px; border-radius: 4px; box-sizing: border-box; }
+        input[type="number"], select { width: 100%; background: #000; border: 1px solid var(--border); color: white; padding: 8px; border-radius: 4px; box-sizing: border-box; }
         
-        .workspace { flex: 1; background: #111; display: flex; justify-content: center; align-items: center; position: relative; overflow: auto; }
-        #canvas-wrap { position: relative; box-shadow: 0 0 40px rgba(0,0,0,0.7); }
-        canvas { display: block; background-image: conic-gradient(#1d1d1d 90deg, #252525 90deg 180deg, #1d1d1d 180deg 270deg, #252525 270deg); background-size: 20px 20px; }
+        .color-picker-wrap { display: flex; align-items: center; gap: 10px; }
+        input[type="color"] { background: none; border: none; width: 40px; height: 40px; cursor: pointer; padding: 0; }
+
+        /* Workspace */
+        .workspace { flex: 1; background: #1a1a1a; display: flex; justify-content: center; align-items: center; position: relative; overflow: auto; }
+        #canvas-wrap { position: relative; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+        canvas { display: block; cursor: crosshair; background-image: 
+            linear-gradient(45deg, #252525 25%, transparent 25%), linear-gradient(-45deg, #252525 25%, transparent 25%), 
+            linear-gradient(45deg, transparent 75%, #252525 75%), linear-gradient(-45deg, transparent 75%, #252525 75%);
+            background-size: 20px 20px; background-position: 0 0, 0 10px, 10px -10px, -10px 0px; }
     </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <div class="vip-card">
+    <div class="vip-section">
         <button class="btn-gold">MEMBRESÍA VIP J&J</button>
-        <a href="https://wa.me/TUNUMERO?text=Hola%20quiero%20suscribirme" class="btn-ws">QUIERO SUSCRIBIRME</a>
+        <button class="btn-free">1 PRUEBA GRATUITA</button>
+        <a href="https://wa.me/TUNUMERO?text=Hola%20J&J%20quiero%20suscribirme%20al%20VIP" class="btn-ws">QUIERO SUSCRIBIRME</a>
     </div>
 
-    <button onclick="document.getElementById('fileInput').click()" style="width:100%; padding:10px; background:#444; color:white; border:none; border-radius:4px; cursor:pointer;">
-        <i class="fa fa-upload"></i> CARGAR IMAGEN
-    </button>
-    <input type="file" id="fileInput" hidden accept="image/*">
+    <div class="panel-content">
+        <button onclick="document.getElementById('fileInput').click()" style="width:100%; padding:10px; background:#333; color:white; border:none; border-radius:4px; cursor:pointer; margin-bottom:10px;">
+            <i class="fa fa-upload"></i> CARGAR DISEÑO
+        </button>
+        <input type="file" id="fileInput" hidden accept="image/*">
 
-    <div class="section-title">Ajustes de Fondo</div>
-    <div class="control-group">
-        <label>Tolerancia <span id="val-tol">30</span></label>
-        <input type="range" id="tolerance" min="0" max="150" value="30">
+        <div class="section-title">Ajustes de Fondo</div>
+        <div class="group">
+            <label>Modo Automático</label>
+            <select id="autoMode" onchange="applyFilters()">
+                <option value="manual">Manual (Clic en imagen)</option>
+                <option value="white">Quitar Blanco</option>
+                <option value="black">Quitar Negro</option>
+            </select>
+        </div>
+
+        <div class="group">
+            <label>Tolerancia <span id="v-tol">30</span></label>
+            <input type="range" id="tolerance" min="0" max="150" value="30">
+        </div>
+
+        <div class="group">
+            <label>Suavizado <span id="v-smooth">0</span></label>
+            <input type="range" id="smooth" min="0" max="10" value="0">
+        </div>
+
+        <div class="group">
+            <label>Contraer / Expandir <span id="v-expand">0</span></label>
+            <input type="range" id="expand" min="-5" max="5" value="0" step="1">
+        </div>
+
+        <div class="section-title">Color de Lienzo (Fondo)</div>
+        <div class="color-picker-wrap">
+            <input type="color" id="canvasBg" value="#1a1a1a" oninput="document.getElementById('ws').style.backgroundColor = this.value">
+            <span style="font-size:12px;">Elegir color de fondo</span>
+        </div>
+
+        <div class="section-title">Medidas (Mantenimiento Proporcional)</div>
+        <div style="display:flex; gap:10px;" class="group">
+            <div><label>Ancho</label><input type="number" id="w_px"></div>
+            <div><label>Alto</label><input type="number" id="h_px"></div>
+        </div>
+        <div class="group">
+            <label>Unidades <select id="units" style="width: auto;"><option>px</option><option>in</option><option>cm</option></select></label>
+            <label style="margin-top:10px;"><input type="checkbox" id="aspect" checked> Mantener proporción</label>
+        </div>
+
+        <button onclick="download()" style="width:100%; background:var(--accent); color:black; border:none; padding:12px; font-weight:bold; border-radius:4px; cursor:pointer; margin-top:10px;">
+            DESCARGAR PNG
+        </button>
     </div>
-
-    <div class="control-group">
-        <label>Suavizado (Blur) <span id="val-smooth">0</span></label>
-        <input type="range" id="smooth" min="0" max="20" value="0">
-    </div>
-
-    <div class="control-group">
-        <label>Contraer / Expandir <span id="val-expand">0</span></label>
-        <input type="range" id="expand" min="-10" max="10" value="0" step="1">
-    </div>
-
-    <div class="section-title">Color de Selección</div>
-    <div style="display:flex; align-items:center; gap:10px; background:#111; padding:10px; border-radius:5px;">
-        <div id="colorShow" style="width:30px; height:30px; border-radius:4px; background:#fff; border:1px solid #444;"></div>
-        <span id="hexLabel">#FFFFFF</span>
-    </div>
-    <p style="font-size:10px; color:#555; margin-top:5px;">* Haz clic en la imagen para elegir color</p>
-
-    <div class="section-title">Tamaño y Proporción</div>
-    <div style="display:flex; gap:10px;" class="control-group">
-        <input type="number" id="w_px" placeholder="Ancho">
-        <input type="number" id="h_px" placeholder="Alto">
-    </div>
-    <label style="justify-content: flex-start; gap:10px;">
-        <input type="checkbox" id="aspect" checked> Mantener proporción
-    </label>
-
-    <div class="section-title">Color del Lienzo</div>
-    <input type="color" id="bgLienzo" value="#111111" oninput="document.getElementById('ws').style.backgroundColor = this.value" style="width:100%; height:30px; border:none; background:none; cursor:pointer;">
-
-    <button onclick="download()" style="width:100%; background:var(--accent); color:black; border:none; padding:12px; font-weight:bold; border-radius:4px; cursor:pointer; margin-top:20px;">
-        DESCARGAR RESULTADO
-    </button>
 </div>
 
 <div class="workspace" id="ws">
@@ -110,6 +131,7 @@
         reader.readAsDataURL(e.target.files[0]);
     };
 
+    // Selección de color por clic (Manual)
     canvas.addEventListener('mousedown', (e) => {
         if(!originalImg) return;
         const rect = canvas.getBoundingClientRect();
@@ -117,63 +139,68 @@
         const y = (e.clientY - rect.top) * (canvas.height / rect.height);
         const pixel = ctx.getImageData(x, y, 1, 1).data;
         targetRGB = {r: pixel[0], g: pixel[1], b: pixel[2]};
-        const hex = "#" + ((1 << 24) + (pixel[0] << 16) + (pixel[1] << 8) + pixel[2]).toString(16).slice(1);
-        document.getElementById('colorShow').style.background = hex;
-        document.getElementById('hexLabel').innerText = hex.toUpperCase();
+        document.getElementById('autoMode').value = 'manual';
         applyFilters();
     });
 
     function applyFilters() {
         if (!originalImg) return;
         
-        // 1. Dibujar original
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(originalImg, 0, 0);
 
         const tol = parseInt(document.getElementById('tolerance').value);
         const smooth = parseInt(document.getElementById('smooth').value);
         const expand = parseInt(document.getElementById('expand').value);
+        const mode = document.getElementById('autoMode').value;
 
-        document.getElementById('val-tol').innerText = tol;
-        document.getElementById('val-smooth').innerText = smooth;
-        document.getElementById('val-expand').innerText = expand;
+        document.getElementById('v-tol').innerText = tol;
+        document.getElementById('v-smooth').innerText = smooth;
+        document.getElementById('v-expand').innerText = expand;
+
+        if(mode === 'white') targetRGB = {r:255, g:255, b:255};
+        if(mode === 'black') targetRGB = {r:0, g:0, b:0};
 
         let imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         let data = imgData.data;
 
-        // 2. Eliminar por tolerancia
+        // 1. Quitar Fondo (Alpha Masking)
         for (let i = 0; i < data.length; i += 4) {
-            const d = Math.sqrt((data[i]-targetRGB.r)**2 + (data[i+1]-targetRGB.g)**2 + (data[i+2]-targetRGB.b)**2);
-            if (d < tol) data[i+3] = 0;
+            const dist = Math.sqrt((data[i]-targetRGB.r)**2 + (data[i+1]-targetRGB.g)**2 + (data[i+2]-targetRGB.b)**2);
+            if (dist < tol) {
+                data[i+3] = 0;
+            }
         }
         ctx.putImageData(imgData, 0, 0);
 
-        // 3. Suavizado (Blur) y Contraer/Expandir usando filtros CSS de Canvas
-        // Aplicamos el suavizado directamente al canvas para mejor rendimiento visual
+        // 2. Aplicar Suavizado y Expandir (Simulado mediante filtros de renderizado)
         if (smooth > 0 || expand !== 0) {
             ctx.save();
-            ctx.filter = `blur(${smooth}px)`;
-            // El truco de contraer/expandir en JS se simula mejor con manipulación de alpha posterior
-            ctx.globalCompositeOperation = 'destination-in';
-            // Aquí se necesitaría una máscara compleja, pero para una web simple aplicamos el suavizado:
+            ctx.filter = `blur(${smooth}px) contrast(${100 + expand * 10}%)`;
+            ctx.globalCompositeOperation = 'copy';
+            ctx.drawImage(canvas, 0, 0);
             ctx.restore();
         }
     }
 
-    // Listener para todos los sliders
+    // Escuchar cambios en sliders
     ['tolerance', 'smooth', 'expand'].forEach(id => {
         document.getElementById(id).oninput = applyFilters;
     });
 
-    // Proporción
+    // Medidas automáticas
     document.getElementById('w_px').oninput = (e) => {
         if(document.getElementById('aspect').checked) 
             document.getElementById('h_px').value = Math.round(e.target.value / ratio);
     };
+    document.getElementById('h_px').oninput = (e) => {
+        if(document.getElementById('aspect').checked) 
+            document.getElementById('w_px').value = Math.round(e.target.value * ratio);
+    };
 
     function download() {
         const link = document.createElement('a');
-        link.download = 'jj_premium_edit.png';
+        link.download = 'j&j_edit_pro.png';
         link.href = canvas.toDataURL();
         link.click();
     }
