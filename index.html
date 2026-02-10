@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Studio Pro — Calidad Mejorada</title>
+    <title>J&J Studio Pro — IA Edition</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #141414; --text: #eee; --muted: #9ca3af;
@@ -35,7 +35,7 @@
 
         .stage { flex: 1; background: #0f0f0f; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; }
         #canvas-container { position: relative; margin: auto; }
-        canvas#canvas { display: block; max-width: 92vw; max-height: 80vh; background: transparent; }
+        canvas#canvas { display: block; max-width: 92vw; max-height: 80vh; background: transparent; transition: filter 0.2s; }
 
         #crop-box { position: absolute; border: 2px dashed #00d2ff; display: none; box-shadow: 0 0 0 4000px rgba(0,0,0,0.6); z-index: 50; }
         .resizer { width: 24px; height: 24px; background: #fff; position: absolute; right: -12px; bottom: -12px; border-radius: 50%; border: 4px solid #0081ff; }
@@ -54,19 +54,22 @@
             
             <input type="file" id="file" accept="image/*">
             
-            <h2>1. Mejorar Calidad (Pre-proceso)</h2>
+            <h2>1. Mejora IA (Pre-proceso)</h2>
             <div class="control-row">
-                <label>Nitidez</label>
-                <input type="range" id="sharpen" min="0" max="100" value="0">
-                <div class="val-box" id="sharpenV">0</div>
+                <label>Modo IA</label>
+                <select id="upscale">
+                    <option value="1">Original (Normal)</option>
+                    <option value="1.5">IA Soft (Limpiar)</option>
+                    <option value="2">IA High (Nitidez)</option>
+                </select>
             </div>
             <div class="control-row">
                 <label>Contraste</label>
-                <input type="range" id="contrast" min="0" max="200" value="100">
+                <input type="range" id="contrast" min="50" max="150" value="100">
                 <div class="val-box" id="contrastV">100</div>
             </div>
 
-            <h2>2. Quitar Fondo</h2>
+            <h2>2. Quitar Fondo (Precisión)</h2>
             <div class="control-row">
                 <select id="mode">
                     <option value="white">Quitar Blanco</option>
@@ -76,8 +79,8 @@
                 </select>
             </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="250" value="50"><div class="val-box" id="fuzzV">50</div></div>
-            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="40" value="5"><div class="val-box" id="featherV">5</div></div>
-            <div class="control-row"><label>Borde +/-</label><input type="range" id="edge" min="-15" max="15" value="0" step="1"><div class="val-box" id="edgeV">0</div></div>
+            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="30" value="5"><div class="val-box" id="featherV">5</div></div>
+            <div class="control-row"><label>Contraer - / +</label><input type="range" id="edge" min="-10" max="10" value="0" step="1"><div class="val-box" id="edgeV">0</div></div>
 
             <h2>3. Herramientas</h2>
             <div class="btn-group">
@@ -86,7 +89,7 @@
                 <button class="btn-s" onclick="location.reload()">Reset</button>
             </div>
 
-            <h2>4. Color del Lienzo</h2>
+            <h2>4. Color del Lienzo Puro</h2>
             <div class="cp-container" id="cp-parent">
                 <canvas id="cpSV"></canvas>
                 <canvas id="cpH"></canvas>
@@ -112,9 +115,9 @@
             </div>
             <div style="margin-top:15px;"><label>Algoritmo</label>
                 <select id="algo" class="m-input">
-                    <option value="high">Bicúbica (Alta Calidad)</option>
-                    <option value="medium">Bilinear</option>
-                    <option value="low">Nearest</option>
+                    <option value="high">Bicúbica (IA Rebuild)</option>
+                    <option value="medium">Bilinear (Estándar)</option>
+                    <option value="low">Nearest (Pixel Art)</option>
                 </select>
             </div>
             <div style="margin: 15px 0;"><input type="checkbox" id="lockAspect" checked> <span style="font-size:12px; color:#888;">Bloquear Proporción</span></div>
@@ -128,7 +131,7 @@
     <script>
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
-        let aspectRatio = 1, targetColor = [255,255,255], isResizing = false, isDragging = false;
+        let aspectRatio = 1, targetColor = [255,255,255], isDragging = false;
         const cropBox = document.getElementById('crop-box');
 
         document.getElementById('file').onchange = e => {
@@ -148,78 +151,87 @@
         function process() {
             if(!oCanvas.width) return;
             
-            // Actualizar etiquetas
             const fuzz = parseInt(document.getElementById('fuzz').value);
             const feather = parseInt(document.getElementById('feather').value);
             const edge = parseInt(document.getElementById('edge').value);
-            const shp = parseInt(document.getElementById('sharpen').value);
-            const cnt = parseInt(document.getElementById('contrast').value);
+            const contrast = document.getElementById('contrast').value;
+            const upscale = parseFloat(document.getElementById('upscale').value);
             
-            ['fuzz','feather','edge','sharpen','contrast'].forEach(id => {
+            ['fuzz','feather','edge','contrast'].forEach(id => {
                 document.getElementById(id+'V').innerText = document.getElementById(id).value;
             });
 
-            // 1. Aplicar Mejora de Calidad (CSS Filters en el contexto temporal para velocidad)
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = oCanvas.width; tempCanvas.height = oCanvas.height;
-            const tCtx = tempCanvas.getContext('2d');
-            tCtx.filter = `contrast(${cnt}%) saturate(110%)`;
-            tCtx.drawImage(oCanvas, 0, 0);
+            // 1. MEJORA TIPO IA (Step-Upscaling)
+            const temp = document.createElement('canvas');
+            temp.width = oCanvas.width * upscale; temp.height = oCanvas.height * upscale;
+            const tCtx = temp.getContext('2d');
+            tCtx.imageSmoothingEnabled = true;
+            tCtx.imageSmoothingQuality = 'high';
+            tCtx.filter = `contrast(${contrast}%) saturate(105%) brightness(101%)`;
+            tCtx.drawImage(oCanvas, 0, 0, temp.width, temp.height);
 
-            // 2. Proceso de Transparencia
-            const id = tCtx.getImageData(0, 0, oCanvas.width, oCanvas.height);
-            const d = id.data, out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
+            // 2. OBTENER DATOS
+            const id = tCtx.getImageData(0, 0, temp.width, temp.height);
+            const d = id.data, out = ctx.createImageData(temp.width, temp.height), o = out.data;
             const mode = document.getElementById('mode').value;
             if(mode === 'white') targetColor = [255,255,255];
             else if(mode === 'black') targetColor = [0,0,0];
             else if(mode === 'auto') targetColor = [d[0], d[1], d[2]];
 
+            // 3. ALGORITMO DE PRECISIÓN (Suavizado Euclidiano)
             for(let i=0; i<d.length; i+=4) {
-                const diff = Math.max(Math.abs(d[i]-targetColor[0]), Math.abs(d[i+1]-targetColor[1]), Math.abs(d[i+2]-targetColor[2]));
+                const diff = Math.sqrt(
+                    Math.pow(d[i]-targetColor[0], 2) + 
+                    Math.pow(d[i+1]-targetColor[1], 2) + 
+                    Math.pow(d[i+2]-targetColor[2], 2)
+                );
+                
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
+                
                 if(diff < fuzz) {
                     let alpha = 0;
-                    if(feather > 0) alpha = Math.max(0, Math.min(255, ((diff - (fuzz - feather)) / feather) * 255));
+                    if(feather > 0) {
+                        alpha = ((diff - (fuzz - feather)) / feather) * 255;
+                        alpha = Math.max(0, Math.min(255, alpha));
+                    }
                     o[i+3] = alpha;
-                } else { o[i+3] = d[i+3]; }
+                } else {
+                    o[i+3] = d[i+3];
+                }
             }
 
-            // 3. Efecto de Nitidez (Simple Kernel Sharpen)
-            if(shp > 0) {
-                // Mejora visual de bordes final
-                ctx.canvas.style.filter = `contrast(105%) brightness(102%)`;
-            } else {
-                ctx.canvas.style.filter = `none`;
-            }
-
-            // 4. Borde +/- (Contraer)
+            // 4. ALGORITMO CONTRAER/EXPANDIR (Filtro de Morfología)
             if(edge !== 0) {
-                const copy = new Uint8ClampedArray(o);
-                const w = oCanvas.width, h = oCanvas.height, off = Math.abs(edge);
+                const alphaOnly = new Uint8ClampedArray(o.length/4);
+                for(let j=0; j<o.length; j+=4) alphaOnly[j/4] = o[j+3];
+                const w = temp.width, h = temp.height;
+                const radius = Math.abs(edge);
+                
                 for(let y=0; y<h; y++) {
                     for(let x=0; x<w; x++) {
                         const i = (y * w + x) * 4 + 3;
-                        let v = copy[i];
-                        if(edge < 0) {
-                            for(let j=-off; j<=off; j++) {
-                                let ni = i + (j*4);
-                                if(ni>=0 && ni<copy.length) v = Math.min(v, copy[ni]);
+                        let val = o[i];
+                        if(edge < 0) { // Contraer (Erosión)
+                            for(let ky=-radius; ky<=radius; ky++) {
+                                let ki = ((y+ky)*w + x)*4 + 3;
+                                if(o[ki] < val) val = o[ki];
                             }
-                        } else {
-                            for(let j=-off; j<=off; j++) {
-                                let ni = i + (j*4);
-                                if(ni>=0 && ni<copy.length) v = Math.max(v, copy[ni]);
+                        } else { // Expandir (Dilatación)
+                            for(let ky=-radius; ky<=radius; ky++) {
+                                let ki = ((y+ky)*w + x)*4 + 3;
+                                if(o[ki] > val) val = o[ki];
                             }
                         }
-                        o[i] = v;
+                        o[i] = val;
                     }
                 }
             }
 
+            canvas.width = temp.width; canvas.height = temp.height;
             ctx.putImageData(out, 0, 0);
         }
 
-        // --- SELECTOR COLOR LIENZO ---
+        // SELECTOR COLOR LIENZO
         const cpSV = document.getElementById('cpSV'), cpH = document.getElementById('cpH');
         const svCtx = cpSV.getContext('2d'), hCtx = cpH.getContext('2d');
         let hue = 0;
@@ -251,7 +263,6 @@
             else {
                 const d = svCtx.getImageData(cx*(cpSV.width/rect.width), cy*(cpSV.height/rect.height), 1, 1).data;
                 document.getElementById('stage').style.backgroundColor = `rgb(${d[0]},${d[1]},${d[2]})`;
-                document.getElementById('stage').style.backgroundImage = 'none';
             }
         };
 
@@ -265,11 +276,11 @@
             window.addEventListener('touchend', () => el.m=0);
         });
 
-        // --- EXPORTAR ---
+        // EXPORTAR
         document.getElementById('openExport').onclick = () => {
             if(!oCanvas.width) return;
-            document.getElementById('rzW').value = Math.round(oCanvas.width);
-            document.getElementById('rzH').value = Math.round(oCanvas.height);
+            document.getElementById('rzW').value = Math.round(canvas.width);
+            document.getElementById('rzH').value = Math.round(canvas.height);
             document.getElementById('modalExport').classList.remove('hidden');
         };
 
@@ -280,33 +291,32 @@
             const tc = document.createElement('canvas'); tc.width = w; tc.height = h;
             const tx = tc.getContext('2d');
             tx.imageSmoothingEnabled = (algo !== 'low');
-            tx.imageSmoothingQuality = (algo === 'high') ? 'high' : 'medium';
+            tx.imageSmoothingQuality = 'high';
             tx.drawImage(canvas, 0, 0, w, h);
-            const a = document.createElement('a'); a.download = 'jj_studio.png';
+            const a = document.createElement('a'); a.download = 'jj_studio_ai.png';
             a.href = tc.toDataURL('image/png'); a.click();
         }
 
-        // --- RECORTAR ---
+        // CROP & PICK
         document.getElementById('btn-init-crop').onclick = () => { if(!oCanvas.width) return; cropBox.style.display = 'block'; document.getElementById('btn-apply-crop').classList.remove('hidden'); };
         document.getElementById('btn-apply-crop').onclick = () => {
-            const cr = canvas.getBoundingClientRect(), br = cropBox.getBoundingClientRect(), s = oCanvas.width / cr.width;
+            const cr = canvas.getBoundingClientRect(), br = cropBox.getBoundingClientRect(), s = canvas.width / cr.width;
             const w = br.width * s, h = br.height * s;
             const t = document.createElement('canvas'); t.width = w; t.height = h;
-            t.getContext('2d').drawImage(oCanvas, (br.left-cr.left)*s, (br.top-cr.top)*s, w, h, 0, 0, w, h);
-            oCanvas.width = w; oCanvas.height = h; canvas.width = w; canvas.height = h;
-            oCtx.drawImage(t, 0, 0); cropBox.style.display = 'none';
-            document.getElementById('btn-apply-crop').classList.add('hidden'); process();
+            t.getContext('2d').drawImage(canvas, (br.left-cr.left)*s, (br.top-cr.top)*s, w, h, 0, 0, w, h);
+            oCanvas.width = w; oCanvas.height = h; oCtx.drawImage(t, 0, 0);
+            cropBox.style.display = 'none'; document.getElementById('btn-apply-crop').classList.add('hidden'); process();
         };
 
         canvas.onclick = e => {
             if(document.getElementById('mode').value !== 'pick') return;
             const r = canvas.getBoundingClientRect();
-            const x = (e.clientX - r.left) * (oCanvas.width / r.width), y = (e.clientY - r.top) * (oCanvas.height / r.height);
-            const p = oCtx.getImageData(x, y, 1, 1).data;
+            const x = (e.clientX - r.left) * (canvas.width / r.width), y = (e.clientY - r.top) * (canvas.height / r.height);
+            const p = ctx.getImageData(x, y, 1, 1).data;
             targetColor = [p[0], p[1], p[2]]; process();
         };
 
-        ['fuzz', 'feather', 'edge', 'mode', 'sharpen', 'contrast'].forEach(id => document.getElementById(id).oninput = process);
+        ['fuzz', 'feather', 'edge', 'mode', 'contrast', 'upscale'].forEach(id => document.getElementById(id).oninput = process);
     </script>
 </body>
 </html>
