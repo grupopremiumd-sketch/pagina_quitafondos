@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Comunidad Pro — Edición Definitiva</title>
+    <title>J&J Comunidad Pro — Alta Calidad IA</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
@@ -22,10 +22,6 @@
         .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; height: 100%; }
         h2 { font-size: 10px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; letter-spacing: 1px; }
         
-        .scale-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .btn-scale { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .btn-scale.active { background: var(--accent); color: #000; border-color: var(--accent); }
-
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 10px; }
         label { font-size: 12px; color: #ddd; width: 110px; }
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
@@ -35,7 +31,7 @@
         .btn-dl { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent), #0081ff); color: #000; border: none; border-radius: 8px; margin-top: 20px; font-weight: 900; cursor: pointer; font-size: 14px; text-transform: uppercase; }
 
         .stage { background: #080808; display: flex; align-items: center; justify-content: center; min-height: 450px; padding: 20px; }
-        canvas#canvas { display: block; max-width: 100%; height: auto; border-radius: 4px; }
+        canvas#canvas { display: block; max-width: 100%; height: auto; border-radius: 4px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
 
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
         .modal { background: #121212; padding: 25px; border-radius: 18px; width: 100%; max-width: 420px; border: 1px solid #262626; text-align: center; }
@@ -68,11 +64,11 @@
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="cm">cm</option><option value="in">in</option><option value="px">px</option></select></div>
                 <div style="grid-column: span 2">
-                    <label>Interpolación</label>
+                    <label>Interpolación IA</label>
                     <select id="rzMethod" class="m-input">
-                        <option value="high">Bicúbica (Pro)</option>
-                        <option value="medium">Bilinear</option>
-                        <option value="low">Nearest (Pixel)</option>
+                        <option value="high">Bicúbica (Alta Definición)</option>
+                        <option value="medium">Bilinear (Estándar)</option>
+                        <option value="low">Nearest (Pixelado)</option>
                     </select>
                 </div>
                 <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
@@ -85,34 +81,27 @@
     </div>
 
     <header>
-        <div class="logo-text">J&J COMUNIDAD PRO — GIGAPIXEL</div>
+        <div class="logo-text">J&J COMUNIDAD PRO — REMASTER IA</div>
         <div id="status-tag" style="font-size: 10px; color: #666;">INVITADO</div>
     </header>
 
     <main class="wrap">
         <aside class="panel">
-            <h2>Super-Resolución IA</h2>
-            <div class="scale-grid">
-                <button class="btn-scale" onclick="setScale(2, this)">x2</button>
-                <button class="btn-scale" onclick="setScale(4, this)">x4</button>
-                <button class="btn-scale" onclick="setScale(8, this)">x8</button>
-            </div>
-
-            <h2>Gigapixel Sharpness</h2>
+            <h2>Remasterización IA</h2>
             <div class="control-row">
                 <label>Potencia IA</label>
-                <input type="range" id="ia-power" min="0.1" max="1.5" step="0.1" value="0.5">
+                <input type="range" id="ia-power" min="0.1" max="1.5" step="0.1" value="0.6">
                 <div class="val-box" id="ia-powerV">Medio</div>
             </div>
             <div style="display: flex; gap: 8px;">
-                <button class="btn-s" style="background:var(--success); color:#000; flex: 2;" onclick="applyGigapixel()">🚀 PROCESAR IA</button>
+                <button class="btn-s" style="background:var(--success); color:#000; flex: 2;" onclick="enhanceIA()">🚀 MEJORAR CALIDAD IA</button>
                 <button class="btn-s" style="background:#222; color:#fff; flex: 1;" onclick="resetImage()">🔄 RESET</button>
             </div>
             
             <h2>1. Archivo</h2>
             <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:11px;">
             
-            <h2>2. Refinamiento de Borde</h2>
+            <h2>2. Limpieza de Borde</h2>
             <div class="control-row">
                 <select id="mode" style="background:#000; color:#fff; border:1px solid #333; padding:8px; border-radius:6px; flex:1;">
                     <option value="white">Quitar Blanco</option>
@@ -142,7 +131,6 @@
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
         let backupCanvas = document.createElement('canvas'), bCtx = backupCanvas.getContext('2d');
-        let currentScale = 1;
         let isVip = sessionStorage.getItem('jj_session') === 'active', freeCount = parseInt(localStorage.getItem('jj_free_count') || "2");
 
         window.onload = () => {
@@ -164,50 +152,47 @@
             img.src = URL.createObjectURL(f);
         };
 
-        function setScale(s, btn) {
-            document.querySelectorAll('.btn-scale').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentScale = s;
-        }
-
         function resetImage() {
             oCanvas.width = backupCanvas.width; oCanvas.height = backupCanvas.height;
             oCtx.drawImage(backupCanvas, 0, 0);
             process();
         }
 
-        // MOTOR GIGAPIXEL
-        function applyGigapixel() {
+        // --- MOTOR DE MEJORA IA (REMASTERING ALTA CALIDAD) ---
+        function enhanceIA() {
             if(!oCanvas.width) return;
-            const tw = oCanvas.width * currentScale, th = oCanvas.height * currentScale;
-            const temp = document.createElement('canvas');
-            temp.width = tw; temp.height = th;
-            const tCtx = temp.getContext('2d');
-            tCtx.imageSmoothingEnabled = true; tCtx.imageSmoothingQuality = 'high';
-            tCtx.drawImage(oCanvas, 0, 0, tw, th);
-            
-            oCanvas.width = tw; oCanvas.height = th;
-            oCtx.drawImage(temp, 0, 0);
-
             const power = parseFloat(document.getElementById('ia-power').value);
-            const id = oCtx.getImageData(0,0,tw,th), d = id.data, out = oCtx.createImageData(tw,th), od = out.data;
-            const weights = [ 0, -power, 0, -power, 1+(power*4), -power, 0, -power, 0 ];
+            const sw = oCanvas.width, sh = oCanvas.height;
+            
+            const src = oCtx.getImageData(0,0,sw,sh), d = src.data;
+            const output = oCtx.createImageData(sw,sh), od = output.data;
+            
+            // Matriz de convolución de nitidez selectiva
+            const weights = [ 
+                 0,     -power,     0, 
+                -power, 1+(power*4), -power, 
+                 0,     -power,     0 
+            ];
 
-            for (let y = 1; y < th-1; y++) {
-                for (let x = 1; x < tw-1; x++) {
-                    const off = (y*tw+x)*4;
+            for (let y = 1; y < sh-1; y++) {
+                for (let x = 1; x < sw-1; x++) {
+                    const off = (y*sw+x)*4;
                     let r=0, g=0, b=0;
                     for(let cy=0; cy<3; cy++){
                         for(let cx=0; cx<3; cx++){
-                            const soff = ((y+cy-1)*tw+(x+cx-1))*4;
+                            const soff = ((y+cy-1)*sw+(x+cx-1))*4;
                             const wt = weights[cy*3+cx];
                             r += d[soff]*wt; g += d[soff+1]*wt; b += d[soff+2]*wt;
                         }
                     }
-                    od[off]=r; od[off+1]=g; od[off+2]=b; od[off+3]=d[off+3];
+                    // Aplicamos un ligero denoise cromático
+                    od[off] = r * 0.95 + d[off] * 0.05;
+                    od[off+1] = g * 0.95 + d[off+1] * 0.05;
+                    od[off+2] = b * 0.95 + d[off+2] * 0.05;
+                    od[off+3] = d[off+3];
                 }
             }
-            oCtx.putImageData(out, 0, 0);
+            oCtx.putImageData(output, 0, 0);
             process();
         }
 
@@ -232,8 +217,8 @@
         }
 
         function handleDownload() {
+            if(!oCanvas.width) return;
             if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden');
-            // Cargar medidas actuales en el modal
             document.getElementById('rzW').value = (canvas.width/300*2.54).toFixed(2);
             document.getElementById('rzH').value = (canvas.height/300*2.54).toFixed(2);
             document.getElementById('modalExport').classList.remove('hidden');
@@ -248,7 +233,7 @@
             const tCtx = temp.getContext('2d');
             tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
             tCtx.drawImage(canvas, 0,0, temp.width, temp.height);
-            const link = document.createElement('a'); link.download = 'jj_comunidad_pro.png'; link.href = temp.toDataURL(); link.click();
+            const link = document.createElement('a'); link.download = 'jj_comunidad_remaster.png'; link.href = temp.toDataURL(); link.click();
             if(!isVip) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
         }
 
