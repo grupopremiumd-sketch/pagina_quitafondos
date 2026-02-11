@@ -161,7 +161,6 @@
             drawCP();
         };
 
-        // ACTUALIZAR TEXTO DE POTENCIA IA
         document.getElementById('ia-power').oninput = function() {
             const v = parseFloat(this.value);
             let text = "Bajo";
@@ -232,7 +231,7 @@
                 if(data.access) {
                     sessionStorage.setItem('jj_session', 'active'); sessionStorage.setItem('jj_status', data.status); location.reload();
                 } else alert("Membresía no válida.");
-            } catch(e) { alert("Error de servidor."); }
+            } catch(e) { alert("Error de red."); }
             btn.innerText = "ENTRAR";
         }
 
@@ -260,7 +259,6 @@
             closeModal('modalExport');
         }
 
-        // --- SELECTOR DE COLOR ---
         const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
         let hue=0, svD=false, hD=false;
         function drawCP() {
@@ -275,22 +273,48 @@
         window.onmousemove = window.ontouchmove = e => { if(hD) handleH(e); if(svD) handleSV(e); if(hD || svD) e.preventDefault(); };
         window.onmouseup = window.ontouchend = () => { hD=false; svD=false; };
 
-        // MEJORA IA CON POTENCIA VARIABLE
-        
+        // --- ALGORITMO DE ENFOQUE REAL (CONVOLUCIÓN) ---
         function enhanceIA() {
             if(!oCanvas.width) return;
-            const id = ctx.getImageData(0,0,canvas.width,canvas.height), d = id.data;
-            const f = parseFloat(document.getElementById('ia-power').value); 
-            for (let i = 0; i < d.length; i += 4) {
-                d[i] += f * (d[i] - 128);
-                d[i+1] += f * (d[i+1] - 128);
-                d[i+2] += f * (d[i+2] - 128);
+            const power = parseFloat(document.getElementById('ia-power').value);
+            const weights = [
+                 0, -power,  0,
+                -power, 1 + (power * 4), -power,
+                 0, -power,  0
+            ];
+            const side = 3;
+            const halfSide = 1;
+            const src = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const sw = src.width, sh = src.height;
+            const output = ctx.createImageData(sw, sh);
+            const dst = output.data, pixels = src.data;
+
+            for (let y = 0; y < sh; y++) {
+                for (let x = 0; x < sw; x++) {
+                    const dstOff = (y * sw + x) * 4;
+                    let r = 0, g = 0, b = 0;
+                    for (let cy = 0; cy < side; cy++) {
+                        for (let cx = 0; cx < side; cx++) {
+                            const scy = y + cy - halfSide;
+                            const scx = x + cx - halfSide;
+                            if (scy >= 0 && scy < sh && scx >= 0 && scx < sw) {
+                                const srcOff = (scy * sw + scx) * 4;
+                                const wt = weights[cy * side + cx];
+                                r += pixels[srcOff] * wt;
+                                g += pixels[srcOff + 1] * wt;
+                                b += pixels[srcOff + 2] * wt;
+                            }
+                        }
+                    }
+                    dst[dstOff] = r; dst[dstOff+1] = g; dst[dstOff+2] = b; dst[dstOff+3] = pixels[dstOff+3];
+                }
             }
-            ctx.putImageData(id, 0, 0);
+            ctx.putImageData(output, 0, 0);
         }
+
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
-        ['fuzz','feather','contract','mode'].forEach(id => document.getElementById(id).oninput = process);
+        ['fuzz', 'feather', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
 </body>
 </html>
