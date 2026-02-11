@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Comunidad Pro — Edición Definitiva</title>
+    <title>J&J Comunidad Pro — FHD Remaster & Crochet</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --accent: #00f2ff; --border: #222; --success: #00ff88; --wa: #25d366;
@@ -27,18 +27,17 @@
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
         label { font-size: 11px; color: #aaa; }
         input[type="range"] { flex: 1; accent-color: var(--accent); }
-        .val-box { background: #000; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 10px; min-width: 35px; text-align: center; }
         
         .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; font-size: 14px; outline: none; margin-bottom: 10px; }
 
         .stage { background: #080808; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; min-height: 400px; transition: background 0.3s; }
-        canvas#canvas { max-width: 90%; max-height: 90%; object-fit: contain; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        canvas#canvas { max-width: 90%; max-height: 90%; object-fit: contain; }
 
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
         .modal { background: #111; padding: 25px; border-radius: 15px; width: 100%; max-width: 420px; border: 1px solid #222; text-align: center; }
         .hidden { display: none !important; }
-        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
         .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-top: 15px; }
+        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
     </style>
 </head>
 <body>
@@ -49,7 +48,7 @@
             <button class="btn-ia" id="btn-free-dl" onclick="startTrial()">🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
             <div class="choice-card hidden" id="btn-subscribe-wa" onclick="contactSupport()" style="border-color: var(--wa);">
                 <div style="font-size:24px">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">Activar VIP</div><div style="font-size:11px; color:#666">Pruebas agotadas. ¡Infórmate aquí!</div></div>
+                <div><div style="font-weight:bold; color:var(--wa);">Activar VIP</div><div style="font-size:11px; color:#666">Descargas agotadas. ¡Infórmate aquí!</div></div>
             </div>
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
             <div class="choice-card" onclick="openLogin()">
@@ -71,18 +70,18 @@
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--accent)">Ajustes de Salida</h3>
+            <h3 style="color:var(--accent)">Exportación Técnica</h3>
             <div class="grid-export">
                 <div><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
                 <div><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
-                <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option><option value="in">in</option></select></div>
+                <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option></select></div>
                 <div style="grid-column: span 2">
-                    <label>Interpolación de Calidad</label>
+                    <label>Interpolación</label>
                     <select id="rzMethod" class="m-input">
-                        <option value="high">Bicúbica (Alta Definición)</option>
-                        <option value="medium">Bilinear (Estándar)</option>
-                        <option value="low">Nearest Neighbor (Pixel Art)</option>
+                        <option value="high">Bicúbica (Pro)</option>
+                        <option value="medium">Bilinear</option>
+                        <option value="low">Nearest</option>
                     </select>
                 </div>
                 <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
@@ -108,7 +107,7 @@
             <button class="btn-ia" onclick="applyFHDRemaster()">🚀 MEJORAR CALIDAD FHD</button>
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <button class="btn-art" onclick="applyBlackAndWhite()">⚪ B&N</button>
-                <button class="btn-art" onclick="applyEmbroidery()">🧵 BORDADO</button>
+                <button class="btn-art" onclick="applyCrochet()">🧶 CROCHET</button>
             </div>
             <button class="btn-secondary" onclick="resetImg()">🔄 REESTABLECER ORIGINAL</button>
 
@@ -124,10 +123,9 @@
                 </select>
             </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"></div>
-            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.5"></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"></div>
 
-            <h2>3. Previsualización</h2>
+            <h2>3. Color de Lienzo</h2>
             <input type="color" id="bgColor" value="#080808" style="width:100%; height:40px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
 
             <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">Descargar Imagen Pro</button>
@@ -165,10 +163,8 @@
             try {
                 const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
                 const data = await res.json();
-                if(data.access) {
-                    sessionStorage.setItem('jj_session', 'active');
-                    location.reload();
-                } else alert("Número no registrado.");
+                if(data.access) { sessionStorage.setItem('jj_session', 'active'); location.reload(); }
+                else alert("Número no registrado.");
             } catch(e) { alert("Error de servidor."); }
         }
 
@@ -179,8 +175,7 @@
                 oCanvas.width = backup.width = img.width;
                 oCanvas.height = backup.height = img.height;
                 aspectRatio = img.width / img.height;
-                oCtx.drawImage(img,0,0);
-                bCtx.drawImage(img,0,0);
+                oCtx.drawImage(img,0,0); bCtx.drawImage(img,0,0);
                 process();
             };
             img.src = URL.createObjectURL(f);
@@ -196,11 +191,23 @@
             oCtx.putImageData(id, 0, 0); process();
         }
 
-        function applyEmbroidery() {
+        // MOTOR CROCHET (Tejido entrelazado)
+        function applyCrochet() {
             if(!oCanvas.width) return;
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
-            for (let i = 0; i < d.length; i += 4) {
-                d[i] = Math.floor(d[i]/43)*43; d[i+1] = Math.floor(d[i+1]/43)*43; d[i+2] = Math.floor(d[i+2]/43)*43;
+            const w = oCanvas.width, h = oCanvas.height;
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const i = (y * w + x) * 4;
+                    // Patrón de crochet (malla 4x4)
+                    if ((x % 4 === 0) || (y % 4 === 0)) {
+                        d[i] *= 0.8; d[i+1] *= 0.8; d[i+2] *= 0.8;
+                    } else {
+                        d[i] = Math.min(255, d[i] * 1.2);
+                        d[i+1] = Math.min(255, d[i+1] * 1.2);
+                        d[i+2] = Math.min(255, d[i+2] * 1.2);
+                    }
+                }
             }
             oCtx.putImageData(id, 0, 0); process();
         }
@@ -215,21 +222,9 @@
             oCtx.drawImage(temp, 0, 0); process();
         }
 
-        canvas.onclick = e => {
-            if(document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
-            const r = canvas.getBoundingClientRect(), 
-                  x = (e.clientX - r.left) * (oCanvas.width / r.width),
-                  y = (e.clientY - r.top) * (oCanvas.height / r.height);
-            const p = oCtx.getImageData(x, y, 1, 1).data;
-            targetColor = [p[0], p[1], p[2]]; process();
-        };
-
         function process() {
             if(!oCanvas.width) return;
-            const fuzz = parseInt(document.getElementById('fuzz').value),
-                  feather = parseFloat(document.getElementById('feather').value),
-                  contract = parseInt(document.getElementById('contract').value);
-            
+            const fuzz = parseInt(document.getElementById('fuzz').value), contract = parseInt(document.getElementById('contract').value);
             let tc = targetColor;
             const mode = document.getElementById('mode').value;
             if(mode === 'white') tc = [255,255,255];
@@ -237,14 +232,13 @@
 
             const id = oCtx.getImageData(0, 0, oCanvas.width, oCanvas.height), d = id.data;
             const out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
-            const threshold = (fuzz * 2.5) + (contract * 10), soft = (feather * 15) + 1;
+            const threshold = (fuzz * 2.5) + (contract * 10);
 
             for (let i = 0; i < d.length; i += 4) {
                 const dist = Math.sqrt((d[i]-tc[0])**2 + (d[i+1]-tc[1])**2 + (d[i+2]-tc[2])**2);
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                if(dist < threshold-soft) o[i+3]=0;
-                else if(dist < threshold) o[i+3]=((dist-(threshold-soft))/soft)*d[i+3];
-                else o[i+3]=d[i+3];
+                // ALPHA CLIPPING ESTRICTO: Si está bajo el umbral, desaparece totalmente
+                o[i+3] = dist < threshold ? 0 : d[i+3];
             }
             canvas.width = oCanvas.width; canvas.height = oCanvas.height;
             ctx.putImageData(out, 0, 0);
@@ -267,22 +261,11 @@
             let tw = rzW.value;
             if(unit === 'in') tw = rzW.value * dpi;
             if(unit === 'cm') tw = (rzW.value / 2.54) * dpi;
-
-            const temp = document.createElement('canvas');
-            temp.width = tw; temp.height = tw / aspectRatio;
-            const tCtx = temp.getContext('2d');
-            tCtx.imageSmoothingQuality = method;
+            const temp = document.createElement('canvas'); temp.width = tw; temp.height = tw / aspectRatio;
+            const tCtx = temp.getContext('2d'); tCtx.imageSmoothingQuality = method;
             tCtx.drawImage(canvas, 0, 0, temp.width, temp.height);
-
-            const link = document.createElement('a');
-            link.download = 'jj_comunidad_pro.png';
-            link.href = temp.toDataURL();
-            link.click();
-            
-            if(!isVip && window.isTrial) {
-                freeCount--; localStorage.setItem('jj_free_count', freeCount);
-                location.reload();
-            }
+            const link = document.createElement('a'); link.download = 'jj_crochet_pro.png'; link.href = temp.toDataURL(); link.click();
+            if(!isVip && window.isTrial) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
             closeModal('modalExport');
         }
 
@@ -293,7 +276,7 @@
         function logout() { sessionStorage.clear(); location.reload(); }
         function resetImg() { oCanvas.width = backup.width; oCanvas.height = backup.height; oCtx.drawImage(backup, 0, 0); process(); }
         document.getElementById('bgColor').oninput = e => document.getElementById('stage').style.backgroundColor = e.target.value;
-        ['fuzz', 'feather', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
+        ['fuzz', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
 </body>
 </html>
