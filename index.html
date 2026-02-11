@@ -6,7 +6,7 @@
     <title>J&J Comunidad Pro — Master Pro</title>
     <style>
         :root {
-            --bg: #0a0a0a; --panel: #111; --text: #eee; --accent: #00f2ff; --border: #222; --success: #00ff88; --wa: #25d366;
+            --bg: #0a0a0a; --panel: #111; --text: #eee; --accent: #00f2ff; --border: #222; --success: #00ff88; --wa: #25d366; --warning: #ff9f43;
         }
         * { box-sizing: border-box; }
         body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
@@ -21,6 +21,7 @@
         h2 { font-size: 10px; color: #666; text-transform: uppercase; margin: 20px 0 10px; letter-spacing: 1px; }
         
         .btn-ia { width: 100%; padding: 14px; background: var(--success); color: #000; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 8px; text-transform: uppercase; font-size: 11px; }
+        .btn-renew { background: var(--warning) !important; color: #000 !important; }
         .btn-art { width: 49%; padding: 10px; background: #222; color: #fff; border: 1px solid #333; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
         .btn-secondary { width: 100%; padding: 10px; background: #1a1a1a; color: #555; border: 1px solid #222; border-radius: 8px; cursor: pointer; font-size: 10px; margin-bottom: 10px; }
 
@@ -37,6 +38,7 @@
         .modal { background: #111; padding: 25px; border-radius: 15px; width: 100%; max-width: 440px; border: 1px solid #222; text-align: center; }
         .hidden { display: none !important; }
         .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; margin-top: 15px; }
+        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
     </style>
 </head>
 <body>
@@ -49,9 +51,10 @@
                 <div style="font-weight:bold; color:var(--wa);">Activar VIP</div>
                 <div style="font-size:11px; color:#666">Pruebas agotadas. Infórmate aquí.</div>
             </div>
-            <div style="background:#1a1a1a; border:1px solid #333; padding:15px; border-radius:12px; cursor:pointer; text-align:left;" onclick="openLogin()">
-                <div style="font-weight:bold; color:white;">Ya soy Socio J&J</div>
-                <div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div>
+            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
+            <div class="choice-card" onclick="openLogin()">
+                <div style="font-size:24px">💎</div>
+                <div><div style="font-weight:bold; color:white;">Ya soy Socio J&J</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
             </div>
             <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Cerrar</button>
         </div>
@@ -61,7 +64,7 @@
         <div class="modal" style="max-width:350px;">
             <h3 style="color:var(--accent)">Acceso VIP</h3>
             <input type="text" id="user-id" placeholder="Número Celular" class="m-input">
-            <button class="btn-ia" onclick="validateAccess()">INGRESAR</button>
+            <button class="btn-ia" onclick="validateAccess()" id="btn-login-text">INGRESAR</button>
             <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Volver</button>
         </div>
     </div>
@@ -75,7 +78,7 @@
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option></select></div>
                 <div style="grid-column: span 2">
-                    <label>Calidad de Salida</label>
+                    <label>Calidad Interpolación</label>
                     <select id="rzMethod" class="m-input">
                         <option value="high">Bicúbica (Pro)</option><option value="medium">Bilinear</option><option value="low">Nearest</option>
                     </select>
@@ -139,11 +142,36 @@
 
         window.onload = () => {
             if(!isVip) document.getElementById('access-modal').classList.remove('hidden');
-            else { document.getElementById('status-tag').innerText = "SOCIO VIP"; document.getElementById('btnLogout').style.display = 'block'; }
+            else { document.getElementById('status-tag').innerText = "SOCIO VIP"; document.getElementById('status-tag').style.color = "var(--success)"; document.getElementById('btnLogout').style.display = 'block'; }
             updateUI();
         };
 
-        // GOTERO MANUAL (CORREGIDO)
+        // --- SISTEMA DE VALIDACIÓN CON LLAMADO A RENOVACIÓN ---
+        async function validateAccess() {
+            const u = document.getElementById('user-id').value.trim();
+            if(!u) return;
+            const btn = document.getElementById('btn-login-text');
+            btn.innerText = "VERIFICANDO...";
+            
+            try {
+                const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
+                const data = await res.json();
+                
+                if(data.access) { 
+                    sessionStorage.setItem('jj_session', 'active'); 
+                    location.reload(); 
+                } else if(data.status === "vencido" || data.status === "vencida") {
+                    btn.innerText = "RENOVAR MEMBRESÍA";
+                    btn.classList.add('btn-renew');
+                    btn.onclick = () => window.open('https://wa.me/51904503246?text=Hola%2C%20mi%20membresia%20ha%20vencido%20y%20quiero%20renovar%20mi%20suscripcion%20VIP', '_blank');
+                } else {
+                    alert("Número no registrado.");
+                    btn.innerText = "INGRESAR";
+                }
+            } catch(e) { alert("Error de servidor."); btn.innerText = "INGRESAR"; }
+        }
+
+        // GOTERO MANUAL
         canvas.addEventListener('mousedown', (e) => {
             if (document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
             const rect = canvas.getBoundingClientRect();
@@ -154,14 +182,13 @@
             process();
         });
 
-        // QUITAR FONDO AUTO (MUESTREO DE BORDE MEJORADO)
+        // QUITAR FONDO AUTO
         function applyAutoRemove() {
             if(!oCanvas.width) return;
             const d = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height).data;
             const w = oCanvas.width, h = oCanvas.height;
             const points = [0, (w-1)*4, (w*h-w)*4, (w*h-1)*4, Math.floor(w/2)*4, (w*h-w+Math.floor(w/2))*4];
-            let r=0, g=0, b=0; 
-            points.forEach(p => { r+=d[p]; g+=d[p+1]; b+=d[p+2]; });
+            let r=0, g=0, b=0; points.forEach(p => { r+=d[p]; g+=d[p+1]; b+=d[p+2]; });
             targetColor = [r/points.length, g/points.length, b/points.length];
             document.getElementById('fuzz').value = 75;
             process();
@@ -214,17 +241,9 @@
             const tCtx = temp.getContext('2d');
             tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
             tCtx.drawImage(canvas, 0, 0, temp.width, temp.height);
-            const link = document.createElement('a'); link.download = 'jj_pro.png'; link.href = temp.toDataURL(); link.click();
+            const link = document.createElement('a'); link.download = 'jj_final.png'; link.href = temp.toDataURL(); link.click();
             if(!isVip && window.isTrial) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
             closeModal('modalExport');
-        }
-
-        async function validateAccess() {
-            const u = document.getElementById('user-id').value.trim();
-            const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
-            const data = await res.json();
-            if(data.access) { sessionStorage.setItem('jj_session', 'active'); location.reload(); }
-            else alert("No registrado.");
         }
 
         function contactSupport() { window.open('https://wa.me/51916689969?text=hola%20quiero%20informes%20sobre%20la%20suscripccion', '_blank'); }
@@ -235,6 +254,7 @@
         function handleDownload() { if(!oCanvas.width) return; if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden'); rzW.value = canvas.width; rzH.value = canvas.height; document.getElementById('modalExport').classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function resetImg() { oCanvas.width=backup.width; oCanvas.height=backup.height; oCtx.drawImage(backup,0,0); process(); }
+        
         document.getElementById('file').onchange = e => {
             const f = e.target.files[0]; if(!f) return;
             const img = new Image(); img.onload = () => { oCanvas.width=backup.width=img.width; oCanvas.height=backup.height=img.height; aspectRatio=img.width/img.height; oCtx.drawImage(img,0,0); bCtx.drawImage(img,0,0); process(); };
