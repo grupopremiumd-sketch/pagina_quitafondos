@@ -3,42 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Comunidad Pro — Upscaler IA HD</title>
+    <title>J&J Comunidad Pro — Remaster IA</title>
     <style>
         :root {
-            --bg: #0d0d0d; --panel: #151515; --text: #f0f0f0; --muted: #888;
-            --accent: #00c3ff; --border: #222; --success: #00ff88;
+            --bg: #0a0a0a; --panel: #111; --text: #eee; --accent: #00f2ff; --border: #222; --success: #00ff88;
         }
-        * { box-sizing: border-box; touch-action: manipulation; }
-        body { margin: 0; font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
 
-        header { padding: 0 20px; border-bottom: 1px solid var(--border); background: #0a0a0a; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 1000; }
-        .logo-text { font-size: 1rem; font-weight: 800; letter-spacing: 1px; color: var(--accent); }
-        
+        header { padding: 0 20px; border-bottom: 1px solid var(--border); background: #000; display: flex; align-items: center; justify-content: space-between; height: 60px; z-index: 1000; position: relative; }
+        .logo { font-weight: 900; color: var(--accent); letter-spacing: 1px; }
+
         .wrap { display: grid; grid-template-columns: 320px 1fr; height: calc(100vh - 60px); }
         @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; height: auto; overflow-y: auto; } }
 
         .panel { padding: 20px; background: var(--panel); border-right: 1px solid var(--border); overflow-y: auto; }
-        h2 { font-size: 10px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+        h2 { font-size: 10px; color: #666; text-transform: uppercase; margin: 20px 0 10px; letter-spacing: 1px; }
         
-        .scale-group { display: flex; gap: 8px; margin-bottom: 15px; }
-        .btn-scale { flex: 1; background: #222; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; }
-        .btn-scale.active { background: var(--accent); color: #000; border-color: var(--accent); }
+        .btn-ia { width: 100%; padding: 15px; background: var(--success); color: #000; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 10px; text-transform: uppercase; font-size: 12px; }
+        .btn-reset { width: 100%; padding: 10px; background: #222; color: #fff; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-size: 11px; margin-bottom: 20px; }
 
-        .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 10px; }
-        label { font-size: 12px; color: #bbb; flex: 1; }
-        input[type="range"] { flex: 1.5; accent-color: var(--accent); cursor: pointer; }
+        .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
+        label { font-size: 11px; color: #aaa; }
+        input[type="range"] { flex: 1; accent-color: var(--accent); }
         
-        .btn-main { width: 100%; padding: 14px; border-radius: 8px; border: none; background: #222; color: #fff; cursor: pointer; font-size: 11px; font-weight: 800; margin-bottom: 8px; transition: 0.2s; }
-        .btn-main:hover { background: #333; }
-        .btn-dl { width: 100%; padding: 16px; background: var(--accent); color: #000; border: none; border-radius: 8px; margin-top: 15px; font-weight: 900; cursor: pointer; font-size: 13px; text-transform: uppercase; }
+        .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 4px; width: 100%; font-size: 12px; }
 
-        .stage { background: #050505; display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; overflow: auto; }
-        canvas#canvas { max-width: 100%; height: auto; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        .stage { background: #080808; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+        canvas#canvas { max-width: 90%; max-height: 85%; object-fit: contain; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
 
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-        .modal { background: #111; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid #222; text-align: center; }
-        .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 6px; width: 100%; margin-bottom: 10px; }
+        .modal { background: #111; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid #222; text-align: center; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -46,72 +41,59 @@
 
     <div id="access-modal" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--accent)">J&J Upscaler IA</h3>
-            <button class="btn-dl" onclick="startTrial()">🎁 PRUEBA GRATUITA (2)</button>
-            <button class="btn-main" style="margin-top:10px" onclick="openLogin()">💎 SOCIO VIP</button>
+            <h3 style="color:var(--accent)">J&J Remaster IA</h3>
+            <button class="btn-ia" onclick="closeModal('access-modal')">🎁 USAR PRUEBA GRATUITA</button>
+            <button class="btn-reset" onclick="window.open('https://wa.me/51916689969')">💎 ACTIVAR SOCIO VIP</button>
         </div>
     </div>
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--accent)">Exportar en HD</h3>
+            <h3 style="color:var(--accent)">Ajustes de Exportación</h3>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align:left; margin-bottom:15px;">
-                <div><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
-                <div><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
+                <div><label>Ancho (px)</label><input type="number" id="rzW" class="m-input"></div>
+                <div><label>Alto (px)</label><input type="number" id="rzH" class="m-input"></div>
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option></select></div>
             </div>
-            <button class="btn-dl" onclick="finalDownload()">DESCARGAR AHORA</button>
+            <button class="btn-ia" style="background:var(--accent)" onclick="finalDownload()">DESCARGAR AHORA</button>
             <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cancelar</button>
         </div>
     </div>
 
     <header>
-        <div class="logo-text">J&J COMUNIDAD PRO</div>
-        <div id="status-tag" style="font-size: 10px; background: #222; padding: 4px 10px; border-radius: 4px;">INVITADO</div>
+        <div class="logo">J&J COMUNIDAD PRO</div>
+        <div id="status" style="font-size:10px; color:#444">MODO REMASTER IA</div>
     </header>
 
     <main class="wrap">
         <aside class="panel">
-            <h2>Super-Resolución</h2>
-            <div class="scale-group">
-                <button class="btn-scale" onclick="setScale(2, this)">x2</button>
-                <button class="btn-scale" onclick="setScale(4, this)">x4</button>
-                <button class="btn-scale" onclick="setScale(8, this)">x8</button>
-            </div>
+            <button class="btn-ia" onclick="applyRemaster()">🚀 MEJORAR CALIDAD HD</button>
+            <button class="btn-reset" onclick="resetImg()">🔄 REESTABLECER ORIGINAL</button>
 
-            <h2>Filtros Inteligentes</h2>
-            <div class="control-row">
-                <label>Limpieza IA</label>
-                <input type="range" id="ia-clean" min="0" max="100" value="30">
-            </div>
-            <div class="control-row">
-                <label>Nitidez HD</label>
-                <input type="range" id="ia-sharp" min="0" max="100" value="40">
-            </div>
-            <button class="btn-main" style="background:var(--success); color:#000;" onclick="applyUpscale()">🚀 PROCESAR IMAGEN</button>
-            <button class="btn-main" onclick="resetImg()">🔄 REESTABLECER</button>
+            <h2>1. Cargar Imagen</h2>
+            <input type="file" id="file" accept="image/*" class="m-input">
 
-            <h2>Limpieza de Borde</h2>
+            <h2>2. Eliminación de Fondo</h2>
             <div class="control-row">
-                <select id="mode" class="m-input" style="margin:0"><option value="white">Fondo Blanco</option><option value="black">Fondo Negro</option></select>
+                <select id="mode" class="m-input" style="margin:0">
+                    <option value="white">Fondo Blanco</option>
+                    <option value="black">Fondo Negro</option>
+                    <option value="pick">🎨 Gotero Manual</option>
+                </select>
             </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"></div>
-            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="1"></div>
+            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="1.5"></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"></div>
 
-            <h2>Color de Fondo</h2>
-            <input type="color" id="bgColor" value="#050505" style="width:100%; height:40px; border:none; background:none; cursor:pointer">
+            <h2>3. Color de Lienzo</h2>
+            <input type="color" id="bgColor" value="#080808" style="width:100%; height:40px; border:none; cursor:pointer; background:none;">
 
-            <button class="btn-dl" onclick="handleDownload()">Descargar Imagen HD</button>
+            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="openExport()">Descargar PNG Final</button>
         </aside>
 
-        <section class="stage">
-            <input type="file" id="file" hidden accept="image/*">
-            <div id="dropzone" onclick="document.getElementById('file').click()" style="border: 2px dashed #333; padding: 40px; text-align: center; cursor: pointer; color: #555;">
-                Haz clic para subir imagen
-            </div>
-            <canvas id="canvas" class="hidden"></canvas>
+        <section class="stage" id="stage">
+            <canvas id="canvas"></canvas>
         </section>
     </main>
 
@@ -119,10 +101,9 @@
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
         let backup = document.createElement('canvas'), bCtx = backup.getContext('2d');
-        let currentScale = 1;
-        let isVip = sessionStorage.getItem('jj_session') === 'active', freeCount = parseInt(localStorage.getItem('jj_free_count') || "2");
+        let targetColor = [255,255,255];
 
-        window.onload = () => { if(!isVip) document.getElementById('access-modal').classList.remove('hidden'); };
+        window.onload = () => { document.getElementById('access-modal').classList.remove('hidden'); };
 
         document.getElementById('file').onchange = e => {
             const f = e.target.files[0]; if(!f) return;
@@ -132,57 +113,46 @@
                 oCanvas.height = backup.height = img.height;
                 oCtx.drawImage(img,0,0);
                 bCtx.drawImage(img,0,0);
-                document.getElementById('dropzone').classList.add('hidden');
-                canvas.classList.remove('hidden');
                 process();
             };
             img.src = URL.createObjectURL(f);
         };
 
-        function setScale(s, btn) {
-            document.querySelectorAll('.btn-scale').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentScale = s;
-        }
-
-        // --- MOTOR UPSCALER IA (TIPO CANVA) ---
-        function applyUpscale() {
+        function applyRemaster() {
             if(!oCanvas.width) return;
-            const tw = oCanvas.width * currentScale, th = oCanvas.height * currentScale;
+            // Doble escalado para suavizado de bordes
             const temp = document.createElement('canvas');
+            const tw = oCanvas.width * 2, th = oCanvas.height * 2;
             temp.width = tw; temp.height = th;
             const tCtx = temp.getContext('2d');
-            
-            // Paso 1: Re-escalado suave (Bicúbico)
-            tCtx.imageSmoothingEnabled = true;
             tCtx.imageSmoothingQuality = 'high';
             tCtx.drawImage(oCanvas, 0, 0, tw, th);
             
             oCanvas.width = tw; oCanvas.height = th;
-            const clean = parseInt(document.getElementById('ia-clean').value) / 100;
-            const sharp = parseInt(document.getElementById('ia-sharp').value) / 50;
-            
-            const id = tCtx.getImageData(0,0,tw,th), d = id.data, out = oCtx.createImageData(tw,th), od = out.data;
-            
-            // Paso 2: Limpieza de ruido y Enfoque (Kernel de Convolución)
-            const weights = [ 0, -sharp, 0, -sharp, 1 + (sharp * 4), -sharp, 0, -sharp, 0 ];
-
-            for (let i = 0; i < d.length; i += 4) {
-                // Suavizado inteligente (Denoise)
-                od[i] = d[i] * (1 - clean) + 128 * clean;
-                od[i+1] = d[i+1] * (1 - clean) + 128 * clean;
-                od[i+2] = d[i+2] * (1 - clean) + 128 * clean;
-                od[i+3] = d[i+3];
-            }
-            
-            oCtx.putImageData(id, 0, 0); // Aplicamos el base suavizado
+            oCtx.drawImage(temp, 0, 0);
             process();
         }
 
+        canvas.onclick = e => {
+            if(document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
+            const r = canvas.getBoundingClientRect(), 
+                  x = (e.clientX - r.left) * (oCanvas.width / r.width),
+                  y = (e.clientY - r.top) * (oCanvas.height / r.height);
+            const p = oCtx.getImageData(x, y, 1, 1).data;
+            targetColor = [p[0], p[1], p[2]];
+            process();
+        };
+
         function process() {
             if(!oCanvas.width) return;
-            const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value), contract = parseInt(document.getElementById('contract').value);
-            const tc = document.getElementById('mode').value === 'white' ? [255,255,255] : [0,0,0];
+            const fuzz = parseInt(document.getElementById('fuzz').value),
+                  feather = parseFloat(document.getElementById('feather').value),
+                  contract = parseInt(document.getElementById('contract').value);
+            
+            let tc = targetColor;
+            if(document.getElementById('mode').value === 'white') tc = [255,255,255];
+            if(document.getElementById('mode').value === 'black') tc = [0,0,0];
+
             const id = oCtx.getImageData(0, 0, oCanvas.width, oCanvas.height), d = id.data;
             const out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
             const threshold = (fuzz * 2.5) + (contract * 10), soft = (feather * 15) + 1;
@@ -198,24 +168,30 @@
             ctx.putImageData(out, 0, 0);
         }
 
-        function handleDownload() {
-            if(!isVip && freeCount <= 0) return alert("Pruebas agotadas. Activa VIP.");
+        function openExport() { 
+            if(!oCanvas.width) return;
             document.getElementById('rzW').value = canvas.width;
             document.getElementById('rzH').value = canvas.height;
-            document.getElementById('modalExport').classList.remove('hidden');
+            document.getElementById('modalExport').classList.remove('hidden'); 
         }
 
         function finalDownload() {
             const link = document.createElement('a');
-            link.download = 'upscale_jj.png';
+            link.download = 'jj_remaster.png';
             link.href = canvas.toDataURL();
             link.click();
-            if(!isVip) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
+            closeModal('modalExport');
         }
 
-        function resetImg() { oCanvas.width=backup.width; oCanvas.height=backup.height; oCtx.drawImage(backup,0,0); process(); }
-        document.getElementById('bgColor').oninput = e => document.querySelector('.stage').style.backgroundColor = e.target.value;
-        function startTrial() { document.getElementById('access-modal').classList.add('hidden'); }
+        function resetImg() { 
+            oCanvas.width = backup.width; oCanvas.height = backup.height;
+            oCtx.drawImage(backup, 0, 0); process(); 
+        }
+
+        document.getElementById('bgColor').oninput = e => {
+            document.getElementById('stage').style.backgroundColor = e.target.value;
+        };
+
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         ['fuzz', 'feather', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
