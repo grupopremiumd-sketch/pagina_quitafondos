@@ -51,7 +51,7 @@
 
             <div class="choice-card hidden" id="btn-subscribe-wa" onclick="contactSupport()" style="border-color: var(--wa);">
                 <div style="font-size:24px">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">Activar Suscripción VIP</div><div style="font-size:11px; color:#666">Pruebas agotadas. ¡Únete hoy!</div></div>
+                <div><div style="font-weight:bold; color:var(--wa);">Activar Suscripción VIP</div><div style="font-size:11px; color:#666">Pruebas agotadas. ¡Infórmate aquí!</div></div>
             </div>
 
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
@@ -62,15 +62,6 @@
             </div>
 
             <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Explorar herramientas</button>
-        </div>
-    </div>
-
-    <div id="login-modal" class="modal-back hidden">
-        <div class="modal" style="max-width:350px;">
-            <h3>Validar Membresía</h3>
-            <input type="text" id="user-id" placeholder="📱 Número Celular" class="m-input" style="margin-bottom:12px">
-            <button class="btn-ia" onclick="validateAccess()" id="btn-login-text">ENTRAR</button>
-            <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Volver</button>
         </div>
     </div>
 
@@ -215,7 +206,6 @@
             for (let i = 0; i < d.length; i += 4) {
                 const dist = Math.sqrt((d[i]-tc[0])**2 + (d[i+1]-tc[1])**2 + (d[i+2]-tc[2])**2);
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                // Alpha Clipping Absoluto
                 if(dist < threshold-soft) o[i+3]=0;
                 else if(dist < threshold) o[i+3]=((dist-(threshold-soft))/soft)*d[i+3];
                 else o[i+3]=d[i+3];
@@ -263,8 +253,7 @@
         }
 
         function startTrial() { window.isTrial = true; closeModal('access-modal'); }
-        function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
-        function contactSupport() { window.open('https://wa.me/51916689969?text=Hola J&J Comunidad, agoté mis pruebas gratuitas y quiero activar mi suscripción VIP.', '_blank'); }
+        function contactSupport() { window.open('https://wa.me/51916689969?text=Hola J&J Comunidad, quiero informes sobre la suscripcion', '_blank'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function logout() { sessionStorage.clear(); location.reload(); }
         function resetImg() { oCanvas.width = backup.width; oCanvas.height = backup.height; oCtx.drawImage(backup, 0, 0); process(); }
