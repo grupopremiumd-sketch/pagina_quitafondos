@@ -50,16 +50,16 @@
 
     <div id="access-modal" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--vip)">Elija una opción para descargar</h3>
-            <button class="btn-dl" onclick="useFreeTrial()">🎁 USAR PRUEBA GRATUITA (1)</button>
+            <h3 style="color:var(--vip)">Opciones de Descarga</h3>
+            <button class="btn-dl" onclick="useFreeTrial()">🎁 PRUEBA GRATUITA (1)</button>
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
             <div class="choice-card" onclick="openLogin()">
                 <div style="font-size:24px">💎</div>
-                <div><div style="font-weight:bold; color:white;">Soy Socio J&J</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
+                <div><div style="font-weight:bold; color:white;">Soy Socio J&J</div><div style="font-size:11px; color:#666">Acceso con tu número móvil.</div></div>
             </div>
             <div class="choice-card" onclick="window.open('https://wa.me/51916689969')">
                 <div style="font-size:24px">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">Quiero Suscribirme</div><div style="font-size:11px; color:#666">Acceso ilimitado y Soporte VIP.</div></div>
+                <div><div style="font-weight:bold; color:var(--wa);">Quiero Suscribirme</div><div style="font-size:11px; color:#666">Soporte VIP y descargas ilimitadas.</div></div>
             </div>
             <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cerrar</button>
         </div>
@@ -87,7 +87,7 @@
                 </div>
             </div>
             <button class="btn-dl" onclick="finalDownload()">DESCARGAR PNG</button>
-            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer">Cancelar</button>
+            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:15px; cursor:pointer">Cancelar</button>
         </div>
     </div>
 
@@ -109,7 +109,7 @@
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"><div class="val-box" id="contractV">0</div></div>
-            <h2>3. Color del Lienzo (Elegir)</h2>
+            <h2>3. Color del Lienzo</h2>
             <div id="cp-box" style="height:100px; display:flex; gap:5px; margin-top:10px; touch-action:none;">
                 <canvas id="cpSV" style="flex:1; border-radius:8px; border:1px solid #333; cursor:crosshair;"></canvas>
                 <canvas id="cpH" style="width:25px; border-radius:8px; border:1px solid #333; cursor:ns-resize;"></canvas>
@@ -163,14 +163,14 @@
             if(!u) return alert("Ingresa tu número.");
             const btn = document.getElementById('btn-login-text'); btn.innerText = "VERIFICANDO...";
             try {
-                // TU URL NUEVA REEMPLAZADA AQUÍ
-                const res = await fetch(`https://script.google.com/macros/s/AKfycbyHKvm9wwDn9imSLNFkLLGMOJb3O12ev8BW8s6DgcuhDRGj17-DlgrksGAcrdI8mj_h/exec?user=${u}`);
+                // TU URL CORRECTA
+                const url = `https://script.google.com/macros/s/AKfycbwD-NYX8Jxu0G3nPYfiXRW1oDxDvqO5J0jBLsxTIGaTo94NpUpgBNcHoW0wCQ9XUu0x/exec?user=${u}`;
+                const res = await fetch(url);
                 const data = await res.json();
-                const st = data.status ? data.status.toLowerCase().trim() : "";
-                if(data.access && (st === 'vigente' || st === 'por vencer')) {
+                if(data.access) {
                     sessionStorage.setItem('jj_session', 'active'); sessionStorage.setItem('jj_status', data.status); location.reload();
-                } else alert("Acceso denegado. Membresía no válida o no encontrada.");
-            } catch(e) { alert("Error de servidor. Verifica la conexión."); }
+                } else alert("Acceso denegado: " + data.status);
+            } catch(e) { alert("Error de conexión con el servidor."); }
             btn.innerText = "ENTRAR";
         }
 
@@ -215,7 +215,7 @@
         }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
-        ['fuzz','feather','contract','mode'].forEach(id => document.getElementById(id).oninput = process);
+        ['fuzz', 'feather', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
 </body>
 </html>
