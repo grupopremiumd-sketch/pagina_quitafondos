@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Comunidad Pro — FHD Remaster & Crochet</title>
+    <title>J&J Comunidad Pro — Edición Definitiva</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --accent: #00f2ff; --border: #222; --success: #00ff88; --wa: #25d366;
@@ -26,12 +26,12 @@
 
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
         label { font-size: 11px; color: #aaa; }
-        input[type="range"] { flex: 1; accent-color: var(--accent); }
+        input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
         
         .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; font-size: 14px; outline: none; margin-bottom: 10px; }
 
-        .stage { background: #080808; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; min-height: 400px; transition: background 0.3s; }
-        canvas#canvas { max-width: 90%; max-height: 90%; object-fit: contain; }
+        .stage { background: #080808; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; min-height: 400px; }
+        canvas#canvas { max-width: 90%; max-height: 90%; object-fit: contain; cursor: crosshair; }
 
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
         .modal { background: #111; padding: 25px; border-radius: 15px; width: 100%; max-width: 420px; border: 1px solid #222; text-align: center; }
@@ -70,7 +70,7 @@
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--accent)">Exportación Técnica</h3>
+            <h3 style="color:var(--accent)">Opciones de Exportación</h3>
             <div class="grid-export">
                 <div><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
                 <div><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
@@ -95,10 +95,7 @@
 
     <header>
         <div class="logo">J&J COMUNIDAD PRO</div>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <div id="status-tag" style="font-size:9px; background:#222; padding:4px 8px; border-radius:4px; font-weight:bold;">INVITADO</div>
-            <button id="btnLogout" onclick="logout()" style="display:none; background:none; border:1px solid #333; color:#555; font-size:9px; cursor:pointer; border-radius:4px; padding:4px 8px;">SALIR</button>
-        </div>
+        <div id="status-tag" style="font-size:9px; background:#222; padding:4px 8px; border-radius:4px; font-weight:bold;">INVITADO</div>
     </header>
 
     <main class="wrap">
@@ -107,14 +104,14 @@
             <button class="btn-ia" onclick="applyFHDRemaster()">🚀 MEJORAR CALIDAD FHD</button>
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <button class="btn-art" onclick="applyBlackAndWhite()">⚪ B&N</button>
-                <button class="btn-art" onclick="applyCrochet()">🧶 CROCHET</button>
+                <button class="btn-art" onclick="applyEmbroidery()">🧶 BORDADO</button>
             </div>
             <button class="btn-secondary" onclick="resetImg()">🔄 REESTABLECER ORIGINAL</button>
 
             <h2>1. Carga</h2>
             <input type="file" id="file" accept="image/*" class="m-input">
 
-            <h2>2. Quitar Fondo</h2>
+            <h2>2. Quitar Fondo (Transparencia)</h2>
             <div class="control-row">
                 <select id="mode" class="m-input" style="margin:0">
                     <option value="white">Fondo Blanco</option>
@@ -123,12 +120,13 @@
                 </select>
             </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"></div>
+            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.5"></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"></div>
 
             <h2>3. Color de Lienzo</h2>
-            <input type="color" id="bgColor" value="#080808" style="width:100%; height:40px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
+            <input type="color" id="bgColor" value="#080808" style="width:100%; height:45px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
 
-            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">Descargar Imagen Pro</button>
+            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">Descargar PNG Pro</button>
         </aside>
 
         <section class="stage" id="stage">
@@ -145,20 +143,26 @@
 
         window.onload = () => {
             if(!isVip) document.getElementById('access-modal').classList.remove('hidden');
-            else {
-                document.getElementById('status-tag').innerText = "SOCIO VIP";
-                document.getElementById('status-tag').style.color = "var(--success)";
-                document.getElementById('btnLogout').style.display = 'block';
-            }
+            else { document.getElementById('status-tag').innerText = "SOCIO VIP"; document.getElementById('status-tag').style.color = "var(--success)"; }
             document.getElementById('count-free').innerText = freeCount;
-            if(freeCount <= 0 && !isVip) {
-                document.getElementById('btn-free-dl').classList.add('hidden');
-                document.getElementById('btn-subscribe-wa').classList.remove('hidden');
-            }
+            if(freeCount <= 0 && !isVip) { document.getElementById('btn-free-dl').classList.add('hidden'); document.getElementById('btn-subscribe-wa').classList.remove('hidden'); }
         };
 
+        // GOTERO DE COLOR (Arreglado)
+        canvas.addEventListener('mousedown', (e) => {
+            if (document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = oCanvas.width / rect.width;
+            const scaleY = oCanvas.height / rect.height;
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+            const pixel = oCtx.getImageData(x, y, 1, 1).data;
+            targetColor = [pixel[0], pixel[1], pixel[2]];
+            process();
+        });
+
         async function validateAccess() {
-            const u = document.getElementById('user-id').value.trim().replace(/\D/g,'');
+            const u = document.getElementById('user-id').value.trim();
             if(!u) return;
             try {
                 const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
@@ -185,28 +189,27 @@
             if(!oCanvas.width) return;
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
             for (let i = 0; i < d.length; i += 4) {
-                let avg = (d[i] * 0.3 + d[i+1] * 0.59 + d[i+2] * 0.11);
-                d[i] = d[i+1] = d[i+2] = avg;
+                let gray = (d[i] * 0.3 + d[i+1] * 0.59 + d[i+2] * 0.11);
+                d[i] = d[i+1] = d[i+2] = gray;
             }
             oCtx.putImageData(id, 0, 0); process();
         }
 
-        // MOTOR CROCHET (Tejido entrelazado)
-        function applyCrochet() {
+        // MOTOR BORDADO / CROCHET (Relieve y Malla)
+        function applyEmbroidery() {
             if(!oCanvas.width) return;
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
             const w = oCanvas.width, h = oCanvas.height;
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
                     const i = (y * w + x) * 4;
-                    // Patrón de crochet (malla 4x4)
-                    if ((x % 4 === 0) || (y % 4 === 0)) {
-                        d[i] *= 0.8; d[i+1] *= 0.8; d[i+2] *= 0.8;
-                    } else {
-                        d[i] = Math.min(255, d[i] * 1.2);
-                        d[i+1] = Math.min(255, d[i+1] * 1.2);
-                        d[i+2] = Math.min(255, d[i+2] * 1.2);
-                    }
+                    // Efecto de puntada (hilos)
+                    let pattern = (x % 5 === 0 || y % 5 === 0) ? 0.7 : 1.2;
+                    d[i] *= pattern; d[i+1] *= pattern; d[i+2] *= pattern;
+                    // Posterización para colores de hilo
+                    d[i] = Math.round(d[i] / 51) * 51;
+                    d[i+1] = Math.round(d[i+1] / 51) * 51;
+                    d[i+2] = Math.round(d[i+2] / 51) * 51;
                 }
             }
             oCtx.putImageData(id, 0, 0); process();
@@ -224,7 +227,9 @@
 
         function process() {
             if(!oCanvas.width) return;
-            const fuzz = parseInt(document.getElementById('fuzz').value), contract = parseInt(document.getElementById('contract').value);
+            const fuzz = parseInt(document.getElementById('fuzz').value),
+                  feather = parseFloat(document.getElementById('feather').value),
+                  contract = parseInt(document.getElementById('contract').value);
             let tc = targetColor;
             const mode = document.getElementById('mode').value;
             if(mode === 'white') tc = [255,255,255];
@@ -232,13 +237,23 @@
 
             const id = oCtx.getImageData(0, 0, oCanvas.width, oCanvas.height), d = id.data;
             const out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
+            
+            // Umbral corregido para contraer y suavizar
             const threshold = (fuzz * 2.5) + (contract * 10);
+            const softRange = (feather * 20) + 1;
 
             for (let i = 0; i < d.length; i += 4) {
                 const dist = Math.sqrt((d[i]-tc[0])**2 + (d[i+1]-tc[1])**2 + (d[i+2]-tc[2])**2);
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                // ALPHA CLIPPING ESTRICTO: Si está bajo el umbral, desaparece totalmente
-                o[i+3] = dist < threshold ? 0 : d[i+3];
+                
+                // ALPHA CLIPPING LIMPIO
+                if(dist < threshold - softRange) {
+                    o[i+3] = 0;
+                } else if(dist < threshold) {
+                    o[i+3] = ((dist - (threshold - softRange)) / softRange) * d[i+3];
+                } else {
+                    o[i+3] = d[i+3];
+                }
             }
             canvas.width = oCanvas.width; canvas.height = oCanvas.height;
             ctx.putImageData(out, 0, 0);
@@ -259,12 +274,11 @@
         function finalDownload() {
             const dpi = parseInt(document.getElementById('rzDPI').value), unit = document.getElementById('rzUnit').value, method = document.getElementById('rzMethod').value;
             let tw = rzW.value;
-            if(unit === 'in') tw = rzW.value * dpi;
             if(unit === 'cm') tw = (rzW.value / 2.54) * dpi;
             const temp = document.createElement('canvas'); temp.width = tw; temp.height = tw / aspectRatio;
             const tCtx = temp.getContext('2d'); tCtx.imageSmoothingQuality = method;
             tCtx.drawImage(canvas, 0, 0, temp.width, temp.height);
-            const link = document.createElement('a'); link.download = 'jj_crochet_pro.png'; link.href = temp.toDataURL(); link.click();
+            const link = document.createElement('a'); link.download = 'jj_comunidad.png'; link.href = temp.toDataURL(); link.click();
             if(!isVip && window.isTrial) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
             closeModal('modalExport');
         }
@@ -276,7 +290,7 @@
         function logout() { sessionStorage.clear(); location.reload(); }
         function resetImg() { oCanvas.width = backup.width; oCanvas.height = backup.height; oCtx.drawImage(backup, 0, 0); process(); }
         document.getElementById('bgColor').oninput = e => document.getElementById('stage').style.backgroundColor = e.target.value;
-        ['fuzz', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
+        ['fuzz', 'feather', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
 </body>
 </html>
