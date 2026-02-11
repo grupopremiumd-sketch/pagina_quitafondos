@@ -23,15 +23,21 @@
         .btn-logout { background: transparent; border: 1px solid #333; color: #666; font-size: 10px; padding: 4px 8px; border-radius: 4px; cursor: pointer; display: none; }
 
         .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
-        @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; height: auto; display: block; } }
+        @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; height: auto; display: block; } .panel { border-right: none; border-bottom: 1px solid var(--border); } }
 
         .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; }
         h2 { font-size: 11px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
+        
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 10px; }
         label { font-size: 12px; color: #ddd; width: 110px; }
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
         .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 45px; text-align: center; font-size: 11px; }
         
+        .cp-container { display: flex; gap: 10px; height: 100px; margin-top: 10px; touch-action: none; }
+        #cpSV { flex: 1; border-radius: 6px; border: 1px solid #2a2a2a; cursor: crosshair; }
+        #cpH { width: 25px; border-radius: 6px; border: 1px solid #2a2a2a; cursor: ns-resize; }
+
+        .btn-s { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; margin-bottom: 8px; }
         .btn-dl { width: 100%; padding: 16px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 20px; font-weight: 900; cursor: pointer; font-size: 14px; }
 
         .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; position: relative; min-height: 450px; padding: 10px; }
@@ -41,6 +47,7 @@
         .modal { background: #121212; padding: 25px; border-radius: 18px; width: 100%; max-width: 480px; border: 1px solid #262626; text-align: center; }
         .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 8px; width: 100%; font-size: 14px; outline: none; }
         .hidden { display: none !important; }
+
         .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; margin-top: 15px; }
         .wa-float { position: fixed; bottom: 20px; right: 20px; background: var(--wa); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000; }
     </style>
@@ -52,17 +59,18 @@
     <div id="access-modal" class="modal-back hidden">
         <div class="modal">
             <h3 style="color:var(--vip)">Opciones de Descarga</h3>
-            <p id="trial-msg" style="font-size:13px; color:var(--muted)">Prueba gratuita: 1 descarga técnica permitida.</p>
-            <button class="btn-dl" onclick="useFreeTrial()">DESCARGA GRATUITA (1)</button>
+            <p id="trial-msg">Prueba gratuita: 1 descarga técnica permitida.</p>
+            <button class="btn-dl" id="btn-free-dl" onclick="useFreeTrial()">DESCARGA GRATUITA (1)</button>
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-            <button class="btn-dl" style="background:#111; border:1px solid #333; color:#fff" onclick="openLogin()">💎 SOCIO J&J</button>
+            <button class="btn-s" onclick="openLogin()">💎 SOY SOCIO VIP</button>
+            <button class="btn-s" style="color:var(--wa)" onclick="window.open('https://wa.me/51916689969')">📲 ACTIVAR O RENOVAR VIP</button>
             <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Cerrar</button>
         </div>
     </div>
 
     <div id="login-modal" class="modal-back hidden">
         <div class="modal" style="max-width:350px;">
-            <h3>Validar Socio</h3>
+            <h3>Acceso Socio</h3>
             <input type="text" id="user-id" placeholder="📱 Número Celular" class="m-input" style="margin-bottom:12px">
             <button class="btn-dl" onclick="validateAccess()" id="btn-login-text">ENTRAR</button>
             <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Volver</button>
@@ -77,6 +85,10 @@
                 <div><label>Alto (cm)</label><input type="number" id="rzH" class="m-input"></div>
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="cm">cm</option><option value="in">in</option></select></div>
+                <div style="grid-column: span 2">
+                    <label>Calidad</label>
+                    <select id="rzMethod" class="m-input"><option value="high">Bicúbica (Alta)</option><option value="medium">Bilinear</option></select>
+                </div>
             </div>
             <button class="btn-dl" onclick="finalDownload()">DESCARGAR PNG</button>
             <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:15px; cursor:pointer">Cancelar</button>
@@ -93,13 +105,16 @@
 
     <main class="wrap">
         <aside class="panel">
+            <button class="btn-s" style="background:var(--vip); color:#000; margin-bottom:20px" onclick="location.href='simulador.html'">✨ SIMULADOR 3D</button>
             <h2>1. Carga</h2>
             <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:11px;">
             <h2>2. Limpieza</h2>
             <div class="control-row"><select id="mode" class="m-input" style="flex:1; margin:0"><option value="white">Blanco</option><option value="black">Negro</option></select></div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
-            <button class="btn-dl" onclick="handleDownload()">DESCARGAR RESULTADO</button>
+            <h2>3. Color Lienzo</h2>
+            <div class="cp-container"><canvas id="cpSV" width="220" height="100"></canvas><canvas id="cpH" width="25" height="100"></canvas></div>
+            <button class="btn-dl" onclick="handleDownload()">DESCARGAR PNG</button>
         </aside>
         <section class="stage" id="stage"><canvas id="canvas"></canvas></section>
     </main>
@@ -107,8 +122,10 @@
     <script>
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d'), aspectRatio = 1;
+        
         let isVip = sessionStorage.getItem('jj_session') === 'active';
         let freeUsed = localStorage.getItem('jj_free_trial') === 'used';
+        let currentMode = 'vip';
 
         window.onload = () => {
             if(isVip) {
@@ -117,6 +134,7 @@
                 tag.classList.add(status.toLowerCase().includes('vencer') ? 'status-warning' : 'status-vip');
                 document.getElementById('btnLogout').style.display = 'block';
             }
+            drawCP();
         };
 
         function logout() { sessionStorage.clear(); location.reload(); }
@@ -145,33 +163,47 @@
 
         async function validateAccess() {
             const u = document.getElementById('user-id').value.trim().replace(/\D/g,'');
-            if(!u) return alert("Ingresa tu número");
-            const btn = document.getElementById('btn-login-text'); btn.innerText = "BUSCANDO...";
+            if(!u) return alert("Ingresa tu número.");
+            const btn = document.getElementById('btn-login-text'); btn.innerText = "VERIFICANDO...";
             try {
-                // PON TU NUEVA URL AQUÍ ABAJO
-                const url = `REEMPLAZA_CON_TU_URL_NUEVA_EXEC?user=${u}&pass=${u}`;
-                const res = await fetch(url);
+                const res = await fetch(`https://script.google.com/macros/s/AKfycbwCEMZlneRGgZwRPBW7__NDCgyIUVcMdwonRG-A-m9c9LTi-4985AydGUzlD0Q36xxC/exec?user=${u}&pass=${u}`);
                 const data = await res.json();
-                if(data.access) {
+                const st = data.status ? data.status.toLowerCase().trim() : "";
+                if(data.access && (st === 'vigente' || st === 'por vencer')) {
                     sessionStorage.setItem('jj_session', 'active'); sessionStorage.setItem('jj_status', data.status); location.reload();
-                } else alert("No encontrado o vencido.");
+                } else alert("Membresía Vencida o No encontrada.");
             } catch(e) { alert("Error de red."); }
             btn.innerText = "ENTRAR";
         }
 
         function handleDownload() { if(isVip) openExport(); else if(!freeUsed) document.getElementById('access-modal').classList.remove('hidden'); else alert("Prueba agotada."); }
-        function useFreeTrial() { localStorage.setItem('jj_free_trial', 'used'); closeModal('access-modal'); openExport('free'); }
-        function openExport(mode) { if(!oCanvas.width) return; rzW.value=(oCanvas.width/300*2.54).toFixed(2); rzH.value=(oCanvas.height/300*2.54).toFixed(2); document.getElementById('modalExport').classList.remove('hidden'); }
+        function useFreeTrial() { localStorage.setItem('jj_free_trial', 'used'); currentMode='free'; closeModal('access-modal'); openExport(); }
+        function openExport() { if(!oCanvas.width) return; rzW.value=(oCanvas.width/300*2.54).toFixed(2); rzH.value=(oCanvas.height/300*2.54).toFixed(2); document.getElementById('modalExport').classList.remove('hidden'); }
         
         function finalDownload() {
             const dpi = parseInt(rzDPI.value);
             const temp = document.createElement('canvas');
             let w = (rzUnit.value === 'in' ? rzW.value*dpi : rzW.value/2.54*dpi);
             temp.width = w; temp.height = w/aspectRatio;
-            const tCtx = temp.getContext('2d'); tCtx.drawImage(canvas, 0,0, temp.width, temp.height);
+            const tCtx = temp.getContext('2d'); tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
+            tCtx.drawImage(canvas, 0,0, temp.width, temp.height);
             const link = document.createElement('a'); link.download = 'jj_studio.png'; link.href = temp.toDataURL(); link.click();
-            closeModal('modalExport'); if(!isVip) location.reload();
+            closeModal('modalExport'); if(currentMode==='free') location.reload();
         }
+
+        const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
+        let hue=0, svD=false, hD=false;
+        function drawCP() {
+            hCtx.clearRect(0,0,25,100); const gH=hCtx.createLinearGradient(0,0,0,100); for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`); hCtx.fillStyle=gH; hCtx.fillRect(0,0,25,100);
+            svCtx.fillStyle=`hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
+            const gW=svCtx.createLinearGradient(0,0,cpSV.width,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent'); svCtx.fillStyle=gW; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
+            const gB=svCtx.createLinearGradient(0,0,0,100); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000'); svCtx.fillStyle=gB; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
+        }
+        const handleH = e => { const r=cpH.getBoundingClientRect(); const y=(e.touches?e.touches[0].clientY:e.clientY)-r.top; hue=Math.max(0,Math.min(y/r.height*360,360)); drawCP(); };
+        const handleSV = e => { const r=cpSV.getBoundingClientRect(); const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left, y=(e.touches?e.touches[0].clientY:e.clientY)-r.top; const id=svCtx.getImageData(Math.max(0,Math.min(x,219)),Math.max(0,Math.min(y,99)),1,1).data; document.getElementById('stage').style.backgroundColor=`rgb(${id[0]},${id[1]},${id[2]})`; };
+        cpH.onmousedown = cpH.ontouchstart = e => { hD=true; handleH(e); }; cpSV.onmousedown = cpSV.ontouchstart = e => { svD=true; handleSV(e); };
+        window.onmousemove = window.ontouchmove = e => { if(hD) handleH(e); if(svD) handleSV(e); if(hD || svD) e.preventDefault(); };
+        window.onmouseup = window.ontouchend = () => { hD=false; svD=false; };
 
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
