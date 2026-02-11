@@ -3,329 +3,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Comunidad Pro — Gigapixel IA Edition</title>
+    <title>J&J Comunidad Pro — Gigapixel IA x8</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
-            --accent: #f87171; --border: #1f1f1f; --success: #10b981; --wa: #25d366;
+            --accent: #00f2ff; --border: #1f1f1f; --success: #10b981; --wa: #25d366;
             --vip: #00d2ff; --warning: #f59e0b;
         }
         * { box-sizing: border-box; touch-action: manipulation; }
-        body { margin: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
 
         header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: #0b0b0b; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 1000; }
         .logo-text { font-size: 1.1rem; font-weight: 800; background: linear-gradient(to right, var(--vip), #0081ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        #status-tag { font-size: 9px; padding: 4px 10px; border-radius: 20px; background: #222; color: #888; font-weight: bold; border: 1px solid #333; text-transform: uppercase; }
-        .status-vip { background: #052e1a !important; color: var(--success) !important; border-color: var(--success) !important; }
-        .status-warning { background: #451a03 !important; color: var(--warning) !important; border-color: var(--warning) !important; }
-        .btn-logout { background: transparent; border: 1px solid #333; color: #666; font-size: 10px; padding: 4px 8px; border-radius: 4px; cursor: pointer; display: none; }
-
         .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
-        @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; height: auto; display: block; } .panel { border-right: none; border-bottom: 1px solid var(--border); } }
+        @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; height: auto; display: block; } }
 
-        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; z-index: 100; }
-        h2 { font-size: 11px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
+        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; height: 100%; }
+        h2 { font-size: 10px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; letter-spacing: 1px; }
+        
+        /* Botones de Escala */
+        .scale-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .btn-scale { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+        .btn-scale:hover { border-color: var(--accent); background: #222; }
+        .btn-scale.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 10px; }
         label { font-size: 12px; color: #ddd; width: 110px; }
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
-        .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 60px; text-align: center; font-size: 10px; }
+        .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 55px; text-align: center; font-size: 10px; }
         
         .btn-s { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; margin-bottom: 8px; }
-        .btn-dl { width: 100%; padding: 16px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 20px; font-weight: 900; cursor: pointer; font-size: 14px; }
+        .btn-dl { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent), #0081ff); color: #000; border: none; border-radius: 8px; margin-top: 20px; font-weight: 900; cursor: pointer; font-size: 14px; text-transform: uppercase; }
 
-        .stage { background: #0b0b0b; display: flex; align-items: center; justify-content: center; min-height: 450px; padding: 10px; }
-        canvas#canvas { display: block; max-width: 100%; height: auto; max-height: 80vh; border-radius: 4px; cursor: crosshair; }
+        .stage { background: #080808; display: flex; align-items: center; justify-content: center; min-height: 450px; padding: 20px; position: relative; }
+        canvas#canvas { display: block; max-width: 100%; height: auto; border-radius: 4px; box-shadow: 0 0 40px rgba(0,0,0,0.5); }
 
-        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.96); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
+        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
         .modal { background: #121212; padding: 25px; border-radius: 18px; width: 100%; max-width: 400px; border: 1px solid #262626; text-align: center; }
         .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 8px; width: 100%; font-size: 14px; outline: none; }
         .hidden { display: none !important; }
         .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
-        .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; margin-top: 15px; }
     </style>
 </head>
 <body>
 
     <div id="access-modal" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--vip); margin-bottom: 20px;">Bienvenido a J&J Comunidad</h3>
-            <button class="btn-dl" id="btn-free-dl" onclick="startFreeTrial()">🎁 USAR PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
+            <h3 style="color:var(--vip); margin-bottom: 20px;">J&J Comunidad Pro</h3>
+            <button class="btn-dl" id="btn-free-dl" onclick="startFreeTrial()">🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
             <div class="choice-card hidden" id="btn-subscribe-wa" onclick="contactSupport()" style="border-color: var(--wa);">
                 <div style="font-size:24px">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">Activar VIP</div><div style="font-size:11px; color:#666">Pruebas agotadas. ¡Únete hoy!</div></div>
+                <div><div style="font-weight:bold; color:var(--wa);">Activar VIP</div><div style="font-size:11px; color:#666">Descargas ilimitadas ahora.</div></div>
             </div>
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
             <div class="choice-card" onclick="openLogin()">
                 <div style="font-size:24px">💎</div>
                 <div><div style="font-weight:bold; color:white;">Ya soy Socio VIP</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
             </div>
-            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Explorar herramientas</button>
-        </div>
-    </div>
-
-    <div id="login-modal" class="modal-back hidden">
-        <div class="modal" style="max-width:350px;">
-            <h3>Acceso Socio</h3>
-            <input type="text" id="user-id" placeholder="📱 Número Celular" class="m-input" style="margin-bottom:12px">
-            <button class="btn-dl" onclick="validateAccess()" id="btn-login-text">ENTRAR</button>
-            <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Volver</button>
-        </div>
-    </div>
-
-    <div id="modalExport" class="modal-back hidden">
-        <div class="modal">
-            <h3 style="margin-top:0; color:var(--vip)">Salida Técnica Pro</h3>
-            <div class="grid-export">
-                <div><label>Ancho (cm)</label><input type="number" id="rzW" class="m-input"></div>
-                <div><label>Alto (cm)</label><input type="number" id="rzH" class="m-input"></div>
-                <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
-                <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="cm">cm</option><option value="in">in</option></select></div>
-                <div style="grid-column: span 2">
-                    <label>Interpolación (Topaz Style)</label>
-                    <select id="rzMethod" class="m-input">
-                        <option value="high">Bicúbica (Suave)</option>
-                        <option value="medium">Bilinear (Estándar)</option>
-                        <option value="low">Nearest (Pixel Art)</option>
-                    </select>
-                </div>
-                <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
-                    <input type="checkbox" id="lockAspect" checked> <small>Bloquear Proporción</small>
-                </div>
-            </div>
-            <button class="btn-dl" onclick="finalDownload()">DESCARGAR PNG</button>
-            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:15px; cursor:pointer">Cancelar</button>
+            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Cerrar</button>
         </div>
     </div>
 
     <header>
-        <div class="logo-text">J&J COMUNIDAD PRO</div>
-        <div class="header-actions">
-            <div id="status-tag">INVITADO</div>
-            <button class="btn-logout" id="btnLogout" onclick="logout()">SALIR</button>
+        <div class="logo-text">J&J COMUNIDAD PRO — GIGAPIXEL IA</div>
+        <div style="display:flex; gap:10px;">
+            <div id="status-tag" style="font-size: 9px; padding: 5px 10px; background: #222; border-radius: 20px; color: #666;">INVITADO</div>
+            <button class="btn-logout" id="btnLogout" onclick="sessionStorage.clear(); location.reload();" style="display:none; background:none; border:1px solid #333; color:#666; font-size:10px; border-radius:4px; cursor:pointer;">SALIR</button>
         </div>
     </header>
 
     <main class="wrap">
         <aside class="panel">
-            <h2>Gigapixel IA Style</h2>
+            <h2>Super-Resolución IA</h2>
+            <div class="scale-grid">
+                <button class="btn-scale" onclick="setScale(2, this)">x2</button>
+                <button class="btn-scale" onclick="setScale(4, this)">x4</button>
+                <button class="btn-scale" onclick="setScale(8, this)">x8</button>
+            </div>
+
+            <h2>Gigapixel Engine</h2>
             <div class="control-row">
-                <label>Potencia IA</label>
-                <input type="range" id="ia-power" min="0.1" max="1.5" step="0.1" value="0.5">
+                <label>Nitidez IA</label>
+                <input type="range" id="ia-power" min="0.1" max="1.2" step="0.1" value="0.4">
                 <div class="val-box" id="ia-powerV">Medio</div>
             </div>
-            <div style="display: flex; gap: 8px;">
-                <button class="btn-s" style="background:var(--success); color:#000; flex: 2;" onclick="enhanceIA()">🚀 ENFOCAR IA</button>
-                <button class="btn-s" style="background:#333; color:#fff; flex: 1;" onclick="resetImage()">🔄 RESET</button>
+            <div class="control-row" style="margin-bottom:20px;">
+                <label style="width:auto;"><input type="checkbox" id="ia-denoise" checked> Reducción de Ruido IA</label>
             </div>
             
-            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
+            <div style="display: flex; gap: 8px;">
+                <button class="btn-s" style="background:var(--success); color:#000; flex: 2;" onclick="applyGigapixel()">🚀 PROCESAR IA</button>
+                <button class="btn-s" style="background:#222; color:#fff; flex: 1;" onclick="resetImage()">🔄 RESET</button>
+            </div>
             
             <h2>1. Carga</h2>
             <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:11px;">
+            
             <h2>2. Limpieza Técnica</h2>
             <div class="control-row">
-                <select id="mode" class="m-input" style="flex:1; margin:0">
+                <select id="mode" style="background:#000; color:#fff; border:1px solid #333; padding:8px; border-radius:6px; flex:1;">
                     <option value="white">Quitar Blanco</option>
                     <option value="black">Quitar Negro</option>
                     <option value="pick">🎨 Gotero Manual</option>
                 </select>
             </div>
-            <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
-            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
-            <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"><div class="val-box" id="contractV">0</div></div>
+            <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"></div>
+            
             <h2>3. Color Lienzo</h2>
-            <div id="cp-box" style="height:100px; display:flex; gap:5px; margin-top:10px; touch-action:none;">
+            <div id="cp-box" style="height:80px; display:flex; gap:5px; margin-top:10px; touch-action:none;">
                 <canvas id="cpSV" style="flex:1; border-radius:8px; border:1px solid #333;"></canvas>
-                <canvas id="cpH" style="width:25px; border-radius:8px; border:1px solid #333;"></canvas>
+                <canvas id="cpH" style="width:20px; border-radius:8px; border:1px solid #333;"></canvas>
             </div>
-            <button class="btn-dl" onclick="handleDownload()">DESCARGAR PNG</button>
+            
+            <button class="btn-dl" onclick="handleDownload()">Descargar PNG Profesional</button>
         </aside>
-        <section class="stage" id="stage"><canvas id="canvas"></canvas></section>
+
+        <section class="stage" id="stage">
+            <canvas id="canvas"></canvas>
+        </section>
     </main>
 
     <script>
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
-        let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d'), aspectRatio = 1;
+        let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
         let backupCanvas = document.createElement('canvas'), bCtx = backupCanvas.getContext('2d');
+        let currentScale = 1;
         let isVip = sessionStorage.getItem('jj_session') === 'active', freeCount = parseInt(localStorage.getItem('jj_free_count') || "2");
-        let targetColor = [255,255,255];
 
         window.onload = () => {
             if(!isVip) document.getElementById('access-modal').classList.remove('hidden');
             else {
-                const tag = document.getElementById('status-tag'), status = sessionStorage.getItem('jj_status');
-                tag.innerText = "SOCIO: " + status;
-                tag.classList.add(status.toLowerCase().includes('vencer') ? 'status-warning' : 'status-vip');
+                document.getElementById('status-tag').innerText = "SOCIO VIP";
                 document.getElementById('btnLogout').style.display = 'block';
             }
-            updateFreeUI();
-            drawCP();
-        };
-
-        document.getElementById('ia-power').oninput = function() {
-            const v = parseFloat(this.value);
-            let text = "Bajo";
-            if(v > 0.4) text = "Medio";
-            if(v > 0.8) text = "Alto";
-            if(v > 1.1) text = "Gigapixel";
-            document.getElementById('ia-powerV').innerText = text;
-        };
-
-        function updateFreeUI() {
             document.getElementById('count-free').innerText = freeCount;
             if(freeCount <= 0 && !isVip) {
                 document.getElementById('btn-free-dl').classList.add('hidden');
                 document.getElementById('btn-subscribe-wa').classList.remove('hidden');
             }
-        }
-
-        function startFreeTrial() {
-            if(freeCount <= 0) return;
-            window.isTrialActive = true; 
-            closeModal('access-modal');
-        }
-
-        function handleDownload() { 
-            if(isVip || window.isTrialActive) openExport(); 
-            else document.getElementById('access-modal').classList.remove('hidden'); 
-        }
-
-        function logout() { sessionStorage.clear(); location.reload(); }
+            drawCP();
+        };
 
         document.getElementById('file').onchange = e => {
             const f = e.target.files[0]; if(!f) return;
             const img = new Image();
-            img.onload = () => { 
-                oCanvas.width = backupCanvas.width = img.width; 
-                oCanvas.height = backupCanvas.height = img.height; 
-                aspectRatio = img.width/img.height; 
-                oCtx.drawImage(img,0,0); 
-                bCtx.drawImage(img,0,0); // Guardar copia original
-                process(); 
+            img.onload = () => {
+                oCanvas.width = backupCanvas.width = img.width;
+                oCanvas.height = backupCanvas.height = img.height;
+                oCtx.drawImage(img,0,0);
+                bCtx.drawImage(img,0,0);
+                currentScale = 1;
+                process();
             };
             img.src = URL.createObjectURL(f);
         };
 
+        function setScale(s, btn) {
+            if(!oCanvas.width) return;
+            document.querySelectorAll('.btn-scale').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentScale = s;
+        }
+
         function resetImage() {
             if(!backupCanvas.width) return;
-            oCtx.clearRect(0,0,oCanvas.width,oCanvas.height);
-            oCtx.drawImage(backupCanvas,0,0);
+            oCanvas.width = backupCanvas.width;
+            oCanvas.height = backupCanvas.height;
+            oCtx.drawImage(backupCanvas, 0, 0);
+            currentScale = 1;
             process();
         }
 
-        canvas.onclick = e => {
-            if(document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
-            const r = canvas.getBoundingClientRect(), x = (e.clientX-r.left)*(oCanvas.width/r.width), y = (e.clientY-r.top)*(oCanvas.height/r.height);
-            const p = oCtx.getImageData(x,y,1,1).data; 
-            targetColor = [p[0],p[1],p[2]]; 
-            process();
-        };
-
-        function process() {
+        // --- MOTOR GIGAPIXEL IA ---
+        function applyGigapixel() {
             if(!oCanvas.width) return;
-            const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value), contract = parseInt(document.getElementById('contract').value);
-            document.getElementById('fuzzV').innerText = fuzz; document.getElementById('featherV').innerText = feather; document.getElementById('contractV').innerText = contract;
-            let tc = (document.getElementById('mode').value==='pick') ? targetColor : (document.getElementById('mode').value==='white' ? [255,255,255] : [0,0,0]);
-            const id=oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d=id.data, out=ctx.createImageData(oCanvas.width,oCanvas.height), o=out.data;
-            const threshold = (fuzz*2.5)+(contract*10), soft = (feather*15)+1;
-            for(let i=0; i<d.length; i+=4) {
-                const dist = Math.sqrt((d[i]-tc[0])**2 + (d[i+1]-tc[1])**2 + (d[i+2]-tc[2])**2);
-                o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                if(dist < threshold-soft) o[i+3]=0; else if(dist < threshold) o[i+3]=((dist-(threshold-soft))/soft)*d[i+3]; else o[i+3]=d[i+3];
-            }
-            canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out,0,0);
-        }
-
-        async function validateAccess() {
-            const u = document.getElementById('user-id').value.trim().replace(/\D/g,'');
-            if(!u) return alert("Ingresa tu número.");
-            const btn = document.getElementById('btn-login-text'); btn.innerText = "BUSCANDO...";
-            try {
-                const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
-                const data = await res.json();
-                if(data.access) {
-                    sessionStorage.setItem('jj_session', 'active'); sessionStorage.setItem('jj_status', data.status); location.reload();
-                } else alert("Acceso denegado.");
-            } catch(e) { alert("Error de red."); }
-            btn.innerText = "ENTRAR";
-        }
-
-        function contactSupport() {
-            const msg = "Hola J&J Comunidad, agoté mis pruebas gratuitas y quiero activar mi suscripción VIP para descargas ilimitadas.";
-            window.open(`https://wa.me/51916689969?text=${encodeURIComponent(msg)}`, '_blank');
-        }
-
-        function openExport() { if(!oCanvas.width) return; rzW.value=(oCanvas.width/300*2.54).toFixed(2); rzH.value=(oCanvas.height/300*2.54).toFixed(2); document.getElementById('modalExport').classList.remove('hidden'); }
-        
-        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect'), rzUnit = document.getElementById('rzUnit'), rzDPI = document.getElementById('rzDPI');
-        rzW.oninput = () => { if(lock.checked) rzH.value = (rzW.value/aspectRatio).toFixed(2); };
-        rzH.oninput = () => { if(lock.checked) rzW.value = (rzH.value*aspectRatio).toFixed(2); };
-
-        function finalDownload() {
-            const dpi = parseInt(rzDPI.value);
+            
+            // 1. Re-escalado IA (Super-resolución)
+            const tw = oCanvas.width * currentScale;
+            const th = oCanvas.height * currentScale;
             const temp = document.createElement('canvas');
-            let w = (rzUnit.value === 'in' ? rzW.value*dpi : (rzUnit.value === 'px' ? rzW.value : rzW.value/2.54*dpi));
-            temp.width = w; temp.height = w/aspectRatio;
-            const tCtx = temp.getContext('2d'); tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
-            tCtx.drawImage(canvas, 0,0, temp.width, temp.height);
-            const link = document.createElement('a'); link.download = 'jj_comunidad_pro.png'; link.href = temp.toDataURL(); link.click();
-            if(window.isTrialActive) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
-            closeModal('modalExport');
-        }
+            temp.width = tw; temp.height = th;
+            const tCtx = temp.getContext('2d');
+            tCtx.imageSmoothingEnabled = true;
+            tCtx.imageSmoothingQuality = 'high';
+            tCtx.drawImage(oCanvas, 0, 0, tw, th);
+            
+            oCanvas.width = tw; oCanvas.height = th;
+            oCtx.drawImage(temp, 0, 0);
 
-        // --- MOTOR GIGAPIXEL IA STYLE (CONVOLUCIÓN + DENOISE) ---
-        
-        function enhanceIA() {
-            if(!oCanvas.width) return;
+            // 2. Denoise & Sharpness (Filtro de Convolución)
             const power = parseFloat(document.getElementById('ia-power').value);
-            const src = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const sw = src.width, sh = src.height;
-            const output = ctx.createImageData(sw, sh);
-            const dst = output.data, pixels = src.data;
+            const denoise = document.getElementById('ia-denoise').checked;
+            const imgData = oCtx.getImageData(0, 0, tw, th);
+            const pixels = imgData.data;
+            const output = oCtx.createImageData(tw, th);
+            const outPixels = output.data;
 
-            // Matriz de convolución Sharpener (3x3)
+            // Matriz Topaz-Style (Enfoque de bordes sin grano)
             const weights = [ 0, -power, 0, -power, 1 + (power * 4), -power, 0, -power, 0 ];
 
-            for (let y = 0; y < sh; y++) {
-                for (let x = 0; x < sw; x++) {
-                    const off = (y * sw + x) * 4;
+            for (let i = 0; i < pixels.length; i += 4) {
+                // Reducción de ruido básica (Suavizado de color)
+                if(denoise) {
+                    pixels[i] = (pixels[i] * 0.9 + 12.8 * 0.1); 
+                    pixels[i+1] = (pixels[i+1] * 0.9 + 12.8 * 0.1);
+                    pixels[i+2] = (pixels[i+2] * 0.9 + 12.8 * 0.1);
+                }
+            }
+
+            // Aplicar matriz de nitidez
+            for (let y = 1; y < th - 1; y++) {
+                for (let x = 1; x < tw - 1; x++) {
+                    const off = (y * tw + x) * 4;
                     let r = 0, g = 0, b = 0;
                     for (let cy = 0; cy < 3; cy++) {
                         for (let cx = 0; cx < 3; cx++) {
-                            const scy = Math.min(sh-1, Math.max(0, y + cy - 1));
-                            const scx = Math.min(sw-1, Math.max(0, x + cx - 1));
-                            const srcOff = (scy * sw + scx) * 4;
+                            const srcOff = ((y + cy - 1) * tw + (x + cx - 1)) * 4;
                             const wt = weights[cy * 3 + cx];
                             r += pixels[srcOff] * wt;
                             g += pixels[srcOff+1] * wt;
                             b += pixels[srcOff+2] * wt;
                         }
                     }
-                    dst[off] = r; dst[off+1] = g; dst[off+2] = b; dst[off+3] = pixels[off+3];
+                    outPixels[off] = r; outPixels[off+1] = g; outPixels[off+2] = b;
+                    outPixels[off+3] = pixels[off+3];
                 }
             }
-            ctx.putImageData(output, 0, 0);
+            oCtx.putImageData(output, 0, 0);
+            process();
         }
 
+        function process() {
+            if(!oCanvas.width) return;
+            const fuzz = parseInt(document.getElementById('fuzz').value);
+            const tc = document.getElementById('mode').value === 'white' ? [255,255,255] : [0,0,0];
+            const imgData = oCtx.getImageData(0, 0, oCanvas.width, oCanvas.height), d = imgData.data;
+            const out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
+            const threshold = fuzz * 2.5;
+
+            for (let i = 0; i < d.length; i += 4) {
+                const dist = Math.sqrt((d[i]-tc[0])**2 + (d[i+1]-tc[1])**2 + (d[i+2]-tc[2])**2);
+                o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
+                o[i+3] = dist < threshold ? 0 : d[i+3];
+            }
+            canvas.width = oCanvas.width; canvas.height = oCanvas.height;
+            ctx.putImageData(out, 0, 0);
+        }
+
+        function handleDownload() {
+            if(!canvas.width) return;
+            if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden');
+            
+            const link = document.createElement('a');
+            link.download = 'jj_gigapixel_pro.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+
+            if(!isVip) {
+                freeCount--;
+                localStorage.setItem('jj_free_count', freeCount);
+                location.reload();
+            }
+        }
+
+        // --- FUNCIONES EXTRA ---
+        function startFreeTrial() { window.isTrial = true; document.getElementById('access-modal').classList.add('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function contactSupport() { window.open('https://wa.me/51916689969?text=Hola J&J Comunidad, quiero activar mi suscripción VIP para usar el motor Gigapixel IA x8.', '_blank'); }
+        function openLogin() { document.getElementById('access-modal').classList.add('hidden'); document.getElementById('login-modal').classList.remove('hidden'); }
+        
         // --- SELECTOR DE COLOR ---
         const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
-        let hue=0, svD=false, hD=false;
+        let hue=0;
         function drawCP() {
-            hCtx.clearRect(0,0,25,100); const gH=hCtx.createLinearGradient(0,0,0,100); for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`); hCtx.fillStyle=gH; hCtx.fillRect(0,0,25,100);
+            hCtx.clearRect(0,0,20,80); const gH=hCtx.createLinearGradient(0,0,0,80); for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`); hCtx.fillStyle=gH; hCtx.fillRect(0,0,20,80);
             svCtx.fillStyle=`hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
             const gW=svCtx.createLinearGradient(0,0,cpSV.width,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent'); svCtx.fillStyle=gW; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
-            const gB=svCtx.createLinearGradient(0,0,0,100); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000'); svCtx.fillStyle=gB; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
+            const gB=svCtx.createLinearGradient(0,0,0,80); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000'); svCtx.fillStyle=gB; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
         }
-        const handleH = e => { const r=cpH.getBoundingClientRect(); const y=(e.touches?e.touches[0].clientY:e.clientY)-r.top; hue=Math.max(0,Math.min(y/r.height*360,360)); drawCP(); };
-        const handleSV = e => { const r=cpSV.getBoundingClientRect(); const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left, y=(e.touches?e.touches[0].clientY:e.clientY)-r.top; const id=svCtx.getImageData(Math.max(0,Math.min(x,cpSV.width-1)),Math.max(0,Math.min(y,cpSV.height-1)),1,1).data; document.getElementById('stage').style.backgroundColor=`rgb(${id[0]},${id[1]},${id[2]})`; };
-        cpH.onmousedown = cpH.ontouchstart = e => { hD=true; handleH(e); }; cpSV.onmousedown = cpSV.ontouchstart = e => { svD=true; handleSV(e); };
-        window.onmousemove = window.ontouchmove = e => { if(hD) handleH(e); if(svD) handleSV(e); if(hD || svD) e.preventDefault(); };
-        window.onmouseup = window.ontouchend = () => { hD=false; svD=false; };
-
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
-        ['fuzz', 'feather', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
+        cpH.onclick = e => { hue = (e.offsetY / 80) * 360; drawCP(); };
+        cpSV.onclick = e => { 
+            const id = svCtx.getImageData(e.offsetX, e.offsetY, 1, 1).data;
+            document.getElementById('stage').style.backgroundColor = `rgb(${id[0]},${id[1]},${id[2]})`;
+        };
     </script>
 </body>
 </html>
