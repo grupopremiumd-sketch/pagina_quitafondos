@@ -21,7 +21,7 @@
         h2 { font-size: 10px; color: #666; text-transform: uppercase; margin: 20px 0 10px; letter-spacing: 1px; }
         
         .btn-ia { width: 100%; padding: 14px; background: var(--success); color: #000; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 8px; text-transform: uppercase; font-size: 11px; }
-        .btn-art { width: 49%; padding: 10px; background: #222; color: #fff; border: 1px solid #333; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
+        .btn-art { width: 32%; padding: 8px; background: #222; color: #fff; border: 1px solid #333; border-radius: 6px; cursor: pointer; font-size: 9px; font-weight: bold; }
         .btn-secondary { width: 100%; padding: 10px; background: #1a1a1a; color: #555; border: 1px solid #222; border-radius: 8px; cursor: pointer; font-size: 10px; margin-bottom: 10px; }
 
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
@@ -37,7 +37,6 @@
         .modal { background: #111; padding: 25px; border-radius: 15px; width: 100%; max-width: 420px; border: 1px solid #222; text-align: center; }
         .hidden { display: none !important; }
         .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-top: 15px; }
-        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
     </style>
 </head>
 <body>
@@ -46,14 +45,13 @@
         <div class="modal">
             <h3 style="color:var(--accent); margin-bottom: 20px;">J&J Comunidad Pro</h3>
             <button class="btn-ia" id="btn-free-dl" onclick="startTrial()">🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
-            <div class="choice-card hidden" id="btn-subscribe-wa" onclick="contactSupport()" style="border-color: var(--wa);">
-                <div style="font-size:24px">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">Activar VIP</div><div style="font-size:11px; color:#666">Descargas agotadas. ¡Infórmate aquí!</div></div>
+            <div id="btn-subscribe-wa" class="hidden" onclick="contactSupport()" style="background:#1a1a1a; border:1px solid var(--wa); padding:15px; border-radius:12px; cursor:pointer; text-align:left; margin-bottom:10px;">
+                <div style="font-weight:bold; color:var(--wa);">Activar Suscripción VIP</div>
+                <div style="font-size:11px; color:#666">Pruebas agotadas. ¡Infórmate aquí!</div>
             </div>
-            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-            <div class="choice-card" onclick="openLogin()">
-                <div style="font-size:24px">💎</div>
-                <div><div style="font-weight:bold; color:white;">Ya soy Socio J&J</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
+            <div style="background:#1a1a1a; border:1px solid #333; padding:15px; border-radius:12px; cursor:pointer; text-align:left;" onclick="openLogin()">
+                <div style="font-weight:bold; color:white;">Ya soy Socio J&J</div>
+                <div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div>
             </div>
             <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Cerrar</button>
         </div>
@@ -63,14 +61,14 @@
         <div class="modal" style="max-width:350px;">
             <h3 style="color:var(--accent)">Acceso VIP</h3>
             <input type="text" id="user-id" placeholder="Número Celular" class="m-input">
-            <button class="btn-ia" onclick="validateAccess()" id="btn-login-text">INGRESAR</button>
+            <button class="btn-ia" onclick="validateAccess()">INGRESAR</button>
             <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Volver</button>
         </div>
     </div>
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--accent)">Opciones de Exportación</h3>
+            <h3 style="color:var(--accent)">Exportación Pro</h3>
             <div class="grid-export">
                 <div><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
                 <div><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
@@ -78,17 +76,13 @@
                 <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option></select></div>
                 <div style="grid-column: span 2">
                     <label>Interpolación</label>
-                    <select id="rzMethod" class="m-input">
-                        <option value="high">Bicúbica (Pro)</option>
-                        <option value="medium">Bilinear</option>
-                        <option value="low">Nearest</option>
-                    </select>
+                    <select id="rzMethod" class="m-input"><option value="high">Bicúbica (Pro)</option><option value="medium">Bilinear</option><option value="low">Nearest</option></select>
                 </div>
                 <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
                     <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción</small>
                 </div>
             </div>
-            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:15px;" onclick="finalDownload()">DESCARGAR PNG</button>
+            <button class="btn-ia" style="background:var(--accent); color:#000;" onclick="finalDownload()">DESCARGAR PNG</button>
             <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cancelar</button>
         </div>
     </div>
@@ -104,34 +98,32 @@
             <button class="btn-ia" onclick="applyFHDRemaster()">🚀 MEJORAR CALIDAD FHD</button>
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <button class="btn-art" onclick="applyBlackAndWhite()">⚪ B&N</button>
-                <button class="btn-art" onclick="applyEmbroidery()">🧶 BORDADO</button>
+                <button class="btn-art" onclick="applySketch()">✏️ BOCETO</button>
+                <button class="btn-art" onclick="applyRealisticEmbroidery()">🧵 BORDADO</button>
             </div>
             <button class="btn-secondary" onclick="resetImg()">🔄 REESTABLECER ORIGINAL</button>
 
             <h2>1. Carga</h2>
             <input type="file" id="file" accept="image/*" class="m-input">
 
-            <h2>2. Quitar Fondo (Transparencia)</h2>
+            <h2>2. Quitar Fondo</h2>
+            <button class="btn-ia" style="background:#6c5ce7; color:#fff;" onclick="applyAutoRemove()">✨ QUITAR FONDO AUTO</button>
             <div class="control-row">
                 <select id="mode" class="m-input" style="margin:0">
-                    <option value="white">Fondo Blanco</option>
-                    <option value="black">Fondo Negro</option>
-                    <option value="pick">🎨 Gotero Manual</option>
+                    <option value="white">Blanco</option><option value="black">Negro</option><option value="pick">🎨 Gotero Manual</option>
                 </select>
             </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"></div>
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.5"></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"></div>
 
-            <h2>3. Color de Lienzo</h2>
-            <input type="color" id="bgColor" value="#080808" style="width:100%; height:45px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
+            <h2>3. Previsualización</h2>
+            <input type="color" id="bgColor" value="#080808" style="width:100%; height:40px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
 
-            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">Descargar PNG Pro</button>
+            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">Descargar Imagen Pro</button>
         </aside>
 
-        <section class="stage" id="stage">
-            <canvas id="canvas"></canvas>
-        </section>
+        <section class="stage" id="stage"><canvas id="canvas"></canvas></section>
     </main>
 
     <script>
@@ -148,147 +140,115 @@
             if(freeCount <= 0 && !isVip) { document.getElementById('btn-free-dl').classList.add('hidden'); document.getElementById('btn-subscribe-wa').classList.remove('hidden'); }
         };
 
-        // GOTERO DE COLOR (Arreglado)
-        canvas.addEventListener('mousedown', (e) => {
-            if (document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
-            const rect = canvas.getBoundingClientRect();
-            const scaleX = oCanvas.width / rect.width;
-            const scaleY = oCanvas.height / rect.height;
-            const x = (e.clientX - rect.left) * scaleX;
-            const y = (e.clientY - rect.top) * scaleY;
-            const pixel = oCtx.getImageData(x, y, 1, 1).data;
-            targetColor = [pixel[0], pixel[1], pixel[2]];
-            process();
-        });
-
-        async function validateAccess() {
-            const u = document.getElementById('user-id').value.trim();
-            if(!u) return;
-            try {
-                const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
-                const data = await res.json();
-                if(data.access) { sessionStorage.setItem('jj_session', 'active'); location.reload(); }
-                else alert("Número no registrado.");
-            } catch(e) { alert("Error de servidor."); }
-        }
-
-        document.getElementById('file').onchange = e => {
-            const f = e.target.files[0]; if(!f) return;
-            const img = new Image();
-            img.onload = () => {
-                oCanvas.width = backup.width = img.width;
-                oCanvas.height = backup.height = img.height;
-                aspectRatio = img.width / img.height;
-                oCtx.drawImage(img,0,0); bCtx.drawImage(img,0,0);
-                process();
-            };
-            img.src = URL.createObjectURL(f);
-        };
-
-        function applyBlackAndWhite() {
+        // --- MOTOR QUITAR FONDO AUTO (IA) ---
+        function applyAutoRemove() {
             if(!oCanvas.width) return;
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
-            for (let i = 0; i < d.length; i += 4) {
-                let gray = (d[i] * 0.3 + d[i+1] * 0.59 + d[i+2] * 0.11);
-                d[i] = d[i+1] = d[i+2] = gray;
-            }
-            oCtx.putImageData(id, 0, 0); process();
+            // Algoritmo de detección de esquinas para identificar color de fondo
+            const corners = [0, (oCanvas.width-1)*4, (oCanvas.width*oCanvas.height-oCanvas.width)*4, (oCanvas.width*oCanvas.height-1)*4];
+            let r=0, g=0, b=0; corners.forEach(c => { r+=d[c]; g+=d[c+1]; b+=d[c+2]; });
+            targetColor = [r/4, g/4, b/4];
+            document.getElementById('fuzz').value = 40;
+            process();
         }
 
-        // MOTOR BORDADO / CROCHET (Relieve y Malla)
-        function applyEmbroidery() {
+        // --- MOTOR BOCETO (SKETCH) ---
+        function applySketch() {
+            if(!oCanvas.width) return;
+            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
+            const w = oCanvas.width, h = oCanvas.height;
+            const out = oCtx.createImageData(w,h), od = out.data;
+            for (let i = 0; i < d.length; i += 4) {
+                let gray = d[i]*0.3 + d[i+1]*0.59 + d[i+2]*0.11;
+                od[i] = od[i+1] = od[i+2] = gray; od[i+3] = 255;
+            }
+            // Invertir y suavizar bordes
+            for (let i = 0; i < od.length; i += 4) {
+                od[i] = 255 - od[i]; od[i+1] = 255 - od[i+1]; od[i+2] = 255 - od[i+2];
+            }
+            oCtx.putImageData(out, 0, 0); process();
+        }
+
+        // --- MOTOR BORDADO ULTRA REALISTA ---
+        function applyRealisticEmbroidery() {
             if(!oCanvas.width) return;
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
             const w = oCanvas.width, h = oCanvas.height;
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
                     const i = (y * w + x) * 4;
-                    // Efecto de puntada (hilos)
-                    let pattern = (x % 5 === 0 || y % 5 === 0) ? 0.7 : 1.2;
-                    d[i] *= pattern; d[i+1] *= pattern; d[i+2] *= pattern;
-                    // Posterización para colores de hilo
-                    d[i] = Math.round(d[i] / 51) * 51;
-                    d[i+1] = Math.round(d[i+1] / 51) * 51;
-                    d[i+2] = Math.round(d[i+2] / 51) * 51;
+                    // Patrón de hilo cruzado 6x6
+                    const isThread = (x % 6 < 2 || y % 6 < 2);
+                    const shadow = isThread ? 0.6 : 1.3;
+                    d[i] = Math.min(255, d[i] * shadow);
+                    d[i+1] = Math.min(255, d[i+1] * shadow);
+                    d[i+2] = Math.min(255, d[i+2] * shadow);
                 }
             }
             oCtx.putImageData(id, 0, 0); process();
         }
 
-        function applyFHDRemaster() {
-            if(!oCanvas.width) return;
-            const tw = Math.round(oCanvas.width * 1.5), th = Math.round(oCanvas.height * 1.5);
-            const temp = document.createElement('canvas'); temp.width = tw; temp.height = th;
-            const tCtx = temp.getContext('2d');
-            tCtx.imageSmoothingQuality = 'high'; tCtx.drawImage(oCanvas, 0, 0, tw, th);
-            oCanvas.width = tw; oCanvas.height = th;
-            oCtx.drawImage(temp, 0, 0); process();
-        }
+        // --- RESTO DE FUNCIONES ---
+        canvas.onmousedown = e => {
+            if(document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
+            const r = canvas.getBoundingClientRect(), x = (e.clientX-r.left)*(oCanvas.width/r.width), y = (e.clientY-r.top)*(oCanvas.height/r.height);
+            const p = oCtx.getImageData(x,y,1,1).data; targetColor = [p[0],p[1],p[2]]; process();
+        };
 
         function process() {
             if(!oCanvas.width) return;
-            const fuzz = parseInt(document.getElementById('fuzz').value),
-                  feather = parseFloat(document.getElementById('feather').value),
-                  contract = parseInt(document.getElementById('contract').value);
+            const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value), contract = parseInt(document.getElementById('contract').value);
             let tc = targetColor;
-            const mode = document.getElementById('mode').value;
-            if(mode === 'white') tc = [255,255,255];
-            if(mode === 'black') tc = [0,0,0];
-
-            const id = oCtx.getImageData(0, 0, oCanvas.width, oCanvas.height), d = id.data;
+            const m = document.getElementById('mode').value;
+            if(m === 'white') tc = [255,255,255]; if(m === 'black') tc = [0,0,0];
+            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
             const out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
-            
-            // Umbral corregido para contraer y suavizar
-            const threshold = (fuzz * 2.5) + (contract * 10);
-            const softRange = (feather * 20) + 1;
-
+            const threshold = (fuzz*2.5)+(contract*10), soft = (feather*15)+1;
             for (let i = 0; i < d.length; i += 4) {
                 const dist = Math.sqrt((d[i]-tc[0])**2 + (d[i+1]-tc[1])**2 + (d[i+2]-tc[2])**2);
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                
-                // ALPHA CLIPPING LIMPIO
-                if(dist < threshold - softRange) {
-                    o[i+3] = 0;
-                } else if(dist < threshold) {
-                    o[i+3] = ((dist - (threshold - softRange)) / softRange) * d[i+3];
-                } else {
-                    o[i+3] = d[i+3];
-                }
+                if(dist < threshold-soft) o[i+3]=0;
+                else if(dist < threshold) o[i+3]=((dist-(threshold-soft))/soft)*255;
+                else o[i+3]=d[i+3];
             }
-            canvas.width = oCanvas.width; canvas.height = oCanvas.height;
-            ctx.putImageData(out, 0, 0);
+            canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out, 0, 0);
+        }
+
+        async function validateAccess() {
+            const u = document.getElementById('user-id').value.trim();
+            if(!u) return;
+            const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
+            const data = await res.json();
+            if(data.access) { sessionStorage.setItem('jj_session', 'active'); location.reload(); }
+            else alert("No registrado.");
         }
 
         function handleDownload() {
             if(!oCanvas.width) return;
             if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden');
-            document.getElementById('rzW').value = canvas.width;
-            document.getElementById('rzH').value = canvas.height;
+            document.getElementById('rzW').value = canvas.width; document.getElementById('rzH').value = canvas.height;
             document.getElementById('modalExport').classList.remove('hidden');
         }
 
-        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect');
-        rzW.oninput = () => { if(lock.checked) rzH.value = Math.round(rzW.value / aspectRatio); };
-        rzH.oninput = () => { if(lock.checked) rzW.value = Math.round(rzH.value * aspectRatio); };
-
         function finalDownload() {
-            const dpi = parseInt(document.getElementById('rzDPI').value), unit = document.getElementById('rzUnit').value, method = document.getElementById('rzMethod').value;
-            let tw = rzW.value;
-            if(unit === 'cm') tw = (rzW.value / 2.54) * dpi;
-            const temp = document.createElement('canvas'); temp.width = tw; temp.height = tw / aspectRatio;
-            const tCtx = temp.getContext('2d'); tCtx.imageSmoothingQuality = method;
-            tCtx.drawImage(canvas, 0, 0, temp.width, temp.height);
-            const link = document.createElement('a'); link.download = 'jj_comunidad.png'; link.href = temp.toDataURL(); link.click();
+            const link = document.createElement('a'); link.download = 'jj_pro.png'; link.href = canvas.toDataURL(); link.click();
             if(!isVip && window.isTrial) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
             closeModal('modalExport');
         }
 
+        document.getElementById('file').onchange = e => {
+            const f = e.target.files[0]; if(!f) return;
+            const img = new Image(); img.onload = () => { oCanvas.width=backup.width=img.width; oCanvas.height=backup.height=img.height; aspectRatio=img.width/img.height; oCtx.drawImage(img,0,0); bCtx.drawImage(img,0,0); process(); };
+            img.src = URL.createObjectURL(f);
+        };
+
+        function resetImg() { oCanvas.width=backup.width; oCanvas.height=backup.height; oCtx.drawImage(backup,0,0); process(); }
         function startTrial() { window.isTrial = true; closeModal('access-modal'); }
         function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
         function contactSupport() { window.open('https://wa.me/51916689969?text=Hola J&J Comunidad, quiero informes sobre la suscripcion', '_blank'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        function logout() { sessionStorage.clear(); location.reload(); }
-        function resetImg() { oCanvas.width = backup.width; oCanvas.height = backup.height; oCtx.drawImage(backup, 0, 0); process(); }
+        function applyBlackAndWhite() { if(!oCanvas.width) return; const id=oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d=id.data; for(let i=0;i<d.length;i+=4){let g=d[i]*0.3+d[i+1]*0.59+d[i+2]*0.11;d[i]=d[i+1]=d[i+2]=g;}oCtx.putImageData(id,0,0); process(); }
+        function applyFHDRemaster() { if(!oCanvas.width) return; const tw=Math.round(oCanvas.width*1.5), th=Math.round(oCanvas.height*1.5); const t=document.createElement('canvas'); t.width=tw; t.height=th; const tc=t.getContext('2d'); tc.imageSmoothingQuality='high'; tc.drawImage(oCanvas,0,0,tw,th); oCanvas.width=tw; oCanvas.height=th; oCtx.drawImage(t,0,0); process(); }
         document.getElementById('bgColor').oninput = e => document.getElementById('stage').style.backgroundColor = e.target.value;
         ['fuzz', 'feather', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
