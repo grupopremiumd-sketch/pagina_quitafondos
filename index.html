@@ -21,7 +21,7 @@
         h2 { font-size: 10px; color: #666; text-transform: uppercase; margin: 20px 0 10px; letter-spacing: 1px; }
         
         .btn-ia { width: 100%; padding: 14px; background: var(--success); color: #000; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 8px; text-transform: uppercase; font-size: 11px; }
-        .btn-art { width: 32%; padding: 8px; background: #222; color: #fff; border: 1px solid #333; border-radius: 6px; cursor: pointer; font-size: 9px; font-weight: bold; }
+        .btn-art { width: 49%; padding: 10px; background: #222; color: #fff; border: 1px solid #333; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
         .btn-secondary { width: 100%; padding: 10px; background: #1a1a1a; color: #555; border: 1px solid #222; border-radius: 8px; cursor: pointer; font-size: 10px; margin-bottom: 10px; }
 
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
@@ -31,10 +31,10 @@
         .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; font-size: 14px; outline: none; margin-bottom: 10px; }
 
         .stage { background: #080808; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; min-height: 400px; }
-        canvas#canvas { max-width: 90%; max-height: 90%; object-fit: contain; cursor: crosshair; }
+        canvas#canvas { max-width: 90%; max-height: 90%; object-fit: contain; }
 
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
-        .modal { background: #111; padding: 25px; border-radius: 15px; width: 90%; max-width: 420px; border: 1px solid #222; text-align: center; }
+        .modal { background: #111; padding: 25px; border-radius: 15px; width: 100%; max-width: 420px; border: 1px solid #222; text-align: center; }
         .hidden { display: none !important; }
         .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-top: 15px; }
     </style>
@@ -74,12 +74,11 @@
                 <div><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option></select></div>
-                <div style="grid-column: span 2">
-                    <label>Interpolación</label>
-                    <select id="rzMethod" class="m-input"><option value="high">Bicúbica (Pro)</option><option value="medium">Bilinear</option><option value="low">Nearest</option></select>
+                <div style="grid-column: span 2; display:flex; gap:10px; align-items:center; margin-top:10px;">
+                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción Vincular</small>
                 </div>
             </div>
-            <button class="btn-ia" style="background:var(--accent); color:#000;" onclick="finalDownload()">DESCARGAR PNG</button>
+            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:15px;" onclick="finalDownload()">DESCARGAR PNG</button>
             <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cancelar</button>
         </div>
     </div>
@@ -95,8 +94,7 @@
             <button class="btn-ia" onclick="applyFHDRemaster()">🚀 MEJORAR CALIDAD FHD</button>
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <button class="btn-art" onclick="applyBlackAndWhite()">⚪ B&N</button>
-                <button class="btn-art" onclick="applyPencilSketch()">✏️ LÁPIZ</button>
-                <button class="btn-art" onclick="applyEmbroidery()">🧵 BORDADO</button>
+                <button class="btn-art" onclick="applyRealisticBordado()">🧵 BORDADO COLOR</button>
             </div>
             <button class="btn-secondary" onclick="resetImg()">🔄 REESTABLECER ORIGINAL</button>
 
@@ -104,7 +102,7 @@
             <input type="file" id="file" accept="image/*" class="m-input">
 
             <h2>2. Quitar Fondo</h2>
-            <button class="btn-ia" style="background:#6c5ce7; color:#fff;" onclick="applyAutoRemove()">✨ QUITAR FONDO AUTO</button>
+            <button class="btn-ia" style="background:#6c5ce7; color:#fff;" onclick="applyAutoRemove()">✨ QUITAR FONDO AUTO (SUJETO)</button>
             <div class="control-row">
                 <select id="mode" class="m-input" style="margin:0">
                     <option value="white">Blanco</option><option value="black">Negro</option><option value="pick">🎨 Gotero Manual</option>
@@ -117,7 +115,7 @@
             <h2>3. Previsualización</h2>
             <input type="color" id="bgColor" value="#080808" style="width:100%; height:40px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
 
-            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">Descargar Imagen Pro</button>
+            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">Descargar PNG Pro</button>
         </aside>
 
         <section class="stage" id="stage"><canvas id="canvas"></canvas></section>
@@ -137,44 +135,38 @@
             if(freeCount <= 0 && !isVip) { document.getElementById('btn-free-dl').classList.add('hidden'); document.getElementById('btn-subscribe-wa').classList.remove('hidden'); }
         };
 
-        // --- MOTOR LÁPIZ (GRAFITO REALISTA) ---
-        function applyPencilSketch() {
+        // --- MOTOR QUITAR FONDO AUTO (IDENTIFICA SUJETO) ---
+        function applyAutoRemove() {
             if(!oCanvas.width) return;
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
             const w = oCanvas.width, h = oCanvas.height;
-            const out = oCtx.createImageData(w,h), od = out.data;
-            for (let i = 0; i < d.length; i += 4) {
-                let gray = d[i]*0.3 + d[i+1]*0.59 + d[i+2]*0.11;
-                od[i] = od[i+1] = od[i+2] = (gray > 120) ? 255 : gray + 50; 
-                od[i+3] = d[i+3];
-            }
-            oCtx.putImageData(out, 0, 0); process();
+            // Analiza el centro (sujeto) vs las esquinas (fondo)
+            const edgeR = (d[0]+d[(w-1)*4]+d[(w*h-w)*4])/3;
+            const edgeG = (d[1]+d[(w-1)*4+1]+d[(w*h-w)*4+1])/3;
+            const edgeB = (d[2]+d[(w-1)*4+2]+d[(w*h-w)*4+2])/3;
+            targetColor = [edgeR, edgeG, edgeB];
+            document.getElementById('fuzz').value = 55;
+            process();
         }
 
-        // --- MOTOR BORDADO (SOLO DISEÑO) ---
-        function applyEmbroidery() {
+        // --- MOTOR BORDADO REALISTA A COLOR (SIN LÍNEAS NEGRAS) ---
+        function applyRealisticBordado() {
             if(!oCanvas.width) return;
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
             const w = oCanvas.width, h = oCanvas.height;
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
                     const i = (y * w + x) * 4;
-                    if(d[i+3] > 10) { // Solo si el píxel no es transparente
-                        let pattern = (x % 4 === 0 || y % 4 === 0) ? 0.7 : 1.3;
-                        d[i] *= pattern; d[i+1] *= pattern; d[i+2] *= pattern;
+                    if(d[i+3] > 10) { // Solo aplica si el diseño no es transparente
+                        // Simula relieve de hilos usando el propio color del diseño
+                        const stitch = (x % 4 === 0 || y % 4 === 0) ? 0.75 : 1.25;
+                        d[i] = Math.min(255, d[i] * stitch);
+                        d[i+1] = Math.min(255, d[i+1] * stitch);
+                        d[i+2] = Math.min(255, d[i+2] * stitch);
                     }
                 }
             }
             oCtx.putImageData(id, 0, 0); process();
-        }
-
-        function applyAutoRemove() {
-            if(!oCanvas.width) return;
-            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
-            const corners = [0, (oCanvas.width-1)*4, (oCanvas.width*oCanvas.height-oCanvas.width)*4];
-            let r=0, g=0, b=0; corners.forEach(c => { r+=d[c]; g+=d[c+1]; b+=d[c+2]; });
-            targetColor = [r/3, g/3, b/3]; document.getElementById('fuzz').value = 45;
-            process();
         }
 
         function process() {
@@ -196,40 +188,37 @@
             canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out, 0, 0);
         }
 
-        canvas.onmousedown = e => {
-            if(document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
-            const r = canvas.getBoundingClientRect(), x = (e.clientX-r.left)*(oCanvas.width/r.width), y = (e.clientY-r.top)*(oCanvas.height/r.height);
-            const p = oCtx.getImageData(x,y,1,1).data; targetColor = [p[0],p[1],p[2]]; process();
-        };
-
-        async function validateAccess() {
-            const u = document.getElementById('user-id').value.trim();
-            if(!u) return;
-            const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
-            const data = await res.json();
-            if(data.access) { sessionStorage.setItem('jj_session', 'active'); location.reload(); }
-            else alert("No registrado.");
-        }
+        // --- LÓGICA DE EXPORTACIÓN Y PROPORCIÓN ---
+        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect');
+        rzW.oninput = () => { if(lock.checked) rzH.value = Math.round(rzW.value / aspectRatio); };
+        rzH.oninput = () => { if(lock.checked) rzW.value = Math.round(rzH.value * aspectRatio); };
 
         function handleDownload() {
             if(!oCanvas.width) return;
             if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden');
-            document.getElementById('rzW').value = canvas.width; document.getElementById('rzH').value = canvas.height;
+            rzW.value = canvas.width; rzH.value = canvas.height;
             document.getElementById('modalExport').classList.remove('hidden');
         }
 
         function finalDownload() {
-            const link = document.createElement('a'); link.download = 'jj_final.png'; link.href = canvas.toDataURL(); link.click();
+            const link = document.createElement('a'); link.download = 'jj_pro_export.png'; link.href = canvas.toDataURL(); link.click();
             if(!isVip && window.isTrial) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
             closeModal('modalExport');
         }
 
+        // --- OTROS ---
         document.getElementById('file').onchange = e => {
             const f = e.target.files[0]; if(!f) return;
             const img = new Image(); img.onload = () => { oCanvas.width=backup.width=img.width; oCanvas.height=backup.height=img.height; aspectRatio=img.width/img.height; oCtx.drawImage(img,0,0); bCtx.drawImage(img,0,0); process(); };
             img.src = URL.createObjectURL(f);
         };
-
+        async function validateAccess() {
+            const u = document.getElementById('user-id').value.trim();
+            const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
+            const data = await res.json();
+            if(data.access) { sessionStorage.setItem('jj_session', 'active'); location.reload(); }
+            else alert("No registrado.");
+        }
         function resetImg() { oCanvas.width=backup.width; oCanvas.height=backup.height; oCtx.drawImage(backup,0,0); process(); }
         function startTrial() { window.isTrial = true; closeModal('access-modal'); }
         function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
