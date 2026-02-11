@@ -87,7 +87,7 @@
                 </div>
             </div>
             <button class="btn-dl" onclick="finalDownload()">DESCARGAR PNG</button>
-            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:15px; cursor:pointer">Cancelar</button>
+            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer">Cancelar</button>
         </div>
     </div>
 
@@ -109,7 +109,7 @@
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"><div class="val-box" id="contractV">0</div></div>
-            <h2>3. Color del Lienzo</h2>
+            <h2>3. Color del Lienzo (Elegir)</h2>
             <div id="cp-box" style="height:100px; display:flex; gap:5px; margin-top:10px; touch-action:none;">
                 <canvas id="cpSV" style="flex:1; border-radius:8px; border:1px solid #333; cursor:crosshair;"></canvas>
                 <canvas id="cpH" style="width:25px; border-radius:8px; border:1px solid #333; cursor:ns-resize;"></canvas>
@@ -163,14 +163,14 @@
             if(!u) return alert("Ingresa tu número.");
             const btn = document.getElementById('btn-login-text'); btn.innerText = "VERIFICANDO...";
             try {
-                // USANDO TU NUEVA URL /EXEC
-                const res = await fetch(`https://script.google.com/macros/s/AKfycb-O2tAgwg_4dGEJqe6ktCuyfLntn37sgtiCWeNF28ueLEvxJ57V5J1j33CGdHmHGM/exec?user=${u}`);
+                // TU URL NUEVA REEMPLAZADA AQUÍ
+                const res = await fetch(`https://script.google.com/macros/s/AKfycbyHKvm9wwDn9imSLNFkLLGMOJb3O12ev8BW8s6DgcuhDRGj17-DlgrksGAcrdI8mj_h/exec?user=${u}`);
                 const data = await res.json();
                 const st = data.status ? data.status.toLowerCase().trim() : "";
                 if(data.access && (st === 'vigente' || st === 'por vencer')) {
                     sessionStorage.setItem('jj_session', 'active'); sessionStorage.setItem('jj_status', data.status); location.reload();
-                } else alert("Acceso denegado o membresía no válida.");
-            } catch(e) { alert("Error de servidor."); }
+                } else alert("Acceso denegado. Membresía no válida o no encontrada.");
+            } catch(e) { alert("Error de servidor. Verifica la conexión."); }
             btn.innerText = "ENTRAR";
         }
 
@@ -193,7 +193,6 @@
             closeModal('modalExport'); if(!isVip && localStorage.getItem('jj_free_trial')==='used') location.reload();
         }
 
-        // --- SELECTOR DE COLOR ---
         const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
         let hue=0, svD=false, hD=false;
         function drawCP() {
@@ -220,7 +219,3 @@
     </script>
 </body>
 </html>
-
-
-
-
