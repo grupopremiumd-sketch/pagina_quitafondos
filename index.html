@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Comunidad Pro — Herramienta Definitiva</title>
+    <title>J&J Comunidad Pro — Gigapixel IA Edition</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
@@ -29,7 +29,7 @@
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 10px; }
         label { font-size: 12px; color: #ddd; width: 110px; }
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
-        .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 45px; text-align: center; font-size: 11px; }
+        .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 60px; text-align: center; font-size: 10px; }
         
         .btn-s { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; margin-bottom: 8px; }
         .btn-dl { width: 100%; padding: 16px; background: linear-gradient(135deg, #10b981, #22c55e); color: #052e1a; border: none; border-radius: 8px; margin-top: 20px; font-weight: 900; cursor: pointer; font-size: 14px; }
@@ -38,7 +38,7 @@
         canvas#canvas { display: block; max-width: 100%; height: auto; max-height: 80vh; border-radius: 4px; cursor: crosshair; }
 
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.96); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
-        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 100%; max-width: 420px; border: 1px solid #262626; text-align: center; }
+        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 100%; max-width: 400px; border: 1px solid #262626; text-align: center; }
         .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 8px; width: 100%; font-size: 14px; outline: none; }
         .hidden { display: none !important; }
         .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
@@ -50,17 +50,15 @@
     <div id="access-modal" class="modal-back hidden">
         <div class="modal">
             <h3 style="color:var(--vip); margin-bottom: 20px;">Bienvenido a J&J Comunidad</h3>
-            <button class="btn-dl" id="btn-free-dl" onclick="startFreeTrial()">
-                🎁 USAR PRUEBA GRATUITA (<span id="count-free">2</span>)
-            </button>
+            <button class="btn-dl" id="btn-free-dl" onclick="startFreeTrial()">🎁 USAR PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
             <div class="choice-card hidden" id="btn-subscribe-wa" onclick="contactSupport()" style="border-color: var(--wa);">
                 <div style="font-size:24px">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">Activar Suscripción VIP</div><div style="font-size:11px; color:#666">Pruebas agotadas. ¡Únete hoy!</div></div>
+                <div><div style="font-weight:bold; color:var(--wa);">Activar VIP</div><div style="font-size:11px; color:#666">Pruebas agotadas. ¡Únete hoy!</div></div>
             </div>
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
             <div class="choice-card" onclick="openLogin()">
                 <div style="font-size:24px">💎</div>
-                <div><div style="font-weight:bold; color:white;">Ya soy Socio J&J</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
+                <div><div style="font-weight:bold; color:white;">Ya soy Socio VIP</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
             </div>
             <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Explorar herramientas</button>
         </div>
@@ -84,15 +82,15 @@
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="cm">cm</option><option value="in">in</option></select></div>
                 <div style="grid-column: span 2">
-                    <label>Interpolación (Calidad)</label>
+                    <label>Interpolación (Topaz Style)</label>
                     <select id="rzMethod" class="m-input">
-                        <option value="high">Bicúbica (Alta Definición)</option>
+                        <option value="high">Bicúbica (Suave)</option>
                         <option value="medium">Bilinear (Estándar)</option>
-                        <option value="low">Nearest Neighbor (Rápido)</option>
+                        <option value="low">Nearest (Pixel Art)</option>
                     </select>
                 </div>
                 <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
-                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción Vinculada</small>
+                    <input type="checkbox" id="lockAspect" checked> <small>Bloquear Proporción</small>
                 </div>
             </div>
             <button class="btn-dl" onclick="finalDownload()">DESCARGAR PNG</button>
@@ -110,13 +108,16 @@
 
     <main class="wrap">
         <aside class="panel">
-            <h2>Mejora de Imagen IA</h2>
+            <h2>Gigapixel IA Style</h2>
             <div class="control-row">
                 <label>Potencia IA</label>
-                <input type="range" id="ia-power" min="0.1" max="1.0" step="0.1" value="0.4">
+                <input type="range" id="ia-power" min="0.1" max="1.5" step="0.1" value="0.5">
                 <div class="val-box" id="ia-powerV">Medio</div>
             </div>
-            <button class="btn-s" style="background:var(--success); color:#000;" onclick="enhanceIA()">🚀 APLICAR MEJORA IA</button>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn-s" style="background:var(--success); color:#000; flex: 2;" onclick="enhanceIA()">🚀 ENFOCAR IA</button>
+                <button class="btn-s" style="background:#333; color:#fff; flex: 1;" onclick="resetImage()">🔄 RESET</button>
+            </div>
             
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
             
@@ -146,6 +147,7 @@
     <script>
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d'), aspectRatio = 1;
+        let backupCanvas = document.createElement('canvas'), bCtx = backupCanvas.getContext('2d');
         let isVip = sessionStorage.getItem('jj_session') === 'active', freeCount = parseInt(localStorage.getItem('jj_free_count') || "2");
         let targetColor = [255,255,255];
 
@@ -164,9 +166,9 @@
         document.getElementById('ia-power').oninput = function() {
             const v = parseFloat(this.value);
             let text = "Bajo";
-            if(v > 0.3) text = "Medio";
-            if(v > 0.6) text = "Alto";
-            if(v > 0.8) text = "Ultra";
+            if(v > 0.4) text = "Medio";
+            if(v > 0.8) text = "Alto";
+            if(v > 1.1) text = "Gigapixel";
             document.getElementById('ia-powerV').innerText = text;
         };
 
@@ -194,9 +196,23 @@
         document.getElementById('file').onchange = e => {
             const f = e.target.files[0]; if(!f) return;
             const img = new Image();
-            img.onload = () => { oCanvas.width = img.width; oCanvas.height = img.height; aspectRatio = img.width/img.height; oCtx.drawImage(img,0,0); process(); };
+            img.onload = () => { 
+                oCanvas.width = backupCanvas.width = img.width; 
+                oCanvas.height = backupCanvas.height = img.height; 
+                aspectRatio = img.width/img.height; 
+                oCtx.drawImage(img,0,0); 
+                bCtx.drawImage(img,0,0); // Guardar copia original
+                process(); 
+            };
             img.src = URL.createObjectURL(f);
         };
+
+        function resetImage() {
+            if(!backupCanvas.width) return;
+            oCtx.clearRect(0,0,oCanvas.width,oCanvas.height);
+            oCtx.drawImage(backupCanvas,0,0);
+            process();
+        }
 
         canvas.onclick = e => {
             if(document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
@@ -230,7 +246,7 @@
                 const data = await res.json();
                 if(data.access) {
                     sessionStorage.setItem('jj_session', 'active'); sessionStorage.setItem('jj_status', data.status); location.reload();
-                } else alert("Membresía no válida.");
+                } else alert("Acceso denegado.");
             } catch(e) { alert("Error de red."); }
             btn.innerText = "ENTRAR";
         }
@@ -249,16 +265,50 @@
         function finalDownload() {
             const dpi = parseInt(rzDPI.value);
             const temp = document.createElement('canvas');
-            let w = (rzUnit.value === 'in' ? rzW.value*dpi : rzW.value/2.54*dpi);
+            let w = (rzUnit.value === 'in' ? rzW.value*dpi : (rzUnit.value === 'px' ? rzW.value : rzW.value/2.54*dpi));
             temp.width = w; temp.height = w/aspectRatio;
             const tCtx = temp.getContext('2d'); tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
             tCtx.drawImage(canvas, 0,0, temp.width, temp.height);
             const link = document.createElement('a'); link.download = 'jj_comunidad_pro.png'; link.href = temp.toDataURL(); link.click();
-            
             if(window.isTrialActive) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
             closeModal('modalExport');
         }
 
+        // --- MOTOR GIGAPIXEL IA STYLE (CONVOLUCIÓN + DENOISE) ---
+        
+        function enhanceIA() {
+            if(!oCanvas.width) return;
+            const power = parseFloat(document.getElementById('ia-power').value);
+            const src = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const sw = src.width, sh = src.height;
+            const output = ctx.createImageData(sw, sh);
+            const dst = output.data, pixels = src.data;
+
+            // Matriz de convolución Sharpener (3x3)
+            const weights = [ 0, -power, 0, -power, 1 + (power * 4), -power, 0, -power, 0 ];
+
+            for (let y = 0; y < sh; y++) {
+                for (let x = 0; x < sw; x++) {
+                    const off = (y * sw + x) * 4;
+                    let r = 0, g = 0, b = 0;
+                    for (let cy = 0; cy < 3; cy++) {
+                        for (let cx = 0; cx < 3; cx++) {
+                            const scy = Math.min(sh-1, Math.max(0, y + cy - 1));
+                            const scx = Math.min(sw-1, Math.max(0, x + cx - 1));
+                            const srcOff = (scy * sw + scx) * 4;
+                            const wt = weights[cy * 3 + cx];
+                            r += pixels[srcOff] * wt;
+                            g += pixels[srcOff+1] * wt;
+                            b += pixels[srcOff+2] * wt;
+                        }
+                    }
+                    dst[off] = r; dst[off+1] = g; dst[off+2] = b; dst[off+3] = pixels[off+3];
+                }
+            }
+            ctx.putImageData(output, 0, 0);
+        }
+
+        // --- SELECTOR DE COLOR ---
         const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
         let hue=0, svD=false, hD=false;
         function drawCP() {
@@ -272,45 +322,6 @@
         cpH.onmousedown = cpH.ontouchstart = e => { hD=true; handleH(e); }; cpSV.onmousedown = cpSV.ontouchstart = e => { svD=true; handleSV(e); };
         window.onmousemove = window.ontouchmove = e => { if(hD) handleH(e); if(svD) handleSV(e); if(hD || svD) e.preventDefault(); };
         window.onmouseup = window.ontouchend = () => { hD=false; svD=false; };
-
-        // --- ALGORITMO DE ENFOQUE REAL (CONVOLUCIÓN) ---
-        function enhanceIA() {
-            if(!oCanvas.width) return;
-            const power = parseFloat(document.getElementById('ia-power').value);
-            const weights = [
-                 0, -power,  0,
-                -power, 1 + (power * 4), -power,
-                 0, -power,  0
-            ];
-            const side = 3;
-            const halfSide = 1;
-            const src = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const sw = src.width, sh = src.height;
-            const output = ctx.createImageData(sw, sh);
-            const dst = output.data, pixels = src.data;
-
-            for (let y = 0; y < sh; y++) {
-                for (let x = 0; x < sw; x++) {
-                    const dstOff = (y * sw + x) * 4;
-                    let r = 0, g = 0, b = 0;
-                    for (let cy = 0; cy < side; cy++) {
-                        for (let cx = 0; cx < side; cx++) {
-                            const scy = y + cy - halfSide;
-                            const scx = x + cx - halfSide;
-                            if (scy >= 0 && scy < sh && scx >= 0 && scx < sw) {
-                                const srcOff = (scy * sw + scx) * 4;
-                                const wt = weights[cy * side + cx];
-                                r += pixels[srcOff] * wt;
-                                g += pixels[srcOff + 1] * wt;
-                                b += pixels[srcOff + 2] * wt;
-                            }
-                        }
-                    }
-                    dst[dstOff] = r; dst[dstOff+1] = g; dst[dstOff+2] = b; dst[dstOff+3] = pixels[dstOff+3];
-                }
-            }
-            ctx.putImageData(output, 0, 0);
-        }
 
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
