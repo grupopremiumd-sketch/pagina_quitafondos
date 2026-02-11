@@ -27,7 +27,7 @@
         label { font-size: 11px; color: #aaa; }
         input[type="range"] { flex: 1; accent-color: var(--accent); }
         
-        .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 4px; width: 100%; font-size: 12px; }
+        .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; font-size: 14px; outline: none; margin-bottom: 10px; }
 
         .stage { background: #080808; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; min-height: 400px; }
         canvas#canvas { max-width: 90%; max-height: 90%; object-fit: contain; }
@@ -44,24 +44,27 @@
     <div id="access-modal" class="modal-back hidden">
         <div class="modal">
             <h3 style="color:var(--accent); margin-bottom: 20px;">Bienvenido a J&J Comunidad</h3>
-            
-            <button class="btn-ia" id="btn-free-dl" onclick="startTrial()">
-                🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)
-            </button>
-
+            <button class="btn-ia" id="btn-free-dl" onclick="startTrial()">🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
             <div class="choice-card hidden" id="btn-subscribe-wa" onclick="contactSupport()" style="border-color: var(--wa);">
                 <div style="font-size:24px">📲</div>
                 <div><div style="font-weight:bold; color:var(--wa);">Activar Suscripción VIP</div><div style="font-size:11px; color:#666">Pruebas agotadas. ¡Infórmate aquí!</div></div>
             </div>
-
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-            
             <div class="choice-card" onclick="openLogin()">
                 <div style="font-size:24px">💎</div>
                 <div><div style="font-weight:bold; color:white;">Ya soy Socio J&J</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
             </div>
-
             <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Explorar herramientas</button>
+        </div>
+    </div>
+
+    <div id="login-modal" class="modal-back hidden">
+        <div class="modal" style="max-width:350px;">
+            <h3 style="color:var(--accent)">Acceso VIP</h3>
+            <p style="font-size: 11px; color: #666; margin-bottom: 15px;">Ingresa el número celular registrado en la comunidad.</p>
+            <input type="text" id="user-id" placeholder="Ej: 916689969" class="m-input">
+            <button class="btn-ia" onclick="validateAccess()" id="btn-login-text">VALIDAR ACCESO</button>
+            <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Volver</button>
         </div>
     </div>
 
@@ -101,10 +104,8 @@
     <main class="wrap">
         <aside class="panel">
             <button class="btn-ia" onclick="applyFHDRemaster()">🚀 MEJORAR CALIDAD FHD</button>
-            
             <h2>1. Carga</h2>
             <input type="file" id="file" accept="image/*" class="m-input">
-
             <h2>2. Quitar Fondo</h2>
             <div class="control-row">
                 <select id="mode" class="m-input" style="margin:0">
@@ -116,16 +117,11 @@
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"></div>
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.5"></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"></div>
-
             <h2>3. Color de Lienzo</h2>
             <input type="color" id="bgColor" value="#080808" style="width:100%; height:45px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
-
             <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">Descargar PNG</button>
         </aside>
-
-        <section class="stage" id="stage">
-            <canvas id="canvas"></canvas>
-        </section>
+        <section class="stage" id="stage"><canvas id="canvas"></canvas></section>
     </main>
 
     <script>
@@ -139,6 +135,7 @@
             if(!isVip) document.getElementById('access-modal').classList.remove('hidden');
             else {
                 document.getElementById('status-tag').innerText = "SOCIO VIP";
+                document.getElementById('status-tag').style.color = "var(--success)";
                 document.getElementById('btnLogout').style.display = 'block';
             }
             updateUI();
@@ -149,6 +146,34 @@
             if(freeCount <= 0 && !isVip) {
                 document.getElementById('btn-free-dl').classList.add('hidden');
                 document.getElementById('btn-subscribe-wa').classList.remove('hidden');
+            }
+        }
+
+        async function validateAccess() {
+            const u = document.getElementById('user-id').value.trim().replace(/\D/g,'');
+            if(!u) return alert("Por favor, ingresa tu número celular.");
+            const btn = document.getElementById('btn-login-text');
+            btn.innerText = "VERIFICANDO...";
+            btn.disabled = true;
+
+            try {
+                // Conexión con tu Google Sheets Script
+                const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
+                const data = await res.json();
+                
+                if(data.access) {
+                    sessionStorage.setItem('jj_session', 'active');
+                    sessionStorage.setItem('jj_status', data.status);
+                    alert("¡Acceso VIP Concedido!");
+                    location.reload();
+                } else {
+                    alert("Número no encontrado o suscripción vencida. Contacta a soporte.");
+                }
+            } catch(e) {
+                alert("Error de conexión. Intenta de nuevo.");
+            } finally {
+                btn.innerText = "VALIDAR ACCESO";
+                btn.disabled = false;
             }
         }
 
@@ -177,16 +202,6 @@
             oCtx.drawImage(temp, 0, 0);
             process();
         }
-
-        canvas.onclick = e => {
-            if(document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
-            const r = canvas.getBoundingClientRect(), 
-                  x = (e.clientX - r.left) * (oCanvas.width / r.width),
-                  y = (e.clientY - r.top) * (oCanvas.height / r.height);
-            const p = oCtx.getImageData(x, y, 1, 1).data;
-            targetColor = [p[0], p[1], p[2]];
-            process();
-        };
 
         function process() {
             if(!oCanvas.width) return;
@@ -253,10 +268,10 @@
         }
 
         function startTrial() { window.isTrial = true; closeModal('access-modal'); }
+        function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
         function contactSupport() { window.open('https://wa.me/51916689969?text=Hola J&J Comunidad, quiero informes sobre la suscripcion', '_blank'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function logout() { sessionStorage.clear(); location.reload(); }
-        function resetImg() { oCanvas.width = backup.width; oCanvas.height = backup.height; oCtx.drawImage(backup, 0, 0); process(); }
         document.getElementById('bgColor').oninput = e => document.getElementById('stage').style.backgroundColor = e.target.value;
         ['fuzz', 'feather', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
