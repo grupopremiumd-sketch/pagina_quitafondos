@@ -110,7 +110,16 @@
 
     <main class="wrap">
         <aside class="panel">
-            <button class="btn-s" style="background:var(--success); color:#000;" onclick="enhanceIA()">🚀 MEJORAR CALIDAD IA</button>
+            <h2>Mejora de Imagen IA</h2>
+            <div class="control-row">
+                <label>Potencia IA</label>
+                <input type="range" id="ia-power" min="0.1" max="1.0" step="0.1" value="0.4">
+                <div class="val-box" id="ia-powerV">Medio</div>
+            </div>
+            <button class="btn-s" style="background:var(--success); color:#000;" onclick="enhanceIA()">🚀 APLICAR MEJORA IA</button>
+            
+            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
+            
             <h2>1. Carga</h2>
             <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:11px;">
             <h2>2. Limpieza Técnica</h2>
@@ -150,6 +159,16 @@
             }
             updateFreeUI();
             drawCP();
+        };
+
+        // ACTUALIZAR TEXTO DE POTENCIA IA
+        document.getElementById('ia-power').oninput = function() {
+            const v = parseFloat(this.value);
+            let text = "Bajo";
+            if(v > 0.3) text = "Medio";
+            if(v > 0.6) text = "Alto";
+            if(v > 0.8) text = "Ultra";
+            document.getElementById('ia-powerV').innerText = text;
         };
 
         function updateFreeUI() {
@@ -241,6 +260,7 @@
             closeModal('modalExport');
         }
 
+        // --- SELECTOR DE COLOR ---
         const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
         let hue=0, svD=false, hD=false;
         function drawCP() {
@@ -255,10 +275,17 @@
         window.onmousemove = window.ontouchmove = e => { if(hD) handleH(e); if(svD) handleSV(e); if(hD || svD) e.preventDefault(); };
         window.onmouseup = window.ontouchend = () => { hD=false; svD=false; };
 
+        // MEJORA IA CON POTENCIA VARIABLE
+        
         function enhanceIA() {
             if(!oCanvas.width) return;
             const id = ctx.getImageData(0,0,canvas.width,canvas.height), d = id.data;
-            const f = 0.4; for (let i = 0; i < d.length; i += 4) { d[i]+=f*(d[i]-128); d[i+1]+=f*(d[i+1]-128); d[i+2]+=f*(d[i+2]-128); }
+            const f = parseFloat(document.getElementById('ia-power').value); 
+            for (let i = 0; i < d.length; i += 4) {
+                d[i] += f * (d[i] - 128);
+                d[i+1] += f * (d[i+1] - 128);
+                d[i+2] += f * (d[i+2] - 128);
+            }
             ctx.putImageData(id, 0, 0);
         }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
