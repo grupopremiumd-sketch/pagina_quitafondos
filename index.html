@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Comunidad Pro — Remaster IA</title>
+    <title>J&J Comunidad Pro — Remaster FHD</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --accent: #00f2ff; --border: #222; --success: #00ff88;
@@ -21,7 +21,7 @@
         h2 { font-size: 10px; color: #666; text-transform: uppercase; margin: 20px 0 10px; letter-spacing: 1px; }
         
         .btn-ia { width: 100%; padding: 15px; background: var(--success); color: #000; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 10px; text-transform: uppercase; font-size: 12px; }
-        .btn-reset { width: 100%; padding: 10px; background: #222; color: #fff; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-size: 11px; margin-bottom: 20px; }
+        .btn-secondary { width: 100%; padding: 10px; background: #222; color: #fff; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-size: 11px; margin-bottom: 10px; }
 
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
         label { font-size: 11px; color: #aaa; }
@@ -29,49 +29,62 @@
         
         .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 8px; border-radius: 4px; width: 100%; font-size: 12px; }
 
-        .stage { background: #080808; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-        canvas#canvas { max-width: 90%; max-height: 85%; object-fit: contain; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        /* Stage corregido para evitar el efecto de cuadrado */
+        .stage { background: #080808; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; transition: background 0.3s; }
+        canvas#canvas { max-width: 95%; max-height: 95%; object-fit: contain; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
 
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-        .modal { background: #111; padding: 25px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid #222; text-align: center; }
+        .modal { background: #111; padding: 25px; border-radius: 15px; width: 90%; max-width: 420px; border: 1px solid #222; text-align: center; }
         .hidden { display: none !important; }
+        .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-top: 15px; }
     </style>
 </head>
 <body>
 
     <div id="access-modal" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--accent)">J&J Remaster IA</h3>
+            <h3 style="color:var(--accent)">J&J Remaster FHD</h3>
             <button class="btn-ia" onclick="closeModal('access-modal')">🎁 USAR PRUEBA GRATUITA</button>
-            <button class="btn-reset" onclick="window.open('https://wa.me/51916689969')">💎 ACTIVAR SOCIO VIP</button>
+            <button class="btn-secondary" onclick="window.open('https://wa.me/51916689969')">💎 ACTIVAR SOCIO VIP</button>
         </div>
     </div>
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--accent)">Ajustes de Exportación</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align:left; margin-bottom:15px;">
-                <div><label>Ancho (px)</label><input type="number" id="rzW" class="m-input"></div>
-                <div><label>Alto (px)</label><input type="number" id="rzH" class="m-input"></div>
+            <h3 style="color:var(--accent)">Ajustes de Salida Profesional</h3>
+            <div class="grid-export">
+                <div><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
+                <div><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
-                <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option></select></div>
+                <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option><option value="in">in</option></select></div>
+                <div style="grid-column: span 2">
+                    <label>Interpolación de Calidad</label>
+                    <select id="rzMethod" class="m-input">
+                        <option value="high">Bicúbica (Alta Definición)</option>
+                        <option value="medium">Bilinear (Estándar)</option>
+                        <option value="low">Nearest Neighbor (Pixel Art)</option>
+                    </select>
+                </div>
+                <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
+                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción</small>
+                </div>
             </div>
-            <button class="btn-ia" style="background:var(--accent)" onclick="finalDownload()">DESCARGAR AHORA</button>
+            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:15px;" onclick="finalDownload()">DESCARGAR PNG</button>
             <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cancelar</button>
         </div>
     </div>
 
     <header>
         <div class="logo">J&J COMUNIDAD PRO</div>
-        <div id="status" style="font-size:10px; color:#444">MODO REMASTER IA</div>
+        <div id="status" style="font-size:10px; color:#444">ENGINE: FHD REMASTER</div>
     </header>
 
     <main class="wrap">
         <aside class="panel">
-            <button class="btn-ia" onclick="applyRemaster()">🚀 MEJORAR CALIDAD HD</button>
-            <button class="btn-reset" onclick="resetImg()">🔄 REESTABLECER ORIGINAL</button>
+            <button class="btn-ia" onclick="applyFHDRemaster()">🚀 MEJORAR CALIDAD FHD</button>
+            <button class="btn-secondary" onclick="resetImg()">🔄 REESTABLECER</button>
 
-            <h2>1. Cargar Imagen</h2>
+            <h2>1. Carga</h2>
             <input type="file" id="file" accept="image/*" class="m-input">
 
             <h2>2. Eliminación de Fondo</h2>
@@ -83,13 +96,13 @@
                 </select>
             </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"></div>
-            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="1.5"></div>
+            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="1.2"></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"></div>
 
             <h2>3. Color de Lienzo</h2>
-            <input type="color" id="bgColor" value="#080808" style="width:100%; height:40px; border:none; cursor:pointer; background:none;">
+            <input type="color" id="bgColor" value="#080808" style="width:100%; height:45px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
 
-            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="openExport()">Descargar PNG Final</button>
+            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="openExport()">Descargar Imagen HD</button>
         </aside>
 
         <section class="stage" id="stage">
@@ -101,7 +114,7 @@
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
         let backup = document.createElement('canvas'), bCtx = backup.getContext('2d');
-        let targetColor = [255,255,255];
+        let targetColor = [255,255,255], aspectRatio = 1;
 
         window.onload = () => { document.getElementById('access-modal').classList.remove('hidden'); };
 
@@ -111,6 +124,7 @@
             img.onload = () => {
                 oCanvas.width = backup.width = img.width;
                 oCanvas.height = backup.height = img.height;
+                aspectRatio = img.width / img.height;
                 oCtx.drawImage(img,0,0);
                 bCtx.drawImage(img,0,0);
                 process();
@@ -118,18 +132,31 @@
             img.src = URL.createObjectURL(f);
         };
 
-        function applyRemaster() {
+        // MOTOR FHD REMASTER (Alta definición sin ruido)
+        function applyFHDRemaster() {
             if(!oCanvas.width) return;
-            // Doble escalado para suavizado de bordes
+            const factor = 1.5; // Escala FHD
             const temp = document.createElement('canvas');
-            const tw = oCanvas.width * 2, th = oCanvas.height * 2;
+            const tw = Math.round(oCanvas.width * factor), th = Math.round(oCanvas.height * factor);
             temp.width = tw; temp.height = th;
             const tCtx = temp.getContext('2d');
+            
+            // Paso 1: Re-escalado de alta calidad
+            tCtx.imageSmoothingEnabled = true;
             tCtx.imageSmoothingQuality = 'high';
             tCtx.drawImage(oCanvas, 0, 0, tw, th);
             
             oCanvas.width = tw; oCanvas.height = th;
             oCtx.drawImage(temp, 0, 0);
+
+            // Paso 2: Filtro de enfoque suave (Unsharp Masking simplificado)
+            const id = oCtx.getImageData(0,0,tw,th), d = id.data;
+            for (let i = 0; i < d.length; i += 4) {
+                d[i] = d[i] + 0.3 * (d[i] - 128);
+                d[i+1] = d[i+1] + 0.3 * (d[i+1] - 128);
+                d[i+2] = d[i+2] + 0.3 * (d[i+2] - 128);
+            }
+            oCtx.putImageData(id, 0, 0);
             process();
         }
 
@@ -175,10 +202,28 @@
             document.getElementById('modalExport').classList.remove('hidden'); 
         }
 
+        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect');
+        rzW.oninput = () => { if(lock.checked) rzH.value = Math.round(rzW.value / aspectRatio); };
+        rzH.oninput = () => { if(lock.checked) rzW.value = Math.round(rzH.value * aspectRatio); };
+
         function finalDownload() {
+            const dpi = parseInt(document.getElementById('rzDPI').value);
+            const unit = document.getElementById('rzUnit').value;
+            const method = document.getElementById('rzMethod').value;
+            
+            let tw = rzW.value;
+            if(unit === 'in') tw = rzW.value * dpi;
+            if(unit === 'cm') tw = (rzW.value / 2.54) * dpi;
+
+            const temp = document.createElement('canvas');
+            temp.width = tw; temp.height = tw / aspectRatio;
+            const tCtx = temp.getContext('2d');
+            tCtx.imageSmoothingQuality = method;
+            tCtx.drawImage(canvas, 0, 0, temp.width, temp.height);
+
             const link = document.createElement('a');
-            link.download = 'jj_remaster.png';
-            link.href = canvas.toDataURL();
+            link.download = 'jj_remaster_pro.png';
+            link.href = temp.toDataURL();
             link.click();
             closeModal('modalExport');
         }
@@ -188,6 +233,7 @@
             oCtx.drawImage(backup, 0, 0); process(); 
         }
 
+        // Cambio de color de lienzo infinito
         document.getElementById('bgColor').oninput = e => {
             document.getElementById('stage').style.backgroundColor = e.target.value;
         };
