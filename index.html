@@ -34,9 +34,9 @@
         canvas#canvas { max-width: 90%; max-height: 90%; object-fit: contain; }
 
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
-        .modal { background: #111; padding: 25px; border-radius: 15px; width: 100%; max-width: 420px; border: 1px solid #222; text-align: center; }
+        .modal { background: #111; padding: 25px; border-radius: 15px; width: 100%; max-width: 440px; border: 1px solid #222; text-align: center; }
         .hidden { display: none !important; }
-        .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-top: 15px; }
+        .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -68,14 +68,22 @@
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--accent)">Exportación Pro</h3>
+            <h3 style="color:var(--accent)">Opciones de Exportación</h3>
             <div class="grid-export">
-                <div><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
-                <div><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
+                <div><label>Ancho (px)</label><input type="number" id="rzW" class="m-input"></div>
+                <div><label>Alto (px)</label><input type="number" id="rzH" class="m-input"></div>
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option></select></div>
-                <div style="grid-column: span 2; display:flex; gap:10px; align-items:center; margin-top:10px;">
-                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción Vincular</small>
+                <div style="grid-column: span 2">
+                    <label>Interpolación de Calidad</label>
+                    <select id="rzMethod" class="m-input">
+                        <option value="high">Bicúbica (Alta Definición)</option>
+                        <option value="medium">Bilinear (Estándar)</option>
+                        <option value="low">Nearest Neighbor (Corte Limpio)</option>
+                    </select>
+                </div>
+                <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
+                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción de Imagen</small>
                 </div>
             </div>
             <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:15px;" onclick="finalDownload()">DESCARGAR PNG</button>
@@ -85,7 +93,10 @@
 
     <header>
         <div class="logo">J&J COMUNIDAD PRO</div>
-        <div id="status-tag" style="font-size:9px; background:#222; padding:4px 8px; border-radius:4px; font-weight:bold;">INVITADO</div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div id="status-tag" style="font-size:9px; background:#222; padding:4px 8px; border-radius:4px; font-weight:bold;">INVITADO</div>
+            <button id="btnLogout" onclick="logout()" style="display:none; background:none; border:1px solid #333; color:#555; font-size:10px; cursor:pointer; border-radius:4px; padding:4px 8px;">SALIR</button>
+        </div>
     </header>
 
     <main class="wrap">
@@ -102,18 +113,20 @@
             <input type="file" id="file" accept="image/*" class="m-input">
 
             <h2>2. Quitar Fondo</h2>
-            <button class="btn-ia" style="background:#6c5ce7; color:#fff;" onclick="applyAutoRemove()">✨ QUITAR FONDO AUTO (SUJETO)</button>
+            <button class="btn-ia" style="background:#6c5ce7; color:#fff;" onclick="applyAutoRemove()">✨ QUITAR FONDO AUTO</button>
             <div class="control-row">
                 <select id="mode" class="m-input" style="margin:0">
-                    <option value="white">Blanco</option><option value="black">Negro</option><option value="pick">🎨 Gotero Manual</option>
+                    <option value="white">Fondo Blanco</option>
+                    <option value="black">Fondo Negro</option>
+                    <option value="pick">🎨 Gotero Manual</option>
                 </select>
             </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"></div>
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.5"></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"></div>
 
-            <h2>3. Previsualización</h2>
-            <input type="color" id="bgColor" value="#080808" style="width:100%; height:40px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
+            <h2>3. Color de Lienzo</h2>
+            <input type="color" id="bgColor" value="#080808" style="width:100%; height:45px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
 
             <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">Descargar PNG Pro</button>
         </aside>
@@ -130,26 +143,33 @@
 
         window.onload = () => {
             if(!isVip) document.getElementById('access-modal').classList.remove('hidden');
-            else { document.getElementById('status-tag').innerText = "SOCIO VIP"; document.getElementById('status-tag').style.color = "var(--success)"; }
+            else {
+                document.getElementById('status-tag').innerText = "SOCIO VIP";
+                document.getElementById('status-tag').style.color = "var(--success)";
+                document.getElementById('btnLogout').style.display = 'block';
+            }
             document.getElementById('count-free').innerText = freeCount;
-            if(freeCount <= 0 && !isVip) { document.getElementById('btn-free-dl').classList.add('hidden'); document.getElementById('btn-subscribe-wa').classList.remove('hidden'); }
+            if(freeCount <= 0 && !isVip) {
+                document.getElementById('btn-free-dl').classList.add('hidden');
+                document.getElementById('btn-subscribe-wa').classList.remove('hidden');
+            }
         };
 
-        // --- MOTOR QUITAR FONDO AUTO (IDENTIFICA SUJETO) ---
+        // --- MOTOR QUITAR FONDO AUTO (MEJORADO) ---
         function applyAutoRemove() {
             if(!oCanvas.width) return;
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
             const w = oCanvas.width, h = oCanvas.height;
-            // Analiza el centro (sujeto) vs las esquinas (fondo)
-            const edgeR = (d[0]+d[(w-1)*4]+d[(w*h-w)*4])/3;
-            const edgeG = (d[1]+d[(w-1)*4+1]+d[(w*h-w)*4+1])/3;
-            const edgeB = (d[2]+d[(w-1)*4+2]+d[(w*h-w)*4+2])/3;
-            targetColor = [edgeR, edgeG, edgeB];
-            document.getElementById('fuzz').value = 55;
+            // Muestreo perimetral (4 esquinas + 4 centros de bordes)
+            const samples = [0, (w-1)*4, (w*h-w)*4, (w*h-1)*4, Math.floor(w/2)*4, (w*h-Math.floor(w/2))*4];
+            let r=0, g=0, b=0; 
+            samples.forEach(s => { r+=d[s]; g+=d[s+1]; b+=d[s+2]; });
+            targetColor = [r/samples.length, g/samples.length, b/samples.length];
+            document.getElementById('fuzz').value = 70; // Tolerancia base sugerida
             process();
         }
 
-        // --- MOTOR BORDADO REALISTA A COLOR (SIN LÍNEAS NEGRAS) ---
+        // --- MOTOR BORDADO (COLOR REALISTA SIN NEGRO) ---
         function applyRealisticBordado() {
             if(!oCanvas.width) return;
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
@@ -157,9 +177,8 @@
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
                     const i = (y * w + x) * 4;
-                    if(d[i+3] > 10) { // Solo aplica si el diseño no es transparente
-                        // Simula relieve de hilos usando el propio color del diseño
-                        const stitch = (x % 4 === 0 || y % 4 === 0) ? 0.75 : 1.25;
+                    if(d[i+3] > 10) {
+                        const stitch = (x % 4 === 0 || y % 4 === 0) ? 0.8 : 1.25;
                         d[i] = Math.min(255, d[i] * stitch);
                         d[i+1] = Math.min(255, d[i+1] * stitch);
                         d[i+2] = Math.min(255, d[i+2] * stitch);
@@ -188,7 +207,7 @@
             canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out, 0, 0);
         }
 
-        // --- LÓGICA DE EXPORTACIÓN Y PROPORCIÓN ---
+        // --- LÓGICA DE PROPORCIÓN Y EXPORTACIÓN ---
         const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect');
         rzW.oninput = () => { if(lock.checked) rzH.value = Math.round(rzW.value / aspectRatio); };
         rzH.oninput = () => { if(lock.checked) rzW.value = Math.round(rzH.value * aspectRatio); };
@@ -201,29 +220,48 @@
         }
 
         function finalDownload() {
-            const link = document.createElement('a'); link.download = 'jj_pro_export.png'; link.href = canvas.toDataURL(); link.click();
+            const method = document.getElementById('rzMethod').value;
+            const temp = document.createElement('canvas');
+            temp.width = rzW.value; temp.height = rzH.value;
+            const tCtx = temp.getContext('2d');
+            tCtx.imageSmoothingQuality = method;
+            tCtx.drawImage(canvas, 0, 0, temp.width, temp.height);
+
+            const link = document.createElement('a'); 
+            link.download = 'jj_pro_final.png'; 
+            link.href = temp.toDataURL(); 
+            link.click();
+            
             if(!isVip && window.isTrial) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
             closeModal('modalExport');
         }
 
-        // --- OTROS ---
-        document.getElementById('file').onchange = e => {
-            const f = e.target.files[0]; if(!f) return;
-            const img = new Image(); img.onload = () => { oCanvas.width=backup.width=img.width; oCanvas.height=backup.height=img.height; aspectRatio=img.width/img.height; oCtx.drawImage(img,0,0); bCtx.drawImage(img,0,0); process(); };
-            img.src = URL.createObjectURL(f);
-        };
+        // --- SESIÓN Y ACCESO ---
         async function validateAccess() {
             const u = document.getElementById('user-id').value.trim();
+            if(!u) return;
             const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
             const data = await res.json();
             if(data.access) { sessionStorage.setItem('jj_session', 'active'); location.reload(); }
             else alert("No registrado.");
         }
-        function resetImg() { oCanvas.width=backup.width; oCanvas.height=backup.height; oCtx.drawImage(backup,0,0); process(); }
+
+        function logout() { sessionStorage.clear(); location.reload(); }
         function startTrial() { window.isTrial = true; closeModal('access-modal'); }
         function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
         function contactSupport() { window.open('https://wa.me/51916689969?text=Hola J&J Comunidad, quiero informes sobre la suscripcion', '_blank'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function resetImg() { oCanvas.width=backup.width; oCanvas.height=backup.height; oCtx.drawImage(backup,0,0); process(); }
+        
+        document.getElementById('file').onchange = e => {
+            const f = e.target.files[0]; if(!f) return;
+            const img = new Image(); img.onload = () => { 
+                oCanvas.width=backup.width=img.width; oCanvas.height=backup.height=img.height; 
+                aspectRatio=img.width/img.height; oCtx.drawImage(img,0,0); bCtx.drawImage(img,0,0); process(); 
+            };
+            img.src = URL.createObjectURL(f);
+        };
+
         function applyBlackAndWhite() { if(!oCanvas.width) return; const id=oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d=id.data; for(let i=0;i<d.length;i+=4){let g=d[i]*0.3+d[i+1]*0.59+d[i+2]*0.11;d[i]=d[i+1]=d[i+2]=g;}oCtx.putImageData(id,0,0); process(); }
         function applyFHDRemaster() { if(!oCanvas.width) return; const tw=Math.round(oCanvas.width*1.5), th=Math.round(oCanvas.height*1.5); const t=document.createElement('canvas'); t.width=tw; t.height=th; const tc=t.getContext('2d'); tc.imageSmoothingQuality='high'; tc.drawImage(oCanvas,0,0,tw,th); oCanvas.width=tw; oCanvas.height=th; oCtx.drawImage(t,0,0); process(); }
         document.getElementById('bgColor').oninput = e => document.getElementById('stage').style.backgroundColor = e.target.value;
