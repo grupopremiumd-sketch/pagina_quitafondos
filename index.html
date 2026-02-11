@@ -49,16 +49,16 @@
 
     <div id="access-modal" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--vip)">Opciones de Suscripción</h3>
-            <button class="btn-dl" onclick="useFreeTrial()">🎁 PRUEBA GRATUITA (1)</button>
+            <h3 style="color:var(--vip)">Elija una opción para descargar</h3>
+            <button class="btn-dl" id="btn-free-dl" onclick="useFreeTrial()">🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
             <div class="choice-card" onclick="openLogin()">
                 <div style="font-size:24px">💎</div>
-                <div><div style="font-weight:bold; color:white;">Soy Socio J&J</div><div style="font-size:11px; color:#666">Valida tu número móvil.</div></div>
+                <div><div style="font-weight:bold; color:white;">Soy Socio J&J</div><div style="font-size:11px; color:#666">Acceso ilimitado con tu número móvil.</div></div>
             </div>
             <div class="choice-card" onclick="window.open('https://wa.me/51916689969')">
                 <div style="font-size:24px">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">Quiero Suscribirme</div><div style="font-size:11px; color:#666">Acceso ilimitado y Soporte Pro.</div></div>
+                <div><div style="font-weight:bold; color:var(--wa);">Quiero Suscribirme</div><div style="font-size:11px; color:#666">Soporte VIP y herramientas Pro.</div></div>
             </div>
             <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cerrar</button>
         </div>
@@ -66,8 +66,8 @@
 
     <div id="login-modal" class="modal-back hidden">
         <div class="modal" style="max-width:350px;">
-            <h3>Validar Acceso</h3>
-            <input type="text" id="user-id" placeholder="📱 Ingresa tu número móvil" class="m-input" style="margin-bottom:12px">
+            <h3>Validar Membresía</h3>
+            <input type="text" id="user-id" placeholder="📱 Número Celular" class="m-input" style="margin-bottom:12px">
             <button class="btn-dl" onclick="validateAccess()" id="btn-login-text">ENTRAR</button>
             <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Volver</button>
         </div>
@@ -75,18 +75,25 @@
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="margin-top:0; color:var(--vip)">Ajustes de Exportación</h3>
+            <h3 style="margin-top:0; color:var(--vip)">Salida Proporcional</h3>
             <div class="grid-export">
                 <div><label>Ancho (cm)</label><input type="number" id="rzW" class="m-input"></div>
                 <div><label>Alto (cm)</label><input type="number" id="rzH" class="m-input"></div>
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="cm">cm</option><option value="in">in</option></select></div>
+                <div style="grid-column: span 2">
+                    <label>Interpolación (Calidad)</label>
+                    <select id="rzMethod" class="m-input">
+                        <option value="high">Bicúbica (Alta Definición)</option>
+                        <option value="medium">Bilinear (Estándar)</option>
+                    </select>
+                </div>
                 <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
-                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción</small>
+                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción Vinculada</small>
                 </div>
             </div>
             <button class="btn-dl" onclick="finalDownload()">DESCARGAR PNG</button>
-            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer">Cerrar</button>
+            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer">Cancelar</button>
         </div>
     </div>
 
@@ -101,14 +108,14 @@
     <main class="wrap">
         <aside class="panel">
             <button class="btn-s" style="background:var(--success); color:#000;" onclick="enhanceIA()">🚀 MEJORAR CALIDAD IA</button>
-            <h2>1. Archivo</h2>
+            <h2>1. Carga</h2>
             <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:11px;">
-            <h2>2. Configuración</h2>
+            <h2>2. Limpieza Técnica</h2>
             <div class="control-row"><select id="mode" class="m-input" style="flex:1; margin:0"><option value="white">Quitar Blanco</option><option value="black">Quitar Negro</option></select></div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"><div class="val-box" id="contractV">0</div></div>
-            <h2>3. Color del Lienzo</h2>
+            <h2>3. Color del Lienzo (Elegir)</h2>
             <div id="cp-box" style="height:100px; display:flex; gap:5px; margin-top:10px; touch-action:none;">
                 <canvas id="cpSV" style="flex:1; border-radius:8px; border:1px solid #333; cursor:crosshair;"></canvas>
                 <canvas id="cpH" style="width:25px; border-radius:8px; border:1px solid #333; cursor:ns-resize;"></canvas>
@@ -121,7 +128,10 @@
     <script>
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d'), aspectRatio = 1;
-        let isVip = sessionStorage.getItem('jj_session') === 'active', freeUsed = localStorage.getItem('jj_free_trial') === 'used';
+        let isVip = sessionStorage.getItem('jj_session') === 'active';
+        
+        // Manejo de 2 descargas gratuitas
+        let freeCount = parseInt(localStorage.getItem('jj_free_count') || "2");
 
         window.onload = () => {
             if(isVip) {
@@ -130,6 +140,7 @@
                 tag.classList.add(status.toLowerCase().includes('vencer') ? 'status-warning' : 'status-vip');
                 document.getElementById('btnLogout').style.display = 'block';
             }
+            document.getElementById('count-free').innerText = freeCount;
             drawCP();
         };
 
@@ -160,21 +171,38 @@
         async function validateAccess() {
             const u = document.getElementById('user-id').value.trim().replace(/\D/g,'');
             if(!u) return alert("Ingresa tu número.");
-            const btn = document.getElementById('btn-login-text'); btn.innerText = "VERIFICANDO...";
+            const btn = document.getElementById('btn-login-text'); btn.innerText = "BUSCANDO...";
             try {
-                // USANDO TU NUEVA URL DE EXEC
-                const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
+                const url = `https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`;
+                const res = await fetch(url);
                 const data = await res.json();
                 if(data.access) {
                     sessionStorage.setItem('jj_session', 'active'); sessionStorage.setItem('jj_status', data.status); location.reload();
-                } else alert("Acceso denegado: " + data.status);
-            } catch(e) { alert("Error de conexión."); }
+                } else alert("Acceso denegado: Membresía no válida.");
+            } catch(e) { alert("Error de red."); }
             btn.innerText = "ENTRAR";
         }
 
-        function handleDownload() { if(isVip) openExport(); else document.getElementById('access-modal').classList.remove('hidden'); }
-        function useFreeTrial() { if(freeUsed){ alert("Prueba usada."); return; } localStorage.setItem('jj_free_trial', 'used'); closeModal('access-modal'); openExport(); }
-        function openExport() { if(!oCanvas.width) return; rzW.value=(oCanvas.width/300*2.54).toFixed(2); rzH.value=(oCanvas.height/300*2.54).toFixed(2); document.getElementById('modalExport').classList.remove('hidden'); }
+        function handleDownload() { 
+            if(isVip) openExport(); 
+            else {
+                if(freeCount <= 0) alert("Has agotado tus 2 descargas de prueba.");
+                document.getElementById('access-modal').classList.remove('hidden'); 
+            }
+        }
+
+        function useFreeTrial() { 
+            if(freeCount <= 0){ alert("Pruebas agotadas. Únete como socio para continuar."); return; }
+            openExport('free');
+            closeModal('access-modal'); 
+        }
+
+        function openExport(mode) { 
+            if(!oCanvas.width) return; 
+            if(mode === 'free') window.isTrial = true;
+            rzW.value=(oCanvas.width/300*2.54).toFixed(2); rzH.value=(oCanvas.height/300*2.54).toFixed(2); 
+            document.getElementById('modalExport').classList.remove('hidden'); 
+        }
         
         const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect'), rzUnit = document.getElementById('rzUnit'), rzDPI = document.getElementById('rzDPI');
         rzW.oninput = () => { if(lock.checked) rzH.value = (rzW.value/aspectRatio).toFixed(2); };
@@ -185,10 +213,16 @@
             const temp = document.createElement('canvas');
             let w = (rzUnit.value === 'in' ? rzW.value*dpi : rzW.value/2.54*dpi);
             temp.width = w; temp.height = w/aspectRatio;
-            const tCtx = temp.getContext('2d'); tCtx.imageSmoothingQuality = 'high';
+            const tCtx = temp.getContext('2d'); tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
             tCtx.drawImage(canvas, 0,0, temp.width, temp.height);
             const link = document.createElement('a'); link.download = 'jj_studio.png'; link.href = temp.toDataURL(); link.click();
-            closeModal('modalExport'); if(!isVip && localStorage.getItem('jj_free_trial')==='used') location.reload();
+            
+            if(window.isTrial) {
+                freeCount--;
+                localStorage.setItem('jj_free_count', freeCount);
+                location.reload();
+            }
+            closeModal('modalExport');
         }
 
         const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
