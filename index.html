@@ -34,7 +34,7 @@
         canvas#canvas { max-width: 90%; max-height: 90%; object-fit: contain; cursor: crosshair; }
 
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
-        .modal { background: #111; padding: 25px; border-radius: 15px; width: 100%; max-width: 420px; border: 1px solid #222; text-align: center; }
+        .modal { background: #111; padding: 25px; border-radius: 15px; width: 90%; max-width: 420px; border: 1px solid #222; text-align: center; }
         .hidden { display: none !important; }
         .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-top: 15px; }
     </style>
@@ -46,7 +46,7 @@
             <h3 style="color:var(--accent); margin-bottom: 20px;">J&J Comunidad Pro</h3>
             <button class="btn-ia" id="btn-free-dl" onclick="startTrial()">🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
             <div id="btn-subscribe-wa" class="hidden" onclick="contactSupport()" style="background:#1a1a1a; border:1px solid var(--wa); padding:15px; border-radius:12px; cursor:pointer; text-align:left; margin-bottom:10px;">
-                <div style="font-weight:bold; color:var(--wa);">Activar Suscripción VIP</div>
+                <div style="font-weight:bold; color:var(--wa);">Activar VIP</div>
                 <div style="font-size:11px; color:#666">Pruebas agotadas. ¡Infórmate aquí!</div>
             </div>
             <div style="background:#1a1a1a; border:1px solid #333; padding:15px; border-radius:12px; cursor:pointer; text-align:left;" onclick="openLogin()">
@@ -78,9 +78,6 @@
                     <label>Interpolación</label>
                     <select id="rzMethod" class="m-input"><option value="high">Bicúbica (Pro)</option><option value="medium">Bilinear</option><option value="low">Nearest</option></select>
                 </div>
-                <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
-                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción</small>
-                </div>
             </div>
             <button class="btn-ia" style="background:var(--accent); color:#000;" onclick="finalDownload()">DESCARGAR PNG</button>
             <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cancelar</button>
@@ -98,8 +95,8 @@
             <button class="btn-ia" onclick="applyFHDRemaster()">🚀 MEJORAR CALIDAD FHD</button>
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <button class="btn-art" onclick="applyBlackAndWhite()">⚪ B&N</button>
-                <button class="btn-art" onclick="applySketch()">✏️ BOCETO</button>
-                <button class="btn-art" onclick="applyRealisticEmbroidery()">🧵 BORDADO</button>
+                <button class="btn-art" onclick="applyPencilSketch()">✏️ LÁPIZ</button>
+                <button class="btn-art" onclick="applyEmbroidery()">🧵 BORDADO</button>
             </div>
             <button class="btn-secondary" onclick="resetImg()">🔄 REESTABLECER ORIGINAL</button>
 
@@ -140,60 +137,45 @@
             if(freeCount <= 0 && !isVip) { document.getElementById('btn-free-dl').classList.add('hidden'); document.getElementById('btn-subscribe-wa').classList.remove('hidden'); }
         };
 
-        // --- MOTOR QUITAR FONDO AUTO (IA) ---
-        function applyAutoRemove() {
-            if(!oCanvas.width) return;
-            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
-            // Algoritmo de detección de esquinas para identificar color de fondo
-            const corners = [0, (oCanvas.width-1)*4, (oCanvas.width*oCanvas.height-oCanvas.width)*4, (oCanvas.width*oCanvas.height-1)*4];
-            let r=0, g=0, b=0; corners.forEach(c => { r+=d[c]; g+=d[c+1]; b+=d[c+2]; });
-            targetColor = [r/4, g/4, b/4];
-            document.getElementById('fuzz').value = 40;
-            process();
-        }
-
-        // --- MOTOR BOCETO (SKETCH) ---
-        function applySketch() {
+        // --- MOTOR LÁPIZ (GRAFITO REALISTA) ---
+        function applyPencilSketch() {
             if(!oCanvas.width) return;
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
             const w = oCanvas.width, h = oCanvas.height;
             const out = oCtx.createImageData(w,h), od = out.data;
             for (let i = 0; i < d.length; i += 4) {
                 let gray = d[i]*0.3 + d[i+1]*0.59 + d[i+2]*0.11;
-                od[i] = od[i+1] = od[i+2] = gray; od[i+3] = 255;
-            }
-            // Invertir y suavizar bordes
-            for (let i = 0; i < od.length; i += 4) {
-                od[i] = 255 - od[i]; od[i+1] = 255 - od[i+1]; od[i+2] = 255 - od[i+2];
+                od[i] = od[i+1] = od[i+2] = (gray > 120) ? 255 : gray + 50; 
+                od[i+3] = d[i+3];
             }
             oCtx.putImageData(out, 0, 0); process();
         }
 
-        // --- MOTOR BORDADO ULTRA REALISTA ---
-        function applyRealisticEmbroidery() {
+        // --- MOTOR BORDADO (SOLO DISEÑO) ---
+        function applyEmbroidery() {
             if(!oCanvas.width) return;
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
             const w = oCanvas.width, h = oCanvas.height;
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
                     const i = (y * w + x) * 4;
-                    // Patrón de hilo cruzado 6x6
-                    const isThread = (x % 6 < 2 || y % 6 < 2);
-                    const shadow = isThread ? 0.6 : 1.3;
-                    d[i] = Math.min(255, d[i] * shadow);
-                    d[i+1] = Math.min(255, d[i+1] * shadow);
-                    d[i+2] = Math.min(255, d[i+2] * shadow);
+                    if(d[i+3] > 10) { // Solo si el píxel no es transparente
+                        let pattern = (x % 4 === 0 || y % 4 === 0) ? 0.7 : 1.3;
+                        d[i] *= pattern; d[i+1] *= pattern; d[i+2] *= pattern;
+                    }
                 }
             }
             oCtx.putImageData(id, 0, 0); process();
         }
 
-        // --- RESTO DE FUNCIONES ---
-        canvas.onmousedown = e => {
-            if(document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
-            const r = canvas.getBoundingClientRect(), x = (e.clientX-r.left)*(oCanvas.width/r.width), y = (e.clientY-r.top)*(oCanvas.height/r.height);
-            const p = oCtx.getImageData(x,y,1,1).data; targetColor = [p[0],p[1],p[2]]; process();
-        };
+        function applyAutoRemove() {
+            if(!oCanvas.width) return;
+            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
+            const corners = [0, (oCanvas.width-1)*4, (oCanvas.width*oCanvas.height-oCanvas.width)*4];
+            let r=0, g=0, b=0; corners.forEach(c => { r+=d[c]; g+=d[c+1]; b+=d[c+2]; });
+            targetColor = [r/3, g/3, b/3]; document.getElementById('fuzz').value = 45;
+            process();
+        }
 
         function process() {
             if(!oCanvas.width) return;
@@ -214,6 +196,12 @@
             canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out, 0, 0);
         }
 
+        canvas.onmousedown = e => {
+            if(document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
+            const r = canvas.getBoundingClientRect(), x = (e.clientX-r.left)*(oCanvas.width/r.width), y = (e.clientY-r.top)*(oCanvas.height/r.height);
+            const p = oCtx.getImageData(x,y,1,1).data; targetColor = [p[0],p[1],p[2]]; process();
+        };
+
         async function validateAccess() {
             const u = document.getElementById('user-id').value.trim();
             if(!u) return;
@@ -231,7 +219,7 @@
         }
 
         function finalDownload() {
-            const link = document.createElement('a'); link.download = 'jj_pro.png'; link.href = canvas.toDataURL(); link.click();
+            const link = document.createElement('a'); link.download = 'jj_final.png'; link.href = canvas.toDataURL(); link.click();
             if(!isVip && window.isTrial) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
             closeModal('modalExport');
         }
