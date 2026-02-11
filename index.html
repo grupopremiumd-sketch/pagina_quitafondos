@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Comunidad Pro — Gigapixel IA x8</title>
+    <title>J&J Comunidad Pro — Edición Definitiva</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
             --accent: #00f2ff; --border: #1f1f1f; --success: #10b981; --wa: #25d366;
-            --vip: #00d2ff; --warning: #f59e0b;
+            --vip: #00d2ff;
         }
         * { box-sizing: border-box; touch-action: manipulation; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
@@ -22,28 +22,26 @@
         .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; height: 100%; }
         h2 { font-size: 10px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; letter-spacing: 1px; }
         
-        /* Botones de Escala */
         .scale-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
-        .btn-scale { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.3s; }
-        .btn-scale:hover { border-color: var(--accent); background: #222; }
+        .btn-scale { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; }
         .btn-scale.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 10px; }
         label { font-size: 12px; color: #ddd; width: 110px; }
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
-        .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 55px; text-align: center; font-size: 10px; }
+        .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 50px; text-align: center; font-size: 10px; }
         
         .btn-s { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; margin-bottom: 8px; }
         .btn-dl { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent), #0081ff); color: #000; border: none; border-radius: 8px; margin-top: 20px; font-weight: 900; cursor: pointer; font-size: 14px; text-transform: uppercase; }
 
-        .stage { background: #080808; display: flex; align-items: center; justify-content: center; min-height: 450px; padding: 20px; position: relative; }
-        canvas#canvas { display: block; max-width: 100%; height: auto; border-radius: 4px; box-shadow: 0 0 40px rgba(0,0,0,0.5); }
+        .stage { background: #080808; display: flex; align-items: center; justify-content: center; min-height: 450px; padding: 20px; }
+        canvas#canvas { display: block; max-width: 100%; height: auto; border-radius: 4px; }
 
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
-        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 100%; max-width: 400px; border: 1px solid #262626; text-align: center; }
+        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 100%; max-width: 420px; border: 1px solid #262626; text-align: center; }
         .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 8px; width: 100%; font-size: 14px; outline: none; }
         .hidden { display: none !important; }
-        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
+        .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; margin-top: 15px; }
     </style>
 </head>
 <body>
@@ -52,25 +50,43 @@
         <div class="modal">
             <h3 style="color:var(--vip); margin-bottom: 20px;">J&J Comunidad Pro</h3>
             <button class="btn-dl" id="btn-free-dl" onclick="startFreeTrial()">🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
-            <div class="choice-card hidden" id="btn-subscribe-wa" onclick="contactSupport()" style="border-color: var(--wa);">
-                <div style="font-size:24px">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">Activar VIP</div><div style="font-size:11px; color:#666">Descargas ilimitadas ahora.</div></div>
-            </div>
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-            <div class="choice-card" onclick="openLogin()">
-                <div style="font-size:24px">💎</div>
-                <div><div style="font-weight:bold; color:white;">Ya soy Socio VIP</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
+            <div style="background:#1a1a1a; padding:15px; border-radius:12px; cursor:pointer; text-align:left;" onclick="openLogin()">
+                <div style="font-weight:bold; color:white;">Ya soy Socio VIP</div>
+                <div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div>
             </div>
             <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Cerrar</button>
         </div>
     </div>
 
-    <header>
-        <div class="logo-text">J&J COMUNIDAD PRO — GIGAPIXEL IA</div>
-        <div style="display:flex; gap:10px;">
-            <div id="status-tag" style="font-size: 9px; padding: 5px 10px; background: #222; border-radius: 20px; color: #666;">INVITADO</div>
-            <button class="btn-logout" id="btnLogout" onclick="sessionStorage.clear(); location.reload();" style="display:none; background:none; border:1px solid #333; color:#666; font-size:10px; border-radius:4px; cursor:pointer;">SALIR</button>
+    <div id="modalExport" class="modal-back hidden">
+        <div class="modal">
+            <h3 style="margin-top:0; color:var(--vip)">Opciones de Exportación</h3>
+            <div class="grid-export">
+                <div><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
+                <div><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
+                <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
+                <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="cm">cm</option><option value="in">in</option><option value="px">px</option></select></div>
+                <div style="grid-column: span 2">
+                    <label>Interpolación</label>
+                    <select id="rzMethod" class="m-input">
+                        <option value="high">Bicúbica (Pro)</option>
+                        <option value="medium">Bilinear</option>
+                        <option value="low">Nearest (Pixel)</option>
+                    </select>
+                </div>
+                <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
+                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción</small>
+                </div>
+            </div>
+            <button class="btn-dl" onclick="finalDownload()">DESCARGAR AHORA</button>
+            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer">Cancelar</button>
         </div>
+    </div>
+
+    <header>
+        <div class="logo-text">J&J COMUNIDAD PRO — GIGAPIXEL</div>
+        <div id="status-tag" style="font-size: 10px; color: #666;">INVITADO</div>
     </header>
 
     <main class="wrap">
@@ -82,25 +98,21 @@
                 <button class="btn-scale" onclick="setScale(8, this)">x8</button>
             </div>
 
-            <h2>Gigapixel Engine</h2>
+            <h2>Gigapixel Sharpness</h2>
             <div class="control-row">
-                <label>Nitidez IA</label>
-                <input type="range" id="ia-power" min="0.1" max="1.2" step="0.1" value="0.4">
+                <label>Potencia IA</label>
+                <input type="range" id="ia-power" min="0.1" max="1.5" step="0.1" value="0.5">
                 <div class="val-box" id="ia-powerV">Medio</div>
             </div>
-            <div class="control-row" style="margin-bottom:20px;">
-                <label style="width:auto;"><input type="checkbox" id="ia-denoise" checked> Reducción de Ruido IA</label>
-            </div>
-            
             <div style="display: flex; gap: 8px;">
                 <button class="btn-s" style="background:var(--success); color:#000; flex: 2;" onclick="applyGigapixel()">🚀 PROCESAR IA</button>
                 <button class="btn-s" style="background:#222; color:#fff; flex: 1;" onclick="resetImage()">🔄 RESET</button>
             </div>
             
-            <h2>1. Carga</h2>
+            <h2>1. Archivo</h2>
             <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:11px;">
             
-            <h2>2. Limpieza Técnica</h2>
+            <h2>2. Refinamiento de Borde</h2>
             <div class="control-row">
                 <select id="mode" style="background:#000; color:#fff; border:1px solid #333; padding:8px; border-radius:6px; flex:1;">
                     <option value="white">Quitar Blanco</option>
@@ -109,6 +121,8 @@
                 </select>
             </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"></div>
+            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"></div>
+            <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"></div>
             
             <h2>3. Color Lienzo</h2>
             <div id="cp-box" style="height:80px; display:flex; gap:5px; margin-top:10px; touch-action:none;">
@@ -116,10 +130,10 @@
                 <canvas id="cpH" style="width:20px; border-radius:8px; border:1px solid #333;"></canvas>
             </div>
             
-            <button class="btn-dl" onclick="handleDownload()">Descargar PNG Profesional</button>
+            <button class="btn-dl" onclick="handleDownload()">Descargar PNG</button>
         </aside>
 
-        <section class="stage" id="stage">
+        <section class="stage">
             <canvas id="canvas"></canvas>
         </section>
     </main>
@@ -133,15 +147,7 @@
 
         window.onload = () => {
             if(!isVip) document.getElementById('access-modal').classList.remove('hidden');
-            else {
-                document.getElementById('status-tag').innerText = "SOCIO VIP";
-                document.getElementById('btnLogout').style.display = 'block';
-            }
             document.getElementById('count-free').innerText = freeCount;
-            if(freeCount <= 0 && !isVip) {
-                document.getElementById('btn-free-dl').classList.add('hidden');
-                document.getElementById('btn-subscribe-wa').classList.remove('hidden');
-            }
             drawCP();
         };
 
@@ -153,127 +159,99 @@
                 oCanvas.height = backupCanvas.height = img.height;
                 oCtx.drawImage(img,0,0);
                 bCtx.drawImage(img,0,0);
-                currentScale = 1;
                 process();
             };
             img.src = URL.createObjectURL(f);
         };
 
         function setScale(s, btn) {
-            if(!oCanvas.width) return;
             document.querySelectorAll('.btn-scale').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             currentScale = s;
         }
 
         function resetImage() {
-            if(!backupCanvas.width) return;
-            oCanvas.width = backupCanvas.width;
-            oCanvas.height = backupCanvas.height;
+            oCanvas.width = backupCanvas.width; oCanvas.height = backupCanvas.height;
             oCtx.drawImage(backupCanvas, 0, 0);
-            currentScale = 1;
             process();
         }
 
-        // --- MOTOR GIGAPIXEL IA ---
+        // MOTOR GIGAPIXEL
         function applyGigapixel() {
             if(!oCanvas.width) return;
-            
-            // 1. Re-escalado IA (Super-resolución)
-            const tw = oCanvas.width * currentScale;
-            const th = oCanvas.height * currentScale;
+            const tw = oCanvas.width * currentScale, th = oCanvas.height * currentScale;
             const temp = document.createElement('canvas');
             temp.width = tw; temp.height = th;
             const tCtx = temp.getContext('2d');
-            tCtx.imageSmoothingEnabled = true;
-            tCtx.imageSmoothingQuality = 'high';
+            tCtx.imageSmoothingEnabled = true; tCtx.imageSmoothingQuality = 'high';
             tCtx.drawImage(oCanvas, 0, 0, tw, th);
             
             oCanvas.width = tw; oCanvas.height = th;
             oCtx.drawImage(temp, 0, 0);
 
-            // 2. Denoise & Sharpness (Filtro de Convolución)
             const power = parseFloat(document.getElementById('ia-power').value);
-            const denoise = document.getElementById('ia-denoise').checked;
-            const imgData = oCtx.getImageData(0, 0, tw, th);
-            const pixels = imgData.data;
-            const output = oCtx.createImageData(tw, th);
-            const outPixels = output.data;
+            const id = oCtx.getImageData(0,0,tw,th), d = id.data, out = oCtx.createImageData(tw,th), od = out.data;
+            const weights = [ 0, -power, 0, -power, 1+(power*4), -power, 0, -power, 0 ];
 
-            // Matriz Topaz-Style (Enfoque de bordes sin grano)
-            const weights = [ 0, -power, 0, -power, 1 + (power * 4), -power, 0, -power, 0 ];
-
-            for (let i = 0; i < pixels.length; i += 4) {
-                // Reducción de ruido básica (Suavizado de color)
-                if(denoise) {
-                    pixels[i] = (pixels[i] * 0.9 + 12.8 * 0.1); 
-                    pixels[i+1] = (pixels[i+1] * 0.9 + 12.8 * 0.1);
-                    pixels[i+2] = (pixels[i+2] * 0.9 + 12.8 * 0.1);
-                }
-            }
-
-            // Aplicar matriz de nitidez
-            for (let y = 1; y < th - 1; y++) {
-                for (let x = 1; x < tw - 1; x++) {
-                    const off = (y * tw + x) * 4;
-                    let r = 0, g = 0, b = 0;
-                    for (let cy = 0; cy < 3; cy++) {
-                        for (let cx = 0; cx < 3; cx++) {
-                            const srcOff = ((y + cy - 1) * tw + (x + cx - 1)) * 4;
-                            const wt = weights[cy * 3 + cx];
-                            r += pixels[srcOff] * wt;
-                            g += pixels[srcOff+1] * wt;
-                            b += pixels[srcOff+2] * wt;
+            for (let y = 1; y < th-1; y++) {
+                for (let x = 1; x < tw-1; x++) {
+                    const off = (y*tw+x)*4;
+                    let r=0, g=0, b=0;
+                    for(let cy=0; cy<3; cy++){
+                        for(let cx=0; cx<3; cx++){
+                            const soff = ((y+cy-1)*tw+(x+cx-1))*4;
+                            const wt = weights[cy*3+cx];
+                            r += d[soff]*wt; g += d[soff+1]*wt; b += d[soff+2]*wt;
                         }
                     }
-                    outPixels[off] = r; outPixels[off+1] = g; outPixels[off+2] = b;
-                    outPixels[off+3] = pixels[off+3];
+                    od[off]=r; od[off+1]=g; od[off+2]=b; od[off+3]=d[off+3];
                 }
             }
-            oCtx.putImageData(output, 0, 0);
+            oCtx.putImageData(out, 0, 0);
             process();
         }
 
         function process() {
             if(!oCanvas.width) return;
-            const fuzz = parseInt(document.getElementById('fuzz').value);
+            const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value), contract = parseInt(document.getElementById('contract').value);
             const tc = document.getElementById('mode').value === 'white' ? [255,255,255] : [0,0,0];
-            const imgData = oCtx.getImageData(0, 0, oCanvas.width, oCanvas.height), d = imgData.data;
+            const id = oCtx.getImageData(0, 0, oCanvas.width, oCanvas.height), d = id.data;
             const out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
-            const threshold = fuzz * 2.5;
+            
+            const threshold = (fuzz * 2.5) + (contract * 10), soft = (feather * 15) + 1;
 
             for (let i = 0; i < d.length; i += 4) {
                 const dist = Math.sqrt((d[i]-tc[0])**2 + (d[i+1]-tc[1])**2 + (d[i+2]-tc[2])**2);
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                o[i+3] = dist < threshold ? 0 : d[i+3];
+                if(dist < threshold-soft) o[i+3]=0;
+                else if(dist < threshold) o[i+3]=((dist-(threshold-soft))/soft)*d[i+3];
+                else o[i+3]=d[i+3];
             }
             canvas.width = oCanvas.width; canvas.height = oCanvas.height;
             ctx.putImageData(out, 0, 0);
         }
 
         function handleDownload() {
-            if(!canvas.width) return;
             if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden');
-            
-            const link = document.createElement('a');
-            link.download = 'jj_gigapixel_pro.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-
-            if(!isVip) {
-                freeCount--;
-                localStorage.setItem('jj_free_count', freeCount);
-                location.reload();
-            }
+            // Cargar medidas actuales en el modal
+            document.getElementById('rzW').value = (canvas.width/300*2.54).toFixed(2);
+            document.getElementById('rzH').value = (canvas.height/300*2.54).toFixed(2);
+            document.getElementById('modalExport').classList.remove('hidden');
         }
 
-        // --- FUNCIONES EXTRA ---
-        function startFreeTrial() { window.isTrial = true; document.getElementById('access-modal').classList.add('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        function contactSupport() { window.open('https://wa.me/51916689969?text=Hola J&J Comunidad, quiero activar mi suscripción VIP para usar el motor Gigapixel IA x8.', '_blank'); }
-        function openLogin() { document.getElementById('access-modal').classList.add('hidden'); document.getElementById('login-modal').classList.remove('hidden'); }
-        
-        // --- SELECTOR DE COLOR ---
+        function finalDownload() {
+            const dpi = parseInt(document.getElementById('rzDPI').value);
+            const unit = document.getElementById('rzUnit').value;
+            const tw = unit === 'px' ? rzW.value : (unit === 'in' ? rzW.value*dpi : rzW.value/2.54*dpi);
+            const temp = document.createElement('canvas');
+            temp.width = tw; temp.height = tw/(canvas.width/canvas.height);
+            const tCtx = temp.getContext('2d');
+            tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
+            tCtx.drawImage(canvas, 0,0, temp.width, temp.height);
+            const link = document.createElement('a'); link.download = 'jj_comunidad_pro.png'; link.href = temp.toDataURL(); link.click();
+            if(!isVip) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
+        }
+
         const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
         let hue=0;
         function drawCP() {
@@ -285,8 +263,11 @@
         cpH.onclick = e => { hue = (e.offsetY / 80) * 360; drawCP(); };
         cpSV.onclick = e => { 
             const id = svCtx.getImageData(e.offsetX, e.offsetY, 1, 1).data;
-            document.getElementById('stage').style.backgroundColor = `rgb(${id[0]},${id[1]},${id[2]})`;
+            document.querySelector('.stage').style.backgroundColor = `rgb(${id[0]},${id[1]},${id[2]})`;
         };
+        function startFreeTrial() { closeModal('access-modal'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        ['fuzz', 'feather', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
 </body>
 </html>
