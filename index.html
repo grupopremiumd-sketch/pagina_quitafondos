@@ -50,8 +50,8 @@
     <div id="access-modal" class="modal-back hidden">
         <div class="modal">
             <h3 style="color:var(--vip); margin-bottom: 20px;">Bienvenido a J&J Comunidad</h3>
-            <button class="btn-dl" id="btn-free-dl" onclick="useFreeTrial()">
-                🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)
+            <button class="btn-dl" id="btn-free-dl" onclick="startFreeTrial()">
+                🎁 USAR PRUEBA GRATUITA (<span id="count-free">2</span>)
             </button>
             <div class="choice-card hidden" id="btn-subscribe-wa" onclick="contactSupport()" style="border-color: var(--wa);">
                 <div style="font-size:24px">📲</div>
@@ -160,6 +160,17 @@
             }
         }
 
+        function startFreeTrial() {
+            if(freeCount <= 0) return;
+            window.isTrialActive = true; 
+            closeModal('access-modal');
+        }
+
+        function handleDownload() { 
+            if(isVip || window.isTrialActive) openExport(); 
+            else document.getElementById('access-modal').classList.remove('hidden'); 
+        }
+
         function logout() { sessionStorage.clear(); location.reload(); }
 
         document.getElementById('file').onchange = e => {
@@ -202,15 +213,8 @@
                 if(data.access) {
                     sessionStorage.setItem('jj_session', 'active'); sessionStorage.setItem('jj_status', data.status); location.reload();
                 } else alert("Membresía no válida.");
-            } catch(e) { alert("Error de red."); }
+            } catch(e) { alert("Error de servidor."); }
             btn.innerText = "ENTRAR";
-        }
-
-        function handleDownload() { if(isVip) openExport(); else document.getElementById('access-modal').classList.remove('hidden'); }
-        
-        function useFreeTrial() { 
-            if(freeCount <= 0) return;
-            window.isTrial = true; closeModal('access-modal'); openExport(); 
         }
 
         function contactSupport() {
@@ -233,7 +237,7 @@
             tCtx.drawImage(canvas, 0,0, temp.width, temp.height);
             const link = document.createElement('a'); link.download = 'jj_comunidad_pro.png'; link.href = temp.toDataURL(); link.click();
             
-            if(window.isTrial) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
+            if(window.isTrialActive) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
             closeModal('modalExport');
         }
 
@@ -259,7 +263,7 @@
         }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
-        ['fuzz', 'feather', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
+        ['fuzz','feather','contract','mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
 </body>
 </html>
