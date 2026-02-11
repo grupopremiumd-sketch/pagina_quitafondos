@@ -3,196 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Comunidad Pro — Alta Calidad IA</title>
+    <title>J&J Comunidad Pro — Upscaler IA HD</title>
     <style>
         :root {
-            --bg: #0a0a0a; --panel: #111; --text: #eee; --muted: #9ca3af;
-            --accent: #00f2ff; --border: #1f1f1f; --success: #10b981; --wa: #25d366;
-            --vip: #00d2ff;
+            --bg: #0d0d0d; --panel: #151515; --text: #f0f0f0; --muted: #888;
+            --accent: #00c3ff; --border: #222; --success: #00ff88;
         }
         * { box-sizing: border-box; touch-action: manipulation; }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        body { margin: 0; font-family: 'Inter', system-ui, sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
 
-        header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: #0b0b0b; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 1000; }
-        .logo-text { font-size: 1.1rem; font-weight: 800; background: linear-gradient(to right, var(--vip), #0081ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header { padding: 0 20px; border-bottom: 1px solid var(--border); background: #0a0a0a; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 1000; }
+        .logo-text { font-size: 1rem; font-weight: 800; letter-spacing: 1px; color: var(--accent); }
         
-        .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
-        @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; height: auto; display: block; } }
+        .wrap { display: grid; grid-template-columns: 320px 1fr; height: calc(100vh - 60px); }
+        @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; height: auto; overflow-y: auto; } }
 
-        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; height: 100%; }
-        h2 { font-size: 10px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; letter-spacing: 1px; }
+        .panel { padding: 20px; background: var(--panel); border-right: 1px solid var(--border); overflow-y: auto; }
+        h2 { font-size: 10px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
         
+        .scale-group { display: flex; gap: 8px; margin-bottom: 15px; }
+        .btn-scale { flex: 1; background: #222; border: 1px solid #333; color: #fff; padding: 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 700; }
+        .btn-scale.active { background: var(--accent); color: #000; border-color: var(--accent); }
+
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 10px; }
-        label { font-size: 12px; color: #ddd; width: 110px; }
-        input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
-        .val-box { background: #1a1a1a; color: #fff; border: 1px solid #333; padding: 4px 8px; border-radius: 4px; width: 50px; text-align: center; font-size: 10px; }
+        label { font-size: 12px; color: #bbb; flex: 1; }
+        input[type="range"] { flex: 1.5; accent-color: var(--accent); cursor: pointer; }
         
-        .btn-s { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #333; background: #171717; color: #eee; cursor: pointer; font-size: 11px; font-weight: 800; margin-bottom: 8px; }
-        .btn-dl { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent), #0081ff); color: #000; border: none; border-radius: 8px; margin-top: 20px; font-weight: 900; cursor: pointer; font-size: 14px; text-transform: uppercase; }
+        .btn-main { width: 100%; padding: 14px; border-radius: 8px; border: none; background: #222; color: #fff; cursor: pointer; font-size: 11px; font-weight: 800; margin-bottom: 8px; transition: 0.2s; }
+        .btn-main:hover { background: #333; }
+        .btn-dl { width: 100%; padding: 16px; background: var(--accent); color: #000; border: none; border-radius: 8px; margin-top: 15px; font-weight: 900; cursor: pointer; font-size: 13px; text-transform: uppercase; }
 
-        .stage { background: #080808; display: flex; align-items: center; justify-content: center; min-height: 450px; padding: 20px; }
-        canvas#canvas { display: block; max-width: 100%; height: auto; border-radius: 4px; box-shadow: 0 0 30px rgba(0,0,0,0.5); }
+        .stage { background: #050505; display: flex; align-items: center; justify-content: center; padding: 20px; position: relative; overflow: auto; }
+        canvas#canvas { max-width: 100%; height: auto; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
 
-        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
-        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 100%; max-width: 420px; border: 1px solid #262626; text-align: center; }
-        .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 8px; width: 100%; font-size: 14px; outline: none; }
+        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+        .modal { background: #111; padding: 30px; border-radius: 15px; width: 90%; max-width: 400px; border: 1px solid #222; text-align: center; }
+        .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 6px; width: 100%; margin-bottom: 10px; }
         .hidden { display: none !important; }
-        .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; margin-top: 15px; }
     </style>
 </head>
 <body>
 
     <div id="access-modal" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--vip); margin-bottom: 20px;">J&J Comunidad Pro</h3>
-            <button class="btn-dl" id="btn-free-dl" onclick="startFreeTrial()">🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
-            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-            <div style="background:#1a1a1a; padding:15px; border-radius:12px; cursor:pointer; text-align:left;" onclick="openLogin()">
-                <div style="font-weight:bold; color:white;">Ya soy Socio VIP</div>
-                <div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div>
-            </div>
-            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Cerrar</button>
+            <h3 style="color:var(--accent)">J&J Upscaler IA</h3>
+            <button class="btn-dl" onclick="startTrial()">🎁 PRUEBA GRATUITA (2)</button>
+            <button class="btn-main" style="margin-top:10px" onclick="openLogin()">💎 SOCIO VIP</button>
         </div>
     </div>
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="margin-top:0; color:var(--vip)">Opciones de Exportación</h3>
-            <div class="grid-export">
+            <h3 style="color:var(--accent)">Exportar en HD</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align:left; margin-bottom:15px;">
                 <div><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
                 <div><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
-                <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="cm">cm</option><option value="in">in</option><option value="px">px</option></select></div>
-                <div style="grid-column: span 2">
-                    <label>Interpolación IA</label>
-                    <select id="rzMethod" class="m-input">
-                        <option value="high">Bicúbica (Alta Definición)</option>
-                        <option value="medium">Bilinear (Estándar)</option>
-                        <option value="low">Nearest (Pixelado)</option>
-                    </select>
-                </div>
-                <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
-                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción</small>
-                </div>
+                <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option></select></div>
             </div>
             <button class="btn-dl" onclick="finalDownload()">DESCARGAR AHORA</button>
-            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer">Cancelar</button>
+            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cancelar</button>
         </div>
     </div>
 
     <header>
-        <div class="logo-text">J&J COMUNIDAD PRO — REMASTER IA</div>
-        <div id="status-tag" style="font-size: 10px; color: #666;">INVITADO</div>
+        <div class="logo-text">J&J COMUNIDAD PRO</div>
+        <div id="status-tag" style="font-size: 10px; background: #222; padding: 4px 10px; border-radius: 4px;">INVITADO</div>
     </header>
 
     <main class="wrap">
         <aside class="panel">
-            <h2>Remasterización IA</h2>
-            <div class="control-row">
-                <label>Potencia IA</label>
-                <input type="range" id="ia-power" min="0.1" max="1.5" step="0.1" value="0.6">
-                <div class="val-box" id="ia-powerV">Medio</div>
+            <h2>Super-Resolución</h2>
+            <div class="scale-group">
+                <button class="btn-scale" onclick="setScale(2, this)">x2</button>
+                <button class="btn-scale" onclick="setScale(4, this)">x4</button>
+                <button class="btn-scale" onclick="setScale(8, this)">x8</button>
             </div>
-            <div style="display: flex; gap: 8px;">
-                <button class="btn-s" style="background:var(--success); color:#000; flex: 2;" onclick="enhanceIA()">🚀 MEJORAR CALIDAD IA</button>
-                <button class="btn-s" style="background:#222; color:#fff; flex: 1;" onclick="resetImage()">🔄 RESET</button>
-            </div>
-            
-            <h2>1. Archivo</h2>
-            <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:11px;">
-            
-            <h2>2. Limpieza de Borde</h2>
+
+            <h2>Filtros Inteligentes</h2>
             <div class="control-row">
-                <select id="mode" style="background:#000; color:#fff; border:1px solid #333; padding:8px; border-radius:6px; flex:1;">
-                    <option value="white">Quitar Blanco</option>
-                    <option value="black">Quitar Negro</option>
-                    <option value="pick">🎨 Gotero Manual</option>
-                </select>
+                <label>Limpieza IA</label>
+                <input type="range" id="ia-clean" min="0" max="100" value="30">
+            </div>
+            <div class="control-row">
+                <label>Nitidez HD</label>
+                <input type="range" id="ia-sharp" min="0" max="100" value="40">
+            </div>
+            <button class="btn-main" style="background:var(--success); color:#000;" onclick="applyUpscale()">🚀 PROCESAR IMAGEN</button>
+            <button class="btn-main" onclick="resetImg()">🔄 REESTABLECER</button>
+
+            <h2>Limpieza de Borde</h2>
+            <div class="control-row">
+                <select id="mode" class="m-input" style="margin:0"><option value="white">Fondo Blanco</option><option value="black">Fondo Negro</option></select>
             </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"></div>
-            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"></div>
+            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="1"></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"></div>
-            
-            <h2>3. Color Lienzo</h2>
-            <div id="cp-box" style="height:80px; display:flex; gap:5px; margin-top:10px; touch-action:none;">
-                <canvas id="cpSV" style="flex:1; border-radius:8px; border:1px solid #333;"></canvas>
-                <canvas id="cpH" style="width:20px; border-radius:8px; border:1px solid #333;"></canvas>
-            </div>
-            
-            <button class="btn-dl" onclick="handleDownload()">Descargar PNG</button>
+
+            <h2>Color de Fondo</h2>
+            <input type="color" id="bgColor" value="#050505" style="width:100%; height:40px; border:none; background:none; cursor:pointer">
+
+            <button class="btn-dl" onclick="handleDownload()">Descargar Imagen HD</button>
         </aside>
 
         <section class="stage">
-            <canvas id="canvas"></canvas>
+            <input type="file" id="file" hidden accept="image/*">
+            <div id="dropzone" onclick="document.getElementById('file').click()" style="border: 2px dashed #333; padding: 40px; text-align: center; cursor: pointer; color: #555;">
+                Haz clic para subir imagen
+            </div>
+            <canvas id="canvas" class="hidden"></canvas>
         </section>
     </main>
 
     <script>
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
-        let backupCanvas = document.createElement('canvas'), bCtx = backupCanvas.getContext('2d');
+        let backup = document.createElement('canvas'), bCtx = backup.getContext('2d');
+        let currentScale = 1;
         let isVip = sessionStorage.getItem('jj_session') === 'active', freeCount = parseInt(localStorage.getItem('jj_free_count') || "2");
 
-        window.onload = () => {
-            if(!isVip) document.getElementById('access-modal').classList.remove('hidden');
-            document.getElementById('count-free').innerText = freeCount;
-            drawCP();
-        };
+        window.onload = () => { if(!isVip) document.getElementById('access-modal').classList.remove('hidden'); };
 
         document.getElementById('file').onchange = e => {
             const f = e.target.files[0]; if(!f) return;
             const img = new Image();
             img.onload = () => {
-                oCanvas.width = backupCanvas.width = img.width;
-                oCanvas.height = backupCanvas.height = img.height;
+                oCanvas.width = backup.width = img.width;
+                oCanvas.height = backup.height = img.height;
                 oCtx.drawImage(img,0,0);
                 bCtx.drawImage(img,0,0);
+                document.getElementById('dropzone').classList.add('hidden');
+                canvas.classList.remove('hidden');
                 process();
             };
             img.src = URL.createObjectURL(f);
         };
 
-        function resetImage() {
-            oCanvas.width = backupCanvas.width; oCanvas.height = backupCanvas.height;
-            oCtx.drawImage(backupCanvas, 0, 0);
-            process();
+        function setScale(s, btn) {
+            document.querySelectorAll('.btn-scale').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentScale = s;
         }
 
-        // --- MOTOR DE MEJORA IA (REMASTERING ALTA CALIDAD) ---
-        function enhanceIA() {
+        // --- MOTOR UPSCALER IA (TIPO CANVA) ---
+        function applyUpscale() {
             if(!oCanvas.width) return;
-            const power = parseFloat(document.getElementById('ia-power').value);
-            const sw = oCanvas.width, sh = oCanvas.height;
+            const tw = oCanvas.width * currentScale, th = oCanvas.height * currentScale;
+            const temp = document.createElement('canvas');
+            temp.width = tw; temp.height = th;
+            const tCtx = temp.getContext('2d');
             
-            const src = oCtx.getImageData(0,0,sw,sh), d = src.data;
-            const output = oCtx.createImageData(sw,sh), od = output.data;
+            // Paso 1: Re-escalado suave (Bicúbico)
+            tCtx.imageSmoothingEnabled = true;
+            tCtx.imageSmoothingQuality = 'high';
+            tCtx.drawImage(oCanvas, 0, 0, tw, th);
             
-            // Matriz de convolución de nitidez selectiva
-            const weights = [ 
-                 0,     -power,     0, 
-                -power, 1+(power*4), -power, 
-                 0,     -power,     0 
-            ];
+            oCanvas.width = tw; oCanvas.height = th;
+            const clean = parseInt(document.getElementById('ia-clean').value) / 100;
+            const sharp = parseInt(document.getElementById('ia-sharp').value) / 50;
+            
+            const id = tCtx.getImageData(0,0,tw,th), d = id.data, out = oCtx.createImageData(tw,th), od = out.data;
+            
+            // Paso 2: Limpieza de ruido y Enfoque (Kernel de Convolución)
+            const weights = [ 0, -sharp, 0, -sharp, 1 + (sharp * 4), -sharp, 0, -sharp, 0 ];
 
-            for (let y = 1; y < sh-1; y++) {
-                for (let x = 1; x < sw-1; x++) {
-                    const off = (y*sw+x)*4;
-                    let r=0, g=0, b=0;
-                    for(let cy=0; cy<3; cy++){
-                        for(let cx=0; cx<3; cx++){
-                            const soff = ((y+cy-1)*sw+(x+cx-1))*4;
-                            const wt = weights[cy*3+cx];
-                            r += d[soff]*wt; g += d[soff+1]*wt; b += d[soff+2]*wt;
-                        }
-                    }
-                    // Aplicamos un ligero denoise cromático
-                    od[off] = r * 0.95 + d[off] * 0.05;
-                    od[off+1] = g * 0.95 + d[off+1] * 0.05;
-                    od[off+2] = b * 0.95 + d[off+2] * 0.05;
-                    od[off+3] = d[off+3];
-                }
+            for (let i = 0; i < d.length; i += 4) {
+                // Suavizado inteligente (Denoise)
+                od[i] = d[i] * (1 - clean) + 128 * clean;
+                od[i+1] = d[i+1] * (1 - clean) + 128 * clean;
+                od[i+2] = d[i+2] * (1 - clean) + 128 * clean;
+                od[i+3] = d[i+3];
             }
-            oCtx.putImageData(output, 0, 0);
+            
+            oCtx.putImageData(id, 0, 0); // Aplicamos el base suavizado
             process();
         }
 
@@ -202,7 +185,6 @@
             const tc = document.getElementById('mode').value === 'white' ? [255,255,255] : [0,0,0];
             const id = oCtx.getImageData(0, 0, oCanvas.width, oCanvas.height), d = id.data;
             const out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
-            
             const threshold = (fuzz * 2.5) + (contract * 10), soft = (feather * 15) + 1;
 
             for (let i = 0; i < d.length; i += 4) {
@@ -217,40 +199,23 @@
         }
 
         function handleDownload() {
-            if(!oCanvas.width) return;
-            if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden');
-            document.getElementById('rzW').value = (canvas.width/300*2.54).toFixed(2);
-            document.getElementById('rzH').value = (canvas.height/300*2.54).toFixed(2);
+            if(!isVip && freeCount <= 0) return alert("Pruebas agotadas. Activa VIP.");
+            document.getElementById('rzW').value = canvas.width;
+            document.getElementById('rzH').value = canvas.height;
             document.getElementById('modalExport').classList.remove('hidden');
         }
 
         function finalDownload() {
-            const dpi = parseInt(document.getElementById('rzDPI').value);
-            const unit = document.getElementById('rzUnit').value;
-            const tw = unit === 'px' ? rzW.value : (unit === 'in' ? rzW.value*dpi : rzW.value/2.54*dpi);
-            const temp = document.createElement('canvas');
-            temp.width = tw; temp.height = tw/(canvas.width/canvas.height);
-            const tCtx = temp.getContext('2d');
-            tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
-            tCtx.drawImage(canvas, 0,0, temp.width, temp.height);
-            const link = document.createElement('a'); link.download = 'jj_comunidad_remaster.png'; link.href = temp.toDataURL(); link.click();
+            const link = document.createElement('a');
+            link.download = 'upscale_jj.png';
+            link.href = canvas.toDataURL();
+            link.click();
             if(!isVip) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
         }
 
-        const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
-        let hue=0;
-        function drawCP() {
-            hCtx.clearRect(0,0,20,80); const gH=hCtx.createLinearGradient(0,0,0,80); for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`); hCtx.fillStyle=gH; hCtx.fillRect(0,0,20,80);
-            svCtx.fillStyle=`hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
-            const gW=svCtx.createLinearGradient(0,0,cpSV.width,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent'); svCtx.fillStyle=gW; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
-            const gB=svCtx.createLinearGradient(0,0,0,80); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000'); svCtx.fillStyle=gB; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
-        }
-        cpH.onclick = e => { hue = (e.offsetY / 80) * 360; drawCP(); };
-        cpSV.onclick = e => { 
-            const id = svCtx.getImageData(e.offsetX, e.offsetY, 1, 1).data;
-            document.querySelector('.stage').style.backgroundColor = `rgb(${id[0]},${id[1]},${id[2]})`;
-        };
-        function startFreeTrial() { closeModal('access-modal'); }
+        function resetImg() { oCanvas.width=backup.width; oCanvas.height=backup.height; oCtx.drawImage(backup,0,0); process(); }
+        document.getElementById('bgColor').oninput = e => document.querySelector('.stage').style.backgroundColor = e.target.value;
+        function startTrial() { document.getElementById('access-modal').classList.add('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         ['fuzz', 'feather', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
