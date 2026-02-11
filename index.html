@@ -15,7 +15,6 @@
 
         header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: #0b0b0b; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 1000; }
         .logo-text { font-size: 1.1rem; font-weight: 800; background: linear-gradient(to right, var(--vip), #0081ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .header-actions { display: flex; align-items: center; gap: 10px; }
         
         #status-tag { font-size: 9px; padding: 4px 10px; border-radius: 20px; background: #222; color: #888; font-weight: bold; border: 1px solid #333; text-transform: uppercase; }
         .status-vip { background: #052e1a !important; color: var(--success) !important; border-color: var(--success) !important; }
@@ -23,11 +22,10 @@
         .btn-logout { background: transparent; border: 1px solid #333; color: #666; font-size: 10px; padding: 4px 8px; border-radius: 4px; cursor: pointer; display: none; }
 
         .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
-        @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; height: auto; display: block; } .panel { border-right: none; border-bottom: 1px solid var(--border); } }
+        @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; height: auto; display: block; } }
 
-        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; z-index: 100; }
+        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; }
         h2 { font-size: 11px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
-        
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 10px; }
         label { font-size: 12px; color: #ddd; width: 110px; }
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
@@ -40,38 +38,42 @@
         canvas#canvas { display: block; max-width: 100%; height: auto; max-height: 80vh; border-radius: 4px; cursor: crosshair; }
 
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.96); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
-        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 100%; max-width: 420px; border: 1px solid #262626; text-align: center; }
+        .modal { background: #121212; padding: 25px; border-radius: 18px; width: 100%; max-width: 400px; border: 1px solid #262626; text-align: center; }
         .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 8px; width: 100%; font-size: 14px; outline: none; }
         .hidden { display: none !important; }
         .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
         .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; margin-top: 15px; }
-        .disabled-btn { opacity: 0.3; cursor: not-allowed !important; filter: grayscale(1); }
     </style>
 </head>
 <body>
 
     <div id="access-modal" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--vip)">Opciones de Descarga</h3>
+            <h3 style="color:var(--vip); margin-bottom: 20px;">Bienvenido a J&J Comunidad</h3>
+            
             <button class="btn-dl" id="btn-free-dl" onclick="useFreeTrial()">
-                🎁 USAR PRUEBA GRATUITA (<span id="count-free">2</span>)
+                🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)
             </button>
+            
+            <div class="choice-card hidden" id="btn-subscribe-wa" onclick="contactSupport()" style="border-color: var(--wa);">
+                <div style="font-size:24px">📲</div>
+                <div><div style="font-weight:bold; color:var(--wa);">Activar Suscripción VIP</div><div style="font-size:11px; color:#666">Pruebas agotadas. ¡Únete hoy!</div></div>
+            </div>
+
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
+            
             <div class="choice-card" onclick="openLogin()">
                 <div style="font-size:24px">💎</div>
                 <div><div style="font-weight:bold; color:white;">Ya soy Socio J&J</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
             </div>
-            <div class="choice-card" onclick="contactSupport()">
-                <div style="font-size:24px">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">Activar Suscripción VIP</div><div style="font-size:11px; color:#666">Descargas ilimitadas y Soporte Pro.</div></div>
-            </div>
-            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cerrar</button>
+
+            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Explorar herramientas</button>
         </div>
     </div>
 
     <div id="login-modal" class="modal-back hidden">
         <div class="modal" style="max-width:350px;">
-            <h3>Validar Membresía</h3>
+            <h3>Acceso Socio</h3>
             <input type="text" id="user-id" placeholder="📱 Número Celular" class="m-input" style="margin-bottom:12px">
             <button class="btn-dl" onclick="validateAccess()" id="btn-login-text">ENTRAR</button>
             <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Volver</button>
@@ -80,22 +82,18 @@
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="margin-top:0; color:var(--vip)">Salida Proporcional</h3>
+            <h3 style="margin-top:0; color:var(--vip)">Salida Técnica</h3>
             <div class="grid-export">
                 <div><label>Ancho (cm)</label><input type="number" id="rzW" class="m-input"></div>
                 <div><label>Alto (cm)</label><input type="number" id="rzH" class="m-input"></div>
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="cm">cm</option><option value="in">in</option></select></div>
-                <div style="grid-column: span 2">
-                    <label>Calidad</label>
-                    <select id="rzMethod" class="m-input"><option value="high">Bicúbica (Pro)</option><option value="medium">Bilinear</option></select>
-                </div>
                 <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
                     <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción Vinculada</small>
                 </div>
             </div>
             <button class="btn-dl" onclick="finalDownload()">DESCARGAR PNG</button>
-            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer">Cancelar</button>
+            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:15px; cursor:pointer">Cancelar</button>
         </div>
     </div>
 
@@ -112,18 +110,12 @@
             <button class="btn-s" style="background:var(--success); color:#000;" onclick="enhanceIA()">🚀 MEJORAR CALIDAD IA</button>
             <h2>1. Carga</h2>
             <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:11px;">
-            <h2>2. Limpieza Técnica</h2>
-            <div class="control-row">
-                <select id="mode" class="m-input" style="flex:1; margin:0">
-                    <option value="white">Quitar Blanco</option>
-                    <option value="black">Quitar Negro</option>
-                    <option value="pick">🎨 Gotero Manual</option>
-                </select>
-            </div>
+            <h2>2. Limpieza</h2>
+            <div class="control-row"><select id="mode" class="m-input" style="flex:1; margin:0"><option value="white">Quitar Blanco</option><option value="black">Quitar Negro</option><option value="pick">🎨 Gotero Manual</option></select></div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"><div class="val-box" id="contractV">0</div></div>
-            <h2>3. Color de Lienzo</h2>
+            <h2>3. Color Lienzo</h2>
             <div id="cp-box" style="height:100px; display:flex; gap:5px; margin-top:10px; touch-action:none;">
                 <canvas id="cpSV" style="flex:1; border-radius:8px; border:1px solid #333;"></canvas>
                 <canvas id="cpH" style="width:25px; border-radius:8px; border:1px solid #333;"></canvas>
@@ -140,16 +132,25 @@
         let targetColor = [255,255,255];
 
         window.onload = () => {
-            if(isVip) {
+            // ABRIR MODAL AUTOMÁTICAMENTE AL INICIO
+            if(!isVip) document.getElementById('access-modal').classList.remove('hidden');
+            else {
                 const tag = document.getElementById('status-tag'), status = sessionStorage.getItem('jj_status');
                 tag.innerText = "SOCIO: " + status;
                 tag.classList.add(status.toLowerCase().includes('vencer') ? 'status-warning' : 'status-vip');
                 document.getElementById('btnLogout').style.display = 'block';
             }
-            document.getElementById('count-free').innerText = freeCount;
-            if(freeCount <= 0 && !isVip) document.getElementById('btn-free-dl').classList.add('disabled-btn');
+            updateFreeUI();
             drawCP();
         };
+
+        function updateFreeUI() {
+            document.getElementById('count-free').innerText = freeCount;
+            if(freeCount <= 0 && !isVip) {
+                document.getElementById('btn-free-dl').classList.add('hidden');
+                document.getElementById('btn-subscribe-wa').classList.remove('hidden');
+            }
+        }
 
         function logout() { sessionStorage.clear(); location.reload(); }
 
@@ -172,21 +173,13 @@
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value), contract = parseInt(document.getElementById('contract').value);
             document.getElementById('fuzzV').innerText = fuzz; document.getElementById('featherV').innerText = feather; document.getElementById('contractV').innerText = contract;
-            
-            let tc = targetColor;
-            const mode = document.getElementById('mode').value;
-            if(mode === 'white') tc = [255,255,255];
-            else if(mode === 'black') tc = [0,0,0];
-
+            let tc = (document.getElementById('mode').value==='pick') ? targetColor : (document.getElementById('mode').value==='white' ? [255,255,255] : [0,0,0]);
             const id=oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d=id.data, out=ctx.createImageData(oCanvas.width,oCanvas.height), o=out.data;
             const threshold = (fuzz*2.5)+(contract*10), soft = (feather*15)+1;
-            
             for(let i=0; i<d.length; i+=4) {
                 const dist = Math.sqrt((d[i]-tc[0])**2 + (d[i+1]-tc[1])**2 + (d[i+2]-tc[2])**2);
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                if(dist < threshold-soft) o[i+3]=0; 
-                else if(dist < threshold) o[i+3]=((dist-(threshold-soft))/soft)*d[i+3]; 
-                else o[i+3]=d[i+3];
+                if(dist < threshold-soft) o[i+3]=0; else if(dist < threshold) o[i+3]=((dist-(threshold-soft))/soft)*d[i+3]; else o[i+3]=d[i+3];
             }
             canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out,0,0);
         }
@@ -200,21 +193,20 @@
                 const data = await res.json();
                 if(data.access) {
                     sessionStorage.setItem('jj_session', 'active'); sessionStorage.setItem('jj_status', data.status); location.reload();
-                } else alert("Membresía no válida.");
-            } catch(e) { alert("Error de servidor."); }
+                } else alert("Acceso denegado: Membresía no válida.");
+            } catch(e) { alert("Error de red."); }
             btn.innerText = "ENTRAR";
         }
 
         function handleDownload() { if(isVip) openExport(); else document.getElementById('access-modal').classList.remove('hidden'); }
         
         function useFreeTrial() { 
-            if(freeCount <= 0){ alert("Has agotado tus pruebas. Activa tu suscripción VIP."); return; }
+            if(freeCount <= 0) return;
             window.isTrial = true; closeModal('access-modal'); openExport(); 
         }
 
         function contactSupport() {
-            let msg = "Hola J&J Comunidad, quiero activar mi suscripción VIP para descargas ilimitadas.";
-            if(freeCount <= 0) msg = "Hola J&J Comunidad, agoté mis pruebas gratuitas y quiero activar mi suscripción VIP para descargas ilimitadas.";
+            const msg = "Hola J&J Comunidad, agoté mis pruebas gratuitas y quiero activar mi suscripción VIP para descargas ilimitadas.";
             window.open(`https://wa.me/51916689969?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
@@ -229,7 +221,7 @@
             const temp = document.createElement('canvas');
             let w = (rzUnit.value === 'in' ? rzW.value*dpi : rzW.value/2.54*dpi);
             temp.width = w; temp.height = w/aspectRatio;
-            const tCtx = temp.getContext('2d'); tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
+            const tCtx = temp.getContext('2d'); tCtx.imageSmoothingQuality = 'high';
             tCtx.drawImage(canvas, 0,0, temp.width, temp.height);
             const link = document.createElement('a'); link.download = 'jj_comunidad_pro.png'; link.href = temp.toDataURL(); link.click();
             
@@ -237,6 +229,7 @@
             closeModal('modalExport');
         }
 
+        // --- SELECTOR DE COLOR ---
         const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
         let hue=0, svD=false, hD=false;
         function drawCP() {
