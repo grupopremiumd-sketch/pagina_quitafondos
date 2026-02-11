@@ -47,9 +47,9 @@
         <div class="modal">
             <h3 style="color:var(--accent); margin-bottom: 20px;">J&J Comunidad Pro</h3>
             <button class="btn-ia" id="btn-free-dl" onclick="startTrial()">🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
-            <div id="btn-subscribe-wa" class="hidden" onclick="contactSupport()" style="background:#1a1a1a; border:1px solid var(--wa); padding:15px; border-radius:12px; cursor:pointer; text-align:left; margin-bottom:10px;">
-                <div style="font-weight:bold; color:var(--wa);">Activar VIP</div>
-                <div style="font-size:11px; color:#666">Pruebas agotadas. Infórmate aquí.</div>
+            <div id="btn-subscribe-wa" class="choice-card hidden" onclick="contactSupport()" style="border-color: var(--wa);">
+                <div style="font-size:24px">📲</div>
+                <div><div style="font-weight:bold; color:var(--wa);">Activar VIP</div><div style="font-size:11px; color:#666">Pruebas agotadas. Infórmate aquí.</div></div>
             </div>
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
             <div class="choice-card" onclick="openLogin()">
@@ -71,14 +71,22 @@
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--accent)">Exportación Pro</h3>
+            <h3 style="color:var(--accent)">Opciones de Exportación</h3>
             <div class="grid-export">
-                <div><label>Ancho (px)</label><input type="number" id="rzW" class="m-input"></div>
-                <div><label>Alto (px)</label><input type="number" id="rzH" class="m-input"></div>
+                <div><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
+                <div><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option></select></div>
+                <div style="grid-column: span 2">
+                    <label>Interpolación de Calidad</label>
+                    <select id="rzMethod" class="m-input">
+                        <option value="high">Bicúbica (Alta Definición)</option>
+                        <option value="medium">Bilinear (Estándar)</option>
+                        <option value="low">Nearest Neighbor (Corte Limpio)</option>
+                    </select>
+                </div>
                 <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
-                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción</small>
+                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción Vincular</small>
                 </div>
             </div>
             <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:15px;" onclick="finalDownload()">DESCARGAR PNG</button>
@@ -118,7 +126,7 @@
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"></div>
 
             <h2>3. Lienzo</h2>
-            <input type="color" id="bgColor" value="#080808" style="width:100%; height:40px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
+            <input type="color" id="bgColor" value="#080808" style="width:100%; height:45px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
 
             <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">Descargar PNG Pro</button>
         </aside>
@@ -135,7 +143,7 @@
 
         window.onload = () => {
             if(!isVip) document.getElementById('access-modal').classList.remove('hidden');
-            else { document.getElementById('status-tag').innerText = "SOCIO VIP"; document.getElementById('btnLogout').style.display = 'block'; }
+            else { document.getElementById('status-tag').innerText = "SOCIO VIP"; document.getElementById('status-tag').style.color = "var(--success)"; document.getElementById('btnLogout').style.display = 'block'; }
             updateUI();
         };
 
@@ -156,7 +164,6 @@
             } catch(e) { alert("Error de servidor."); } finally { btn.innerText = "INGRESAR"; }
         }
 
-        // MOTOR BORDADO FULL COLOR (Sincronizado con diseño)
         function applyRealisticBordado() {
             if(!oCanvas.width) return;
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
@@ -164,27 +171,14 @@
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
                     const i = (y * w + x) * 4;
-                    if(d[i+3] > 15) { // Solo píxeles visibles
-                        // Efecto de puntada de seda: brillo 1.35 y sombra 0.7
+                    if(d[i+3] > 15) {
                         const stitch = (x % 4 === 0 || y % 4 === 0) ? 0.7 : 1.35;
-                        d[i] = Math.min(255, d[i] * stitch);
-                        d[i+1] = Math.min(255, d[i+1] * stitch);
-                        d[i+2] = Math.min(255, d[i+2] * stitch);
+                        d[i] = Math.min(255, d[i] * stitch); d[i+1] = Math.min(255, d[i+1] * stitch); d[i+2] = Math.min(255, d[i+2] * stitch);
                     }
                 }
             }
             oCtx.putImageData(id, 0, 0); process();
         }
-
-        // GOTERO MANUAL Y PROCESOS
-        canvas.addEventListener('mousedown', (e) => {
-            if (document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
-            const rect = canvas.getBoundingClientRect();
-            const x = (e.clientX - rect.left) * (oCanvas.width / rect.width);
-            const y = (e.clientY - rect.top) * (oCanvas.height / rect.height);
-            const pixel = oCtx.getImageData(x, y, 1, 1).data;
-            targetColor = [pixel[0], pixel[1], pixel[2]]; process();
-        });
 
         function applyAutoRemove() {
             if(!oCanvas.width) return;
@@ -215,12 +209,54 @@
             canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out, 0, 0);
         }
 
-        // LÓGICA DE INTERFAZ
-        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect');
+        // --- LÓGICA DE EXPORTACIÓN TÉCNICA ---
+        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect'), unit = document.getElementById('rzUnit'), dpi = document.getElementById('rzDPI');
+        
         rzW.oninput = () => { if(lock.checked) rzH.value = Math.round(rzW.value / aspectRatio); };
         rzH.oninput = () => { if(lock.checked) rzW.value = Math.round(rzH.value * aspectRatio); };
-        function handleDownload() { if(!oCanvas.width) return; if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden'); rzW.value = canvas.width; rzH.value = canvas.height; document.getElementById('modalExport').classList.remove('hidden'); }
-        function finalDownload() { const link = document.createElement('a'); link.download = 'jj_pro.png'; link.href = canvas.toDataURL(); link.click(); if(!isVip && window.isTrial) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); } closeModal('modalExport'); }
+
+        function handleDownload() {
+            if(!oCanvas.width) return;
+            if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden');
+            rzW.value = canvas.width; rzH.value = canvas.height;
+            document.getElementById('modalExport').classList.remove('hidden');
+        }
+
+        function finalDownload() {
+            const method = document.getElementById('rzMethod').value;
+            let finalW = parseInt(rzW.value);
+            let finalH = parseInt(rzH.value);
+            
+            if(unit.value === 'cm') {
+                finalW = Math.round((finalW / 2.54) * parseInt(dpi.value));
+                finalH = Math.round((finalH / 2.54) * parseInt(dpi.value));
+            }
+
+            const temp = document.createElement('canvas');
+            temp.width = finalW; temp.height = finalH;
+            const tCtx = temp.getContext('2d');
+            tCtx.imageSmoothingQuality = method;
+            tCtx.drawImage(canvas, 0, 0, finalW, finalH);
+
+            const link = document.createElement('a'); 
+            link.download = 'jj_pro_final.png'; 
+            link.href = temp.toDataURL(); 
+            link.click();
+            
+            if(!isVip && window.isTrial) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
+            closeModal('modalExport');
+        }
+
+        // --- FUNCIONALIDADES GENERALES ---
+        canvas.addEventListener('mousedown', (e) => {
+            if (document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (oCanvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (oCanvas.height / rect.height);
+            const pixel = oCtx.getImageData(x, y, 1, 1).data;
+            targetColor = [pixel[0], pixel[1], pixel[2]]; process();
+        });
+
         function logout() { sessionStorage.clear(); location.reload(); }
         function startTrial() { window.isTrial = true; closeModal('access-modal'); }
         function updateUI() { document.getElementById('count-free').innerText = freeCount; if(freeCount <= 0 && !isVip) { document.getElementById('btn-free-dl').classList.add('hidden'); document.getElementById('btn-subscribe-wa').classList.remove('hidden'); } }
