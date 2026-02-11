@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Comunidad Pro — FHD Remaster</title>
+    <title>J&J Comunidad Pro — Remaster & Art</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --accent: #00f2ff; --border: #222; --success: #00ff88; --wa: #25d366;
@@ -20,8 +20,9 @@
         .panel { padding: 20px; background: var(--panel); border-right: 1px solid var(--border); overflow-y: auto; }
         h2 { font-size: 10px; color: #666; text-transform: uppercase; margin: 20px 0 10px; letter-spacing: 1px; }
         
-        .btn-ia { width: 100%; padding: 15px; background: var(--success); color: #000; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 10px; text-transform: uppercase; font-size: 12px; }
-        .btn-secondary { width: 100%; padding: 10px; background: #222; color: #fff; border: 1px solid #333; border-radius: 8px; cursor: pointer; font-size: 11px; margin-bottom: 10px; }
+        .btn-ia { width: 100%; padding: 14px; background: var(--success); color: #000; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 8px; text-transform: uppercase; font-size: 11px; }
+        .btn-art { width: 49%; padding: 10px; background: #222; color: #fff; border: 1px solid #333; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
+        .btn-secondary { width: 100%; padding: 10px; background: #1a1a1a; color: #555; border: 1px solid #222; border-radius: 8px; cursor: pointer; font-size: 10px; margin-bottom: 10px; }
 
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
         label { font-size: 11px; color: #aaa; }
@@ -30,65 +31,52 @@
         .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; font-size: 14px; outline: none; margin-bottom: 10px; }
 
         .stage { background: #080808; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; min-height: 400px; }
-        canvas#canvas { max-width: 90%; max-height: 90%; object-fit: contain; }
+        canvas#canvas { max-width: 90%; max-height: 90%; object-fit: contain; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
 
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
         .modal { background: #111; padding: 25px; border-radius: 15px; width: 100%; max-width: 400px; border: 1px solid #222; text-align: center; }
         .hidden { display: none !important; }
         .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
-        .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-top: 15px; }
     </style>
 </head>
 <body>
 
     <div id="access-modal" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--accent); margin-bottom: 20px;">Bienvenido a J&J Comunidad</h3>
+            <h3 style="color:var(--accent); margin-bottom: 20px;">J&J Comunidad Pro</h3>
             <button class="btn-ia" id="btn-free-dl" onclick="startTrial()">🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
             <div class="choice-card hidden" id="btn-subscribe-wa" onclick="contactSupport()" style="border-color: var(--wa);">
                 <div style="font-size:24px">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">Activar Suscripción VIP</div><div style="font-size:11px; color:#666">Pruebas agotadas. ¡Infórmate aquí!</div></div>
+                <div><div style="font-weight:bold; color:var(--wa);">Activar VIP</div><div style="font-size:11px; color:#666">Descargas agotadas. ¡Infórmate aquí!</div></div>
             </div>
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
             <div class="choice-card" onclick="openLogin()">
                 <div style="font-size:24px">💎</div>
                 <div><div style="font-weight:bold; color:white;">Ya soy Socio J&J</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
             </div>
-            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Explorar herramientas</button>
+            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Cerrar</button>
         </div>
     </div>
 
     <div id="login-modal" class="modal-back hidden">
         <div class="modal" style="max-width:350px;">
             <h3 style="color:var(--accent)">Acceso VIP</h3>
-            <p style="font-size: 11px; color: #666; margin-bottom: 15px;">Ingresa el número celular registrado en la comunidad.</p>
-            <input type="text" id="user-id" placeholder="Ej: 916689969" class="m-input">
-            <button class="btn-ia" onclick="validateAccess()" id="btn-login-text">VALIDAR ACCESO</button>
+            <input type="text" id="user-id" placeholder="Número Celular" class="m-input">
+            <button class="btn-ia" onclick="validateAccess()" id="btn-login-text">INGRESAR</button>
             <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Volver</button>
         </div>
     </div>
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--accent)">Opciones de Exportación</h3>
-            <div class="grid-export">
-                <div><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
-                <div><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
+            <h3 style="color:var(--accent)">Exportación Pro</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align:left; margin-bottom:15px;">
+                <div><label>Ancho (px)</label><input type="number" id="rzW" class="m-input"></div>
+                <div><label>Alto (px)</label><input type="number" id="rzH" class="m-input"></div>
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
-                <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option><option value="in">in</option></select></div>
-                <div style="grid-column: span 2">
-                    <label>Interpolación de Calidad</label>
-                    <select id="rzMethod" class="m-input">
-                        <option value="high">Bicúbica (Alta Definición)</option>
-                        <option value="medium">Bilinear (Estándar)</option>
-                        <option value="low">Nearest Neighbor (Pixel Art)</option>
-                    </select>
-                </div>
-                <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
-                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción</small>
-                </div>
+                <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option></select></div>
             </div>
-            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:15px;" onclick="finalDownload()">DESCARGAR PNG</button>
+            <button class="btn-ia" style="background:var(--accent); color:#000;" onclick="finalDownload()">DESCARGAR PNG</button>
             <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cancelar</button>
         </div>
     </div>
@@ -96,16 +84,24 @@
     <header>
         <div class="logo">J&J COMUNIDAD PRO</div>
         <div style="display:flex; align-items:center; gap:10px;">
-            <div id="status-tag" style="font-size:9px; background:#222; padding:4px 8px; border-radius:4px;">INVITADO</div>
-            <button id="btnLogout" onclick="logout()" style="display:none; background:none; border:1px solid #333; color:#555; font-size:10px; cursor:pointer; border-radius:4px;">SALIR</button>
+            <div id="status-tag" style="font-size:9px; background:#222; padding:4px 8px; border-radius:4px; font-weight:bold;">INVITADO</div>
+            <button id="btnLogout" onclick="logout()" style="display:none; background:none; border:1px solid #333; color:#555; font-size:9px; cursor:pointer; border-radius:4px; padding:4px 8px;">SALIR</button>
         </div>
     </header>
 
     <main class="wrap">
         <aside class="panel">
+            <h2>Motores IA</h2>
             <button class="btn-ia" onclick="applyFHDRemaster()">🚀 MEJORAR CALIDAD FHD</button>
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <button class="btn-art" onclick="applyBlackAndWhite()">⚪ B&N</button>
+                <button class="btn-art" onclick="applyEmbroidery()">🧵 BORDADO</button>
+            </div>
+            <button class="btn-secondary" onclick="resetImg()">🔄 REESTABLECER ORIGINAL</button>
+
             <h2>1. Carga</h2>
             <input type="file" id="file" accept="image/*" class="m-input">
+
             <h2>2. Quitar Fondo</h2>
             <div class="control-row">
                 <select id="mode" class="m-input" style="margin:0">
@@ -116,12 +112,16 @@
             </div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"></div>
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.5"></div>
-            <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"></div>
-            <h2>3. Color de Lienzo</h2>
-            <input type="color" id="bgColor" value="#080808" style="width:100%; height:45px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
-            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">Descargar PNG</button>
+
+            <h2>3. Previsualización</h2>
+            <input type="color" id="bgColor" value="#080808" style="width:100%; height:40px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
+
+            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">Descargar Imagen Pro</button>
         </aside>
-        <section class="stage" id="stage"><canvas id="canvas"></canvas></section>
+
+        <section class="stage" id="stage">
+            <canvas id="canvas"></canvas>
+        </section>
     </main>
 
     <script>
@@ -138,43 +138,24 @@
                 document.getElementById('status-tag').style.color = "var(--success)";
                 document.getElementById('btnLogout').style.display = 'block';
             }
-            updateUI();
-        };
-
-        function updateUI() {
             document.getElementById('count-free').innerText = freeCount;
             if(freeCount <= 0 && !isVip) {
                 document.getElementById('btn-free-dl').classList.add('hidden');
                 document.getElementById('btn-subscribe-wa').classList.remove('hidden');
             }
-        }
+        };
 
         async function validateAccess() {
             const u = document.getElementById('user-id').value.trim().replace(/\D/g,'');
-            if(!u) return alert("Por favor, ingresa tu número celular.");
-            const btn = document.getElementById('btn-login-text');
-            btn.innerText = "VERIFICANDO...";
-            btn.disabled = true;
-
+            if(!u) return;
             try {
-                // Conexión con tu Google Sheets Script
                 const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
                 const data = await res.json();
-                
                 if(data.access) {
                     sessionStorage.setItem('jj_session', 'active');
-                    sessionStorage.setItem('jj_status', data.status);
-                    alert("¡Acceso VIP Concedido!");
-                    location.reload();
-                } else {
-                    alert("Número no encontrado o suscripción vencida. Contacta a soporte.");
-                }
-            } catch(e) {
-                alert("Error de conexión. Intenta de nuevo.");
-            } finally {
-                btn.innerText = "VALIDAR ACCESO";
-                btn.disabled = false;
-            }
+                    location.reload(); // Recarga directa sin mensaje
+                } else alert("Número no registrado.");
+            } catch(e) { alert("Error de red."); }
         }
 
         document.getElementById('file').onchange = e => {
@@ -191,11 +172,32 @@
             img.src = URL.createObjectURL(f);
         };
 
+        function applyBlackAndWhite() {
+            if(!oCanvas.width) return;
+            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
+            for (let i = 0; i < d.length; i += 4) {
+                let avg = (d[i] * 0.3 + d[i+1] * 0.59 + d[i+2] * 0.11);
+                d[i] = d[i+1] = d[i+2] = avg;
+            }
+            oCtx.putImageData(id, 0, 0);
+            process();
+        }
+
+        function applyEmbroidery() {
+            if(!oCanvas.width) return;
+            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
+            // Efecto Posterizar para hilos
+            for (let i = 0; i < d.length; i += 4) {
+                d[i] = Math.floor(d[i]/43)*43; d[i+1] = Math.floor(d[i+1]/43)*43; d[i+2] = Math.floor(d[i+2]/43)*43;
+            }
+            oCtx.putImageData(id, 0, 0);
+            process();
+        }
+
         function applyFHDRemaster() {
             if(!oCanvas.width) return;
-            const temp = document.createElement('canvas');
             const tw = Math.round(oCanvas.width * 1.5), th = Math.round(oCanvas.height * 1.5);
-            temp.width = tw; temp.height = th;
+            const temp = document.createElement('canvas'); temp.width = tw; temp.height = th;
             const tCtx = temp.getContext('2d');
             tCtx.imageSmoothingQuality = 'high'; tCtx.drawImage(oCanvas, 0, 0, tw, th);
             oCanvas.width = tw; oCanvas.height = th;
@@ -205,18 +207,14 @@
 
         function process() {
             if(!oCanvas.width) return;
-            const fuzz = parseInt(document.getElementById('fuzz').value),
-                  feather = parseFloat(document.getElementById('feather').value),
-                  contract = parseInt(document.getElementById('contract').value);
-            
+            const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value);
             let tc = targetColor;
-            const mode = document.getElementById('mode').value;
-            if(mode === 'white') tc = [255,255,255];
-            if(mode === 'black') tc = [0,0,0];
+            if(document.getElementById('mode').value === 'white') tc = [255,255,255];
+            if(document.getElementById('mode').value === 'black') tc = [0,0,0];
 
             const id = oCtx.getImageData(0, 0, oCanvas.width, oCanvas.height), d = id.data;
             const out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
-            const threshold = (fuzz * 2.5) + (contract * 10), soft = (feather * 15) + 1;
+            const threshold = fuzz * 2.5, soft = feather * 15 + 1;
 
             for (let i = 0; i < d.length; i += 4) {
                 const dist = Math.sqrt((d[i]-tc[0])**2 + (d[i+1]-tc[1])**2 + (d[i+2]-tc[2])**2);
@@ -237,31 +235,13 @@
             document.getElementById('modalExport').classList.remove('hidden');
         }
 
-        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect');
-        rzW.oninput = () => { if(lock.checked) rzH.value = Math.round(rzW.value / aspectRatio); };
-        rzH.oninput = () => { if(lock.checked) rzW.value = Math.round(rzH.value * aspectRatio); };
-
         function finalDownload() {
-            const dpi = parseInt(document.getElementById('rzDPI').value);
-            const unit = document.getElementById('rzUnit').value;
-            let tw = rzW.value;
-            if(unit === 'in') tw = rzW.value * dpi;
-            if(unit === 'cm') tw = (rzW.value / 2.54) * dpi;
-
-            const temp = document.createElement('canvas');
-            temp.width = tw; temp.height = tw / aspectRatio;
-            const tCtx = temp.getContext('2d');
-            tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
-            tCtx.drawImage(canvas, 0, 0, temp.width, temp.height);
-
             const link = document.createElement('a');
-            link.download = 'jj_comunidad_pro.png';
-            link.href = temp.toDataURL();
+            link.download = 'jj_remaster_pro.png';
+            link.href = canvas.toDataURL();
             link.click();
-            
             if(!isVip && window.isTrial) {
-                freeCount--;
-                localStorage.setItem('jj_free_count', freeCount);
+                freeCount--; localStorage.setItem('jj_free_count', freeCount);
                 location.reload();
             }
             closeModal('modalExport');
@@ -272,8 +252,9 @@
         function contactSupport() { window.open('https://wa.me/51916689969?text=Hola J&J Comunidad, quiero informes sobre la suscripcion', '_blank'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function logout() { sessionStorage.clear(); location.reload(); }
+        function resetImg() { oCanvas.width = backup.width; oCanvas.height = backup.height; oCtx.drawImage(backup, 0, 0); process(); }
         document.getElementById('bgColor').oninput = e => document.getElementById('stage').style.backgroundColor = e.target.value;
-        ['fuzz', 'feather', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
+        ['fuzz', 'feather', 'mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
 </body>
 </html>
