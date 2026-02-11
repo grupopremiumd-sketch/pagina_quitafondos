@@ -6,7 +6,7 @@
     <title>J&J Comunidad Pro — FHD Remaster</title>
     <style>
         :root {
-            --bg: #0a0a0a; --panel: #111; --text: #eee; --accent: #00f2ff; --border: #222; --success: #00ff88;
+            --bg: #0a0a0a; --panel: #111; --text: #eee; --accent: #00f2ff; --border: #222; --success: #00ff88; --wa: #25d366;
         }
         * { box-sizing: border-box; }
         body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
@@ -32,52 +32,89 @@
         .stage { background: #080808; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; min-height: 400px; }
         canvas#canvas { max-width: 90%; max-height: 90%; object-fit: contain; }
 
-        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 2000; }
-        .modal { background: #111; padding: 25px; border-radius: 15px; width: 90%; max-width: 420px; border: 1px solid #222; text-align: center; }
+        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
+        .modal { background: #111; padding: 25px; border-radius: 15px; width: 100%; max-width: 400px; border: 1px solid #222; text-align: center; }
         .hidden { display: none !important; }
+        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
         .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-top: 15px; }
     </style>
 </head>
 <body>
 
+    <div id="access-modal" class="modal-back hidden">
+        <div class="modal">
+            <h3 style="color:var(--accent); margin-bottom: 20px;">Bienvenido a J&J Comunidad</h3>
+            
+            <button class="btn-ia" id="btn-free-dl" onclick="startTrial()">
+                🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)
+            </button>
+
+            <div class="choice-card hidden" id="btn-subscribe-wa" onclick="contactSupport()" style="border-color: var(--wa);">
+                <div style="font-size:24px">📲</div>
+                <div><div style="font-weight:bold; color:var(--wa);">Activar Suscripción VIP</div><div style="font-size:11px; color:#666">Pruebas agotadas. ¡Únete hoy!</div></div>
+            </div>
+
+            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
+            
+            <div class="choice-card" onclick="openLogin()">
+                <div style="font-size:24px">💎</div>
+                <div><div style="font-weight:bold; color:white;">Ya soy Socio J&J</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
+            </div>
+
+            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Explorar herramientas</button>
+        </div>
+    </div>
+
+    <div id="login-modal" class="modal-back hidden">
+        <div class="modal" style="max-width:350px;">
+            <h3>Validar Membresía</h3>
+            <input type="text" id="user-id" placeholder="📱 Número Celular" class="m-input" style="margin-bottom:12px">
+            <button class="btn-ia" onclick="validateAccess()" id="btn-login-text">ENTRAR</button>
+            <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Volver</button>
+        </div>
+    </div>
+
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--accent)">Ajustes de Exportación</h3>
+            <h3 style="color:var(--accent)">Opciones de Exportación</h3>
             <div class="grid-export">
                 <div><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
                 <div><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option><option value="in">in</option></select></div>
                 <div style="grid-column: span 2">
-                    <label>Calidad de Interpolación</label>
+                    <label>Interpolación de Calidad</label>
                     <select id="rzMethod" class="m-input">
                         <option value="high">Bicúbica (Alta Definición)</option>
                         <option value="medium">Bilinear (Estándar)</option>
-                        <option value="low">Nearest (Pixel Art)</option>
+                        <option value="low">Nearest Neighbor (Pixel Art)</option>
                     </select>
                 </div>
                 <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
                     <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción</small>
                 </div>
             </div>
-            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:15px;" onclick="finalDownload()">DESCARGAR AHORA</button>
+            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:15px;" onclick="finalDownload()">DESCARGAR PNG</button>
             <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cancelar</button>
         </div>
     </div>
 
     <header>
         <div class="logo">J&J COMUNIDAD PRO</div>
-        <button class="btn-secondary" style="width:auto; margin:0;" onclick="resetImg()">🔄 RESET</button>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div id="status-tag" style="font-size:9px; background:#222; padding:4px 8px; border-radius:4px;">INVITADO</div>
+            <button id="btnLogout" onclick="logout()" style="display:none; background:none; border:1px solid #333; color:#555; font-size:10px; cursor:pointer; border-radius:4px;">SALIR</button>
+        </div>
     </header>
 
     <main class="wrap">
         <aside class="panel">
             <button class="btn-ia" onclick="applyFHDRemaster()">🚀 MEJORAR CALIDAD FHD</button>
             
-            <h2>1. Carga de Imagen</h2>
+            <h2>1. Carga</h2>
             <input type="file" id="file" accept="image/*" class="m-input">
 
-            <h2>2. Quitar Fondo (Transparencia)</h2>
+            <h2>2. Quitar Fondo</h2>
             <div class="control-row">
                 <select id="mode" class="m-input" style="margin:0">
                     <option value="white">Fondo Blanco</option>
@@ -89,10 +126,10 @@
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.5"></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"></div>
 
-            <h2>3. Previsualización Lienzo</h2>
+            <h2>3. Color de Lienzo</h2>
             <input type="color" id="bgColor" value="#080808" style="width:100%; height:45px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
 
-            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="openExport()">Descargar PNG Profesional</button>
+            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">Descargar PNG</button>
         </aside>
 
         <section class="stage" id="stage">
@@ -105,6 +142,24 @@
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
         let backup = document.createElement('canvas'), bCtx = backup.getContext('2d');
         let targetColor = [255,255,255], aspectRatio = 1;
+        let isVip = sessionStorage.getItem('jj_session') === 'active', freeCount = parseInt(localStorage.getItem('jj_free_count') || "2");
+
+        window.onload = () => {
+            if(!isVip) document.getElementById('access-modal').classList.remove('hidden');
+            else {
+                document.getElementById('status-tag').innerText = "SOCIO VIP";
+                document.getElementById('btnLogout').style.display = 'block';
+            }
+            updateUI();
+        };
+
+        function updateUI() {
+            document.getElementById('count-free').innerText = freeCount;
+            if(freeCount <= 0 && !isVip) {
+                document.getElementById('btn-free-dl').classList.add('hidden');
+                document.getElementById('btn-subscribe-wa').classList.remove('hidden');
+            }
+        }
 
         document.getElementById('file').onchange = e => {
             const f = e.target.files[0]; if(!f) return;
@@ -122,13 +177,11 @@
 
         function applyFHDRemaster() {
             if(!oCanvas.width) return;
-            const factor = 1.5;
-            const tw = Math.round(oCanvas.width * factor), th = Math.round(oCanvas.height * factor);
             const temp = document.createElement('canvas');
+            const tw = Math.round(oCanvas.width * 1.5), th = Math.round(oCanvas.height * 1.5);
             temp.width = tw; temp.height = th;
             const tCtx = temp.getContext('2d');
-            tCtx.imageSmoothingEnabled = true; tCtx.imageSmoothingQuality = 'high';
-            tCtx.drawImage(oCanvas, 0, 0, tw, th);
+            tCtx.imageSmoothingQuality = 'high'; tCtx.drawImage(oCanvas, 0, 0, tw, th);
             oCanvas.width = tw; oCanvas.height = th;
             oCtx.drawImage(temp, 0, 0);
             process();
@@ -162,25 +215,21 @@
             for (let i = 0; i < d.length; i += 4) {
                 const dist = Math.sqrt((d[i]-tc[0])**2 + (d[i+1]-tc[1])**2 + (d[i+2]-tc[2])**2);
                 o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                
-                // Lógica de Alpha Clipping para evitar que se combine con el fondo
-                if(dist < threshold - soft) {
-                    o[i+3] = 0; // Transparencia total
-                } else if(dist < threshold) {
-                    o[i+3] = ((dist - (threshold - soft)) / soft) * d[i+3];
-                } else {
-                    o[i+3] = d[i+3];
-                }
+                // Alpha Clipping Absoluto
+                if(dist < threshold-soft) o[i+3]=0;
+                else if(dist < threshold) o[i+3]=((dist-(threshold-soft))/soft)*d[i+3];
+                else o[i+3]=d[i+3];
             }
             canvas.width = oCanvas.width; canvas.height = oCanvas.height;
             ctx.putImageData(out, 0, 0);
         }
 
-        function openExport() { 
+        function handleDownload() {
             if(!oCanvas.width) return;
+            if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden');
             document.getElementById('rzW').value = canvas.width;
             document.getElementById('rzH').value = canvas.height;
-            document.getElementById('modalExport').classList.remove('hidden'); 
+            document.getElementById('modalExport').classList.remove('hidden');
         }
 
         const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect');
@@ -190,32 +239,36 @@
         function finalDownload() {
             const dpi = parseInt(document.getElementById('rzDPI').value);
             const unit = document.getElementById('rzUnit').value;
-            const method = document.getElementById('rzMethod').value;
             let tw = rzW.value;
             if(unit === 'in') tw = rzW.value * dpi;
             if(unit === 'cm') tw = (rzW.value / 2.54) * dpi;
+
             const temp = document.createElement('canvas');
             temp.width = tw; temp.height = tw / aspectRatio;
             const tCtx = temp.getContext('2d');
-            tCtx.imageSmoothingQuality = method;
+            tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
             tCtx.drawImage(canvas, 0, 0, temp.width, temp.height);
+
             const link = document.createElement('a');
-            link.download = 'jj_clean_pro.png';
+            link.download = 'jj_comunidad_pro.png';
             link.href = temp.toDataURL();
             link.click();
+            
+            if(!isVip && window.isTrial) {
+                freeCount--;
+                localStorage.setItem('jj_free_count', freeCount);
+                location.reload();
+            }
             closeModal('modalExport');
         }
 
-        function resetImg() { 
-            oCanvas.width = backup.width; oCanvas.height = backup.height;
-            oCtx.drawImage(backup, 0, 0); process(); 
-        }
-
-        document.getElementById('bgColor').oninput = e => {
-            document.getElementById('stage').style.backgroundColor = e.target.value;
-        };
-
+        function startTrial() { window.isTrial = true; closeModal('access-modal'); }
+        function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
+        function contactSupport() { window.open('https://wa.me/51916689969?text=Hola J&J Comunidad, agoté mis pruebas gratuitas y quiero activar mi suscripción VIP.', '_blank'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function logout() { sessionStorage.clear(); location.reload(); }
+        function resetImg() { oCanvas.width = backup.width; oCanvas.height = backup.height; oCtx.drawImage(backup, 0, 0); process(); }
+        document.getElementById('bgColor').oninput = e => document.getElementById('stage').style.backgroundColor = e.target.value;
         ['fuzz', 'feather', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
 </body>
