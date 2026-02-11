@@ -15,7 +15,6 @@
 
         header { padding: 12px 20px; border-bottom: 1px solid var(--border); background: #0b0b0b; display: flex; align-items: center; justify-content: space-between; height: 60px; position: sticky; top: 0; z-index: 1000; }
         .logo-text { font-size: 1.1rem; font-weight: 800; background: linear-gradient(to right, var(--vip), #0081ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .header-actions { display: flex; align-items: center; gap: 10px; }
         
         #status-tag { font-size: 9px; padding: 4px 10px; border-radius: 20px; background: #222; color: #888; font-weight: bold; border: 1px solid #333; text-transform: uppercase; }
         .status-vip { background: #052e1a !important; color: var(--success) !important; border-color: var(--success) !important; }
@@ -23,7 +22,7 @@
         .btn-logout { background: transparent; border: 1px solid #333; color: #666; font-size: 10px; padding: 4px 8px; border-radius: 4px; cursor: pointer; display: none; }
 
         .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
-        @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; height: auto; display: block; } .panel { border-right: none; border-bottom: 1px solid var(--border); } }
+        @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; height: auto; display: block; } }
 
         .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; }
         h2 { font-size: 11px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
@@ -50,16 +49,16 @@
 
     <div id="access-modal" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--vip)">Opciones de Descarga</h3>
+            <h3 style="color:var(--vip)">Opciones de Suscripción</h3>
             <button class="btn-dl" onclick="useFreeTrial()">🎁 PRUEBA GRATUITA (1)</button>
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
             <div class="choice-card" onclick="openLogin()">
                 <div style="font-size:24px">💎</div>
-                <div><div style="font-weight:bold; color:white;">Soy Socio J&J</div><div style="font-size:11px; color:#666">Acceso con tu número móvil.</div></div>
+                <div><div style="font-weight:bold; color:white;">Soy Socio J&J</div><div style="font-size:11px; color:#666">Valida tu número móvil.</div></div>
             </div>
             <div class="choice-card" onclick="window.open('https://wa.me/51916689969')">
                 <div style="font-size:24px">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">Quiero Suscribirme</div><div style="font-size:11px; color:#666">Soporte VIP y descargas ilimitadas.</div></div>
+                <div><div style="font-weight:bold; color:var(--wa);">Quiero Suscribirme</div><div style="font-size:11px; color:#666">Acceso ilimitado y Soporte Pro.</div></div>
             </div>
             <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cerrar</button>
         </div>
@@ -67,8 +66,8 @@
 
     <div id="login-modal" class="modal-back hidden">
         <div class="modal" style="max-width:350px;">
-            <h3>Validar Membresía</h3>
-            <input type="text" id="user-id" placeholder="📱 Número Celular" class="m-input" style="margin-bottom:12px">
+            <h3>Validar Acceso</h3>
+            <input type="text" id="user-id" placeholder="📱 Ingresa tu número móvil" class="m-input" style="margin-bottom:12px">
             <button class="btn-dl" onclick="validateAccess()" id="btn-login-text">ENTRAR</button>
             <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Volver</button>
         </div>
@@ -76,24 +75,24 @@
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="margin-top:0; color:var(--vip)">Salida Proporcional</h3>
+            <h3 style="margin-top:0; color:var(--vip)">Ajustes de Exportación</h3>
             <div class="grid-export">
                 <div><label>Ancho (cm)</label><input type="number" id="rzW" class="m-input"></div>
                 <div><label>Alto (cm)</label><input type="number" id="rzH" class="m-input"></div>
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="cm">cm</option><option value="in">in</option></select></div>
                 <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
-                    <input type="checkbox" id="lockAspect" checked> <small>Bloquear Proporción Vinculada</small>
+                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción</small>
                 </div>
             </div>
             <button class="btn-dl" onclick="finalDownload()">DESCARGAR PNG</button>
-            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:15px; cursor:pointer">Cancelar</button>
+            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer">Cerrar</button>
         </div>
     </div>
 
     <header>
         <div class="logo-text">J&J STUDIO PRO</div>
-        <div class="header-actions">
+        <div style="display:flex; align-items:center; gap:10px;">
             <div id="status-tag">INVITADO</div>
             <button class="btn-logout" id="btnLogout" onclick="logout()">SALIR</button>
         </div>
@@ -102,9 +101,9 @@
     <main class="wrap">
         <aside class="panel">
             <button class="btn-s" style="background:var(--success); color:#000;" onclick="enhanceIA()">🚀 MEJORAR CALIDAD IA</button>
-            <h2>1. Carga</h2>
+            <h2>1. Archivo</h2>
             <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:11px;">
-            <h2>2. Limpieza Técnica</h2>
+            <h2>2. Configuración</h2>
             <div class="control-row"><select id="mode" class="m-input" style="flex:1; margin:0"><option value="white">Quitar Blanco</option><option value="black">Quitar Negro</option></select></div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
@@ -163,19 +162,18 @@
             if(!u) return alert("Ingresa tu número.");
             const btn = document.getElementById('btn-login-text'); btn.innerText = "VERIFICANDO...";
             try {
-                // TU URL CORRECTA
-                const url = `https://script.google.com/macros/s/AKfycbwD-NYX8Jxu0G3nPYfiXRW1oDxDvqO5J0jBLsxTIGaTo94NpUpgBNcHoW0wCQ9XUu0x/exec?user=${u}`;
-                const res = await fetch(url);
+                // USANDO TU NUEVA URL DE EXEC
+                const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
                 const data = await res.json();
                 if(data.access) {
                     sessionStorage.setItem('jj_session', 'active'); sessionStorage.setItem('jj_status', data.status); location.reload();
                 } else alert("Acceso denegado: " + data.status);
-            } catch(e) { alert("Error de conexión con el servidor."); }
+            } catch(e) { alert("Error de conexión."); }
             btn.innerText = "ENTRAR";
         }
 
         function handleDownload() { if(isVip) openExport(); else document.getElementById('access-modal').classList.remove('hidden'); }
-        function useFreeTrial() { if(freeUsed){ alert("Prueba agotada."); return; } localStorage.setItem('jj_free_trial', 'used'); closeModal('access-modal'); openExport(); }
+        function useFreeTrial() { if(freeUsed){ alert("Prueba usada."); return; } localStorage.setItem('jj_free_trial', 'used'); closeModal('access-modal'); openExport(); }
         function openExport() { if(!oCanvas.width) return; rzW.value=(oCanvas.width/300*2.54).toFixed(2); rzH.value=(oCanvas.height/300*2.54).toFixed(2); document.getElementById('modalExport').classList.remove('hidden'); }
         
         const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect'), rzUnit = document.getElementById('rzUnit'), rzDPI = document.getElementById('rzDPI');
