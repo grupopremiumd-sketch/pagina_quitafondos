@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Comunidad Pro — Edición Definitiva</title>
+    <title>J&J Comunidad Pro</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --accent: #00f2ff; --border: #222; --success: #00ff88; --wa: #25d366;
@@ -37,6 +37,7 @@
         .modal { background: #111; padding: 25px; border-radius: 15px; width: 100%; max-width: 440px; border: 1px solid #222; text-align: center; }
         .hidden { display: none !important; }
         .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; margin-top: 15px; }
+        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
     </style>
 </head>
 <body>
@@ -45,13 +46,14 @@
         <div class="modal">
             <h3 style="color:var(--accent); margin-bottom: 20px;">J&J Comunidad Pro</h3>
             <button class="btn-ia" id="btn-free-dl" onclick="startTrial()">🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
-            <div id="btn-subscribe-wa" class="hidden" onclick="contactSupport()" style="background:#1a1a1a; border:1px solid var(--wa); padding:15px; border-radius:12px; cursor:pointer; text-align:left; margin-bottom:10px;">
-                <div style="font-weight:bold; color:var(--wa);">Activar VIP</div>
-                <div style="font-size:11px; color:#666">Pruebas agotadas. ¡Infórmate aquí!</div>
+            <div id="btn-subscribe-wa" class="choice-card hidden" onclick="contactSupport()" style="border-color: var(--wa);">
+                <div style="font-size:24px">📲</div>
+                <div><div style="font-weight:bold; color:var(--wa);">Activar VIP</div><div style="font-size:11px; color:#666">Pruebas agotadas. Infórmate aquí.</div></div>
             </div>
-            <div style="background:#1a1a1a; border:1px solid #333; padding:15px; border-radius:12px; cursor:pointer; text-align:left;" onclick="openLogin()">
-                <div style="font-weight:bold; color:white;">Ya soy Socio J&J</div>
-                <div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div>
+            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
+            <div class="choice-card" onclick="openLogin()">
+                <div style="font-size:24px">💎</div>
+                <div><div style="font-weight:bold; color:white;">Ya soy Socio J&J</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
             </div>
             <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Cerrar</button>
         </div>
@@ -75,11 +77,9 @@
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option></select></div>
                 <div style="grid-column: span 2">
-                    <label>Interpolación de Calidad</label>
+                    <label>Calidad Interpolación</label>
                     <select id="rzMethod" class="m-input">
-                        <option value="high">Bicúbica (Pro)</option>
-                        <option value="medium">Bilinear</option>
-                        <option value="low">Nearest Neighbor</option>
+                        <option value="high">Bicúbica (Pro)</option><option value="medium">Bilinear</option><option value="low">Nearest</option>
                     </select>
                 </div>
                 <div style="grid-column: span 2; display:flex; gap:10px; align-items:center;">
@@ -101,7 +101,6 @@
 
     <main class="wrap">
         <aside class="panel">
-            <h2>IA & Arte</h2>
             <button class="btn-ia" onclick="applyFHDRemaster()">🚀 MEJORAR CALIDAD FHD</button>
             <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
                 <button class="btn-art" onclick="applyBlackAndWhite()">⚪ B&N</button>
@@ -143,22 +142,41 @@
 
         window.onload = () => {
             if(!isVip) document.getElementById('access-modal').classList.remove('hidden');
-            else { document.getElementById('status-tag').innerText = "SOCIO VIP"; document.getElementById('btnLogout').style.display = 'block'; }
-            document.getElementById('count-free').innerText = freeCount;
-            if(freeCount <= 0 && !isVip) { document.getElementById('btn-free-dl').classList.add('hidden'); document.getElementById('btn-subscribe-wa').classList.remove('hidden'); }
+            else { 
+                document.getElementById('status-tag').innerText = "SOCIO VIP"; 
+                document.getElementById('status-tag').style.color = "var(--success)";
+                document.getElementById('btnLogout').style.display = 'block'; 
+            }
+            updateUI();
         };
 
-        // MOTOR AUTO: Independiente del manual
+        function updateUI() {
+            document.getElementById('count-free').innerText = freeCount;
+            if(freeCount <= 0 && !isVip) {
+                document.getElementById('btn-free-dl').classList.add('hidden');
+                document.getElementById('btn-subscribe-wa').classList.remove('hidden');
+            }
+        }
+
+        async function validateAccess() {
+            const u = document.getElementById('user-id').value.trim();
+            if(!u) return;
+            try {
+                const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
+                const data = await res.json();
+                if(data.access) { sessionStorage.setItem('jj_session', 'active'); location.reload(); }
+                else alert("Número no registrado.");
+            } catch(e) { alert("Error de servidor."); }
+        }
+
         function applyAutoRemove() {
             if(!oCanvas.width) return;
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
             const w = oCanvas.width, h = oCanvas.height;
-            // Scan perimetral para aislar sujeto
             const corners = [0, (w-1)*4, (w*h-w)*4, (w*h-1)*4];
-            let r=0, g=0, b=0; 
-            corners.forEach(s => { r+=d[s]; g+=d[s+1]; b+=d[s+2]; });
+            let r=0, g=0, b=0; corners.forEach(s => { r+=d[s]; g+=d[s+1]; b+=d[s+2]; });
             targetColor = [r/4, g/4, b/4];
-            document.getElementById('fuzz').value = 55;
+            document.getElementById('fuzz').value = 65;
             process();
         }
 
@@ -169,7 +187,7 @@
             for (let y = 0; y < h; y++) {
                 for (let x = 0; x < w; x++) {
                     const i = (y * w + x) * 4;
-                    if(d[i+3] > 10) {
+                    if(d[i+3] > 20) {
                         const stitch = (x % 4 === 0 || y % 4 === 0) ? 0.75 : 1.25;
                         d[i] = Math.min(255, d[i] * stitch);
                         d[i+1] = Math.min(255, d[i+1] * stitch);
@@ -216,22 +234,15 @@
             const tCtx = temp.getContext('2d');
             tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
             tCtx.drawImage(canvas, 0, 0, temp.width, temp.height);
-            const link = document.createElement('a'); link.download = 'jj_comunidad_pro.png'; link.href = temp.toDataURL(); link.click();
+            const link = document.createElement('a'); link.download = 'jj_pro.png'; link.href = temp.toDataURL(); link.click();
             if(!isVip && window.isTrial) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
             closeModal('modalExport');
         }
 
-        async function validateAccess() {
-            const u = document.getElementById('user-id').value.trim();
-            const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
-            const data = await res.json();
-            if(data.access) { sessionStorage.setItem('jj_session', 'active'); location.reload(); }
-            else alert("No registrado.");
-        }
-
+        function contactSupport() { window.open('https://wa.me/51916689969?text=hola%20quiero%20informes%20sobre%20la%20suscripccion', '_blank'); }
         function logout() { sessionStorage.clear(); location.reload(); }
         function startTrial() { window.isTrial = true; closeModal('access-modal'); }
-        function contactSupport() { window.open('https://wa.me/51916689969?text=Hola J&J Comunidad, quiero informes sobre la suscripcion', '_blank'); }
+        function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function resetImg() { oCanvas.width=backup.width; oCanvas.height=backup.height; oCtx.drawImage(backup,0,0); process(); }
         
@@ -243,7 +254,6 @@
             };
             img.src = URL.createObjectURL(f);
         };
-
         function applyBlackAndWhite() { if(!oCanvas.width) return; const id=oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d=id.data; for(let i=0;i<d.length;i+=4){let g=d[i]*0.3+d[i+1]*0.59+d[i+2]*0.11;d[i]=d[i+1]=d[i+2]=g;}oCtx.putImageData(id,0,0); process(); }
         function applyFHDRemaster() { if(!oCanvas.width) return; const tw=Math.round(oCanvas.width*1.5), th=Math.round(oCanvas.height*1.5); const t=document.createElement('canvas'); t.width=tw; t.height=th; const tc=t.getContext('2d'); tc.imageSmoothingQuality='high'; tc.drawImage(oCanvas,0,0,tw,th); oCanvas.width=tw; oCanvas.height=th; oCtx.drawImage(t,0,0); process(); }
         document.getElementById('bgColor').oninput = e => document.getElementById('stage').style.backgroundColor = e.target.value;
