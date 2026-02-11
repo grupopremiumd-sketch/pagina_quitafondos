@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Comunidad Pro</title>
+    <title>J&J Comunidad Pro — Master Pro</title>
     <style>
         :root {
             --bg: #0a0a0a; --panel: #111; --text: #eee; --accent: #00f2ff; --border: #222; --success: #00ff88; --wa: #25d366;
@@ -31,13 +31,12 @@
         .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; font-size: 14px; outline: none; margin-bottom: 10px; }
 
         .stage { background: #080808; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; min-height: 400px; }
-        canvas#canvas { max-width: 90%; max-height: 90%; object-fit: contain; }
+        canvas#canvas { max-width: 90%; max-height: 90%; object-fit: contain; cursor: crosshair; }
 
         .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
         .modal { background: #111; padding: 25px; border-radius: 15px; width: 100%; max-width: 440px; border: 1px solid #222; text-align: center; }
         .hidden { display: none !important; }
         .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; margin-top: 15px; }
-        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
     </style>
 </head>
 <body>
@@ -46,14 +45,13 @@
         <div class="modal">
             <h3 style="color:var(--accent); margin-bottom: 20px;">J&J Comunidad Pro</h3>
             <button class="btn-ia" id="btn-free-dl" onclick="startTrial()">🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
-            <div id="btn-subscribe-wa" class="choice-card hidden" onclick="contactSupport()" style="border-color: var(--wa);">
-                <div style="font-size:24px">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">Activar VIP</div><div style="font-size:11px; color:#666">Pruebas agotadas. Infórmate aquí.</div></div>
+            <div id="btn-subscribe-wa" class="hidden" onclick="contactSupport()" style="background:#1a1a1a; border:1px solid var(--wa); padding:15px; border-radius:12px; cursor:pointer; text-align:left; margin-bottom:10px;">
+                <div style="font-weight:bold; color:var(--wa);">Activar VIP</div>
+                <div style="font-size:11px; color:#666">Pruebas agotadas. Infórmate aquí.</div>
             </div>
-            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-            <div class="choice-card" onclick="openLogin()">
-                <div style="font-size:24px">💎</div>
-                <div><div style="font-weight:bold; color:white;">Ya soy Socio J&J</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
+            <div style="background:#1a1a1a; border:1px solid #333; padding:15px; border-radius:12px; cursor:pointer; text-align:left;" onclick="openLogin()">
+                <div style="font-weight:bold; color:white;">Ya soy Socio J&J</div>
+                <div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div>
             </div>
             <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Cerrar</button>
         </div>
@@ -77,7 +75,7 @@
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label><select id="rzUnit" class="m-input"><option value="px">px</option><option value="cm">cm</option></select></div>
                 <div style="grid-column: span 2">
-                    <label>Calidad Interpolación</label>
+                    <label>Calidad de Salida</label>
                     <select id="rzMethod" class="m-input">
                         <option value="high">Bicúbica (Pro)</option><option value="medium">Bilinear</option><option value="low">Nearest</option>
                     </select>
@@ -114,7 +112,6 @@
             <h2>2. Quitar Fondo IA</h2>
             <button class="btn-ia" style="background:#6c5ce7; color:#fff;" onclick="applyAutoRemove()">✨ QUITAR FONDO AUTO</button>
             
-            <h2>3. Ajuste Manual</h2>
             <div class="control-row">
                 <select id="mode" class="m-input" style="margin:0">
                     <option value="white">Blanco</option><option value="black">Negro</option><option value="pick">🎨 Gotero Manual</option>
@@ -124,7 +121,7 @@
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.5"></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"></div>
 
-            <h2>4. Lienzo</h2>
+            <h2>3. Lienzo</h2>
             <input type="color" id="bgColor" value="#080808" style="width:100%; height:40px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
 
             <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">Descargar PNG Pro</button>
@@ -142,41 +139,31 @@
 
         window.onload = () => {
             if(!isVip) document.getElementById('access-modal').classList.remove('hidden');
-            else { 
-                document.getElementById('status-tag').innerText = "SOCIO VIP"; 
-                document.getElementById('status-tag').style.color = "var(--success)";
-                document.getElementById('btnLogout').style.display = 'block'; 
-            }
+            else { document.getElementById('status-tag').innerText = "SOCIO VIP"; document.getElementById('btnLogout').style.display = 'block'; }
             updateUI();
         };
 
-        function updateUI() {
-            document.getElementById('count-free').innerText = freeCount;
-            if(freeCount <= 0 && !isVip) {
-                document.getElementById('btn-free-dl').classList.add('hidden');
-                document.getElementById('btn-subscribe-wa').classList.remove('hidden');
-            }
-        }
+        // GOTERO MANUAL (CORREGIDO)
+        canvas.addEventListener('mousedown', (e) => {
+            if (document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (oCanvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (oCanvas.height / rect.height);
+            const pixel = oCtx.getImageData(x, y, 1, 1).data;
+            targetColor = [pixel[0], pixel[1], pixel[2]];
+            process();
+        });
 
-        async function validateAccess() {
-            const u = document.getElementById('user-id').value.trim();
-            if(!u) return;
-            try {
-                const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
-                const data = await res.json();
-                if(data.access) { sessionStorage.setItem('jj_session', 'active'); location.reload(); }
-                else alert("Número no registrado.");
-            } catch(e) { alert("Error de servidor."); }
-        }
-
+        // QUITAR FONDO AUTO (MUESTREO DE BORDE MEJORADO)
         function applyAutoRemove() {
             if(!oCanvas.width) return;
-            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
+            const d = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height).data;
             const w = oCanvas.width, h = oCanvas.height;
-            const corners = [0, (w-1)*4, (w*h-w)*4, (w*h-1)*4];
-            let r=0, g=0, b=0; corners.forEach(s => { r+=d[s]; g+=d[s+1]; b+=d[s+2]; });
-            targetColor = [r/4, g/4, b/4];
-            document.getElementById('fuzz').value = 65;
+            const points = [0, (w-1)*4, (w*h-w)*4, (w*h-1)*4, Math.floor(w/2)*4, (w*h-w+Math.floor(w/2))*4];
+            let r=0, g=0, b=0; 
+            points.forEach(p => { r+=d[p]; g+=d[p+1]; b+=d[p+2]; });
+            targetColor = [r/points.length, g/points.length, b/points.length];
+            document.getElementById('fuzz').value = 75;
             process();
         }
 
@@ -221,13 +208,6 @@
         rzW.oninput = () => { if(lock.checked) rzH.value = Math.round(rzW.value / aspectRatio); };
         rzH.oninput = () => { if(lock.checked) rzW.value = Math.round(rzH.value * aspectRatio); };
 
-        function handleDownload() {
-            if(!oCanvas.width) return;
-            if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden');
-            rzW.value = canvas.width; rzH.value = canvas.height;
-            document.getElementById('modalExport').classList.remove('hidden');
-        }
-
         function finalDownload() {
             const temp = document.createElement('canvas');
             temp.width = rzW.value; temp.height = rzH.value;
@@ -239,19 +219,25 @@
             closeModal('modalExport');
         }
 
+        async function validateAccess() {
+            const u = document.getElementById('user-id').value.trim();
+            const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
+            const data = await res.json();
+            if(data.access) { sessionStorage.setItem('jj_session', 'active'); location.reload(); }
+            else alert("No registrado.");
+        }
+
         function contactSupport() { window.open('https://wa.me/51916689969?text=hola%20quiero%20informes%20sobre%20la%20suscripccion', '_blank'); }
         function logout() { sessionStorage.clear(); location.reload(); }
         function startTrial() { window.isTrial = true; closeModal('access-modal'); }
+        function updateUI() { document.getElementById('count-free').innerText = freeCount; if(freeCount <= 0 && !isVip) { document.getElementById('btn-free-dl').classList.add('hidden'); document.getElementById('btn-subscribe-wa').classList.remove('hidden'); } }
         function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
+        function handleDownload() { if(!oCanvas.width) return; if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden'); rzW.value = canvas.width; rzH.value = canvas.height; document.getElementById('modalExport').classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function resetImg() { oCanvas.width=backup.width; oCanvas.height=backup.height; oCtx.drawImage(backup,0,0); process(); }
-        
         document.getElementById('file').onchange = e => {
             const f = e.target.files[0]; if(!f) return;
-            const img = new Image(); img.onload = () => { 
-                oCanvas.width=backup.width=img.width; oCanvas.height=backup.height=img.height; 
-                aspectRatio=img.width/img.height; oCtx.drawImage(img,0,0); bCtx.drawImage(img,0,0); process(); 
-            };
+            const img = new Image(); img.onload = () => { oCanvas.width=backup.width=img.width; oCanvas.height=backup.height=img.height; aspectRatio=img.width/img.height; oCtx.drawImage(img,0,0); bCtx.drawImage(img,0,0); process(); };
             img.src = URL.createObjectURL(f);
         };
         function applyBlackAndWhite() { if(!oCanvas.width) return; const id=oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d=id.data; for(let i=0;i<d.length;i+=4){let g=d[i]*0.3+d[i+1]*0.59+d[i+2]*0.11;d[i]=d[i+1]=d[i+2]=g;}oCtx.putImageData(id,0,0); process(); }
