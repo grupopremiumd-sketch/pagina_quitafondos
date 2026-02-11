@@ -25,9 +25,8 @@
         .wrap { display: grid; grid-template-columns: 350px 1fr; height: calc(100vh - 60px); }
         @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; height: auto; display: block; } .panel { border-right: none; border-bottom: 1px solid var(--border); } }
 
-        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; z-index: 100; }
+        .panel { padding: 20px; background: #111; border-right: 1px solid var(--border); overflow-y: auto; }
         h2 { font-size: 11px; color: var(--muted); margin: 20px 0 10px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 5px; }
-        
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 10px; }
         label { font-size: 12px; color: #ddd; width: 110px; }
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
@@ -43,10 +42,7 @@
         .modal { background: #121212; padding: 25px; border-radius: 18px; width: 100%; max-width: 480px; border: 1px solid #262626; text-align: center; }
         .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 8px; width: 100%; font-size: 14px; outline: none; }
         .hidden { display: none !important; }
-
         .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
-        .choice-card:hover { border-color: var(--vip); background: #222; }
-
         .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; margin-top: 15px; }
     </style>
 </head>
@@ -59,11 +55,11 @@
             <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
             <div class="choice-card" onclick="openLogin()">
                 <div style="font-size:24px">💎</div>
-                <div><div style="font-weight:bold; color:white;">Soy Socio J&J</div><div style="font-size:11px; color:#666">Ingresa con tu número registrado.</div></div>
+                <div><div style="font-weight:bold; color:white;">Soy Socio J&J</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
             </div>
             <div class="choice-card" onclick="window.open('https://wa.me/51916689969')">
                 <div style="font-size:24px">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">Quiero Suscribirme</div><div style="font-size:11px; color:#666">Descargas ilimitadas y herramientas Pro.</div></div>
+                <div><div style="font-weight:bold; color:var(--wa);">Quiero Suscribirme</div><div style="font-size:11px; color:#666">Acceso ilimitado y Soporte VIP.</div></div>
             </div>
             <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cerrar</button>
         </div>
@@ -71,8 +67,8 @@
 
     <div id="login-modal" class="modal-back hidden">
         <div class="modal" style="max-width:350px;">
-            <h3>Validar Socio</h3>
-            <input type="text" id="user-id" placeholder="📱 Número Celular (con código)" class="m-input" style="margin-bottom:12px">
+            <h3>Validar Membresía</h3>
+            <input type="text" id="user-id" placeholder="📱 Número Celular" class="m-input" style="margin-bottom:12px">
             <button class="btn-dl" onclick="validateAccess()" id="btn-login-text">ENTRAR</button>
             <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Volver</button>
         </div>
@@ -80,7 +76,7 @@
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="margin-top:0; color:var(--vip)">Ajustes de Salida</h3>
+            <h3 style="margin-top:0; color:var(--vip)">Salida Proporcional</h3>
             <div class="grid-export">
                 <div><label>Ancho (cm)</label><input type="number" id="rzW" class="m-input"></div>
                 <div><label>Alto (cm)</label><input type="number" id="rzH" class="m-input"></div>
@@ -91,7 +87,7 @@
                 </div>
             </div>
             <button class="btn-dl" onclick="finalDownload()">DESCARGAR PNG</button>
-            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:10px; cursor:pointer">Cancelar</button>
+            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; width:100%; margin-top:15px; cursor:pointer">Cancelar</button>
         </div>
     </div>
 
@@ -106,17 +102,17 @@
     <main class="wrap">
         <aside class="panel">
             <button class="btn-s" style="background:var(--success); color:#000;" onclick="enhanceIA()">🚀 MEJORAR CALIDAD IA</button>
-            <h2>1. Archivo</h2>
+            <h2>1. Carga</h2>
             <input type="file" id="file" accept="image/*" style="width:100%; color:#888; font-size:11px;">
-            <h2>2. Herramientas de Limpieza</h2>
-            <div class="control-row"><select id="mode" class="m-input" style="flex:1; margin:0"><option value="white">Quitar Fondo Blanco</option><option value="black">Quitar Fondo Negro</option></select></div>
+            <h2>2. Limpieza Técnica</h2>
+            <div class="control-row"><select id="mode" class="m-input" style="flex:1; margin:0"><option value="white">Quitar Blanco</option><option value="black">Quitar Negro</option></select></div>
             <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"><div class="val-box" id="fuzzV">60</div></div>
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.8"><div class="val-box" id="featherV">0.8</div></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"><div class="val-box" id="contractV">0</div></div>
-            <h2>3. Color del Lienzo (Elegir)</h2>
-            <div id="cp-box" style="height:110px; display:flex; gap:8px; margin-top:10px; touch-action:none;">
+            <h2>3. Color del Lienzo</h2>
+            <div id="cp-box" style="height:100px; display:flex; gap:5px; margin-top:10px; touch-action:none;">
                 <canvas id="cpSV" style="flex:1; border-radius:8px; border:1px solid #333; cursor:crosshair;"></canvas>
-                <canvas id="cpH" style="width:30px; border-radius:8px; border:1px solid #333; cursor:ns-resize;"></canvas>
+                <canvas id="cpH" style="width:25px; border-radius:8px; border:1px solid #333; cursor:ns-resize;"></canvas>
             </div>
             <button class="btn-dl" onclick="handleDownload()">DESCARGAR RESULTADO</button>
         </aside>
@@ -164,26 +160,22 @@
 
         async function validateAccess() {
             const u = document.getElementById('user-id').value.trim().replace(/\D/g,'');
-            if(!u) return alert("Por favor, ingresa tu número.");
+            if(!u) return alert("Ingresa tu número.");
             const btn = document.getElementById('btn-login-text'); btn.innerText = "VERIFICANDO...";
             try {
-                // Validación mejorada para tu hoja de cálculo 
-                const res = await fetch(`https://script.google.com/macros/s/AKfycbwCEMZlneRGgZwRPBW7__NDCgyIUVcMdwonRG-A-m9c9LTi-4985AydGUzlD0Q36xxC/exec?user=${u}&pass=${u}`);
+                // USANDO TU NUEVA URL /EXEC
+                const res = await fetch(`https://script.google.com/macros/s/AKfycb-O2tAgwg_4dGEJqe6ktCuyfLntn37sgtiCWeNF28ueLEvxJ57V5J1j33CGdHmHGM/exec?user=${u}`);
                 const data = await res.json();
                 const st = data.status ? data.status.toLowerCase().trim() : "";
                 if(data.access && (st === 'vigente' || st === 'por vencer')) {
                     sessionStorage.setItem('jj_session', 'active'); sessionStorage.setItem('jj_status', data.status); location.reload();
-                } else alert("Acceso denegado. Verifique que su número coincida con la base de datos y su membresía esté vigente.");
-            } catch(e) { alert("Error de conexión."); }
+                } else alert("Acceso denegado o membresía no válida.");
+            } catch(e) { alert("Error de servidor."); }
             btn.innerText = "ENTRAR";
         }
 
-        function handleDownload() { 
-            if(isVip) openExport(); 
-            else document.getElementById('access-modal').classList.remove('hidden'); // DIRECTO A OPCIONES
-        }
-
-        function useFreeTrial() { if(freeUsed) return alert("Ya usaste tu prueba gratuita."); localStorage.setItem('jj_free_trial', 'used'); closeModal('access-modal'); openExport(); }
+        function handleDownload() { if(isVip) openExport(); else document.getElementById('access-modal').classList.remove('hidden'); }
+        function useFreeTrial() { if(freeUsed){ alert("Prueba agotada."); return; } localStorage.setItem('jj_free_trial', 'used'); closeModal('access-modal'); openExport(); }
         function openExport() { if(!oCanvas.width) return; rzW.value=(oCanvas.width/300*2.54).toFixed(2); rzH.value=(oCanvas.height/300*2.54).toFixed(2); document.getElementById('modalExport').classList.remove('hidden'); }
         
         const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect'), rzUnit = document.getElementById('rzUnit'), rzDPI = document.getElementById('rzDPI');
@@ -197,18 +189,18 @@
             temp.width = w; temp.height = w/aspectRatio;
             const tCtx = temp.getContext('2d'); tCtx.imageSmoothingQuality = 'high';
             tCtx.drawImage(canvas, 0,0, temp.width, temp.height);
-            const link = document.createElement('a'); link.download = 'jj_studio_pro.png'; link.href = temp.toDataURL(); link.click();
-            closeModal('modalExport'); if(localStorage.getItem('jj_free_trial')==='used' && !isVip) location.reload();
+            const link = document.createElement('a'); link.download = 'jj_studio.png'; link.href = temp.toDataURL(); link.click();
+            closeModal('modalExport'); if(!isVip && localStorage.getItem('jj_free_trial')==='used') location.reload();
         }
 
         // --- SELECTOR DE COLOR ---
         const cpSV=document.getElementById('cpSV'), cpH=document.getElementById('cpH'), svCtx=cpSV.getContext('2d'), hCtx=cpH.getContext('2d');
         let hue=0, svD=false, hD=false;
         function drawCP() {
-            hCtx.clearRect(0,0,30,110); const gH=hCtx.createLinearGradient(0,0,0,110); for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`); hCtx.fillStyle=gH; hCtx.fillRect(0,0,30,110);
+            hCtx.clearRect(0,0,25,100); const gH=hCtx.createLinearGradient(0,0,0,100); for(let i=0; i<=360; i+=30) gH.addColorStop(i/360, `hsl(${i},100%,50%)`); hCtx.fillStyle=gH; hCtx.fillRect(0,0,25,100);
             svCtx.fillStyle=`hsl(${hue},100%,50%)`; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
             const gW=svCtx.createLinearGradient(0,0,cpSV.width,0); gW.addColorStop(0,'#fff'); gW.addColorStop(1,'transparent'); svCtx.fillStyle=gW; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
-            const gB=svCtx.createLinearGradient(0,0,0,110); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000'); svCtx.fillStyle=gB; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
+            const gB=svCtx.createLinearGradient(0,0,0,100); gB.addColorStop(0,'transparent'); gB.addColorStop(1,'#000'); svCtx.fillStyle=gB; svCtx.fillRect(0,0,cpSV.width,cpSV.height);
         }
         const handleH = e => { const r=cpH.getBoundingClientRect(); const y=(e.touches?e.touches[0].clientY:e.clientY)-r.top; hue=Math.max(0,Math.min(y/r.height*360,360)); drawCP(); };
         const handleSV = e => { const r=cpSV.getBoundingClientRect(); const x=(e.touches?e.touches[0].clientX:e.clientX)-r.left, y=(e.touches?e.touches[0].clientY:e.clientY)-r.top; const id=svCtx.getImageData(Math.max(0,Math.min(x,cpSV.width-1)),Math.max(0,Math.min(y,cpSV.height-1)),1,1).data; document.getElementById('stage').style.backgroundColor=`rgb(${id[0]},${id[1]},${id[2]})`; };
