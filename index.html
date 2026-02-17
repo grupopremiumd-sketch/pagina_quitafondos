@@ -152,6 +152,23 @@
             updateUI();
         };
 
+        // --- SISTEMA GOTERO MANUAL (FIJADO) ---
+        canvas.addEventListener('click', (e) => {
+            if (document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = oCanvas.width / rect.width;
+            const scaleY = oCanvas.height / rect.height;
+            
+            const x = (e.clientX - rect.left) * scaleX;
+            const y = (e.clientY - rect.top) * scaleY;
+
+            // Extraer color del canvas original (oCtx)
+            const pixel = oCtx.getImageData(x, y, 1, 1).data;
+            targetColor = [pixel[0], pixel[1], pixel[2]];
+            process();
+        });
+
         // --- SISTEMA EXPORTAR CON PX/CM/IN ---
         const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect'), unit = document.getElementById('rzUnit'), dpi = document.getElementById('rzDPI');
         
