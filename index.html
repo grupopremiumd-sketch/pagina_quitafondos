@@ -25,10 +25,10 @@
         .btn-art { width: 49%; padding: 10px; background: #222; color: #fff; border: 1px solid #333; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
         .btn-secondary { width: 100%; padding: 10px; background: #1a1a1a; color: #555; border: 1px solid #222; border-radius: 8px; cursor: pointer; font-size: 10px; margin-bottom: 10px; }
 
-        /* ESTILOS BOTONES DE GESTIÓN */
-        .btn-tg { width: 100%; padding: 12px; background: #0088cc; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; font-size: 11px; }
-        .btn-wa-renew { width: 100%; padding: 12px; background: var(--wa); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; font-size: 11px; }
-        .btn-new { width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; font-size: 11px; }
+        /* BOTONES DE GESTIÓN */
+        .btn-tg { width: 100%; padding: 12px; background: #0088cc; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-wa-renew { width: 100%; padding: 12px; background: var(--wa); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-new { width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
         label { font-size: 11px; color: #aaa; }
@@ -51,17 +51,21 @@
     <div id="access-modal" class="modal-back hidden">
         <div class="modal">
             <h3 style="color:var(--accent); margin-bottom: 20px;">J&J Comunidad Pro</h3>
+            
             <button class="btn-ia" id="btn-free-dl" onclick="startTrial()">🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
-            <div id="btn-subscribe-wa" class="choice-card hidden" onclick="contactSupport()" style="border-color: var(--wa);">
-                <div style="font-size:24px">📲</div>
-                <div><div style="font-weight:bold; color:var(--wa);">Activar VIP</div><div style="font-size:11px; color:#666">Descargas agotadas. Infórmate aquí.</div></div>
-            </div>
-            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
+            
             <div class="choice-card" onclick="openLogin()">
                 <div style="font-size:24px">💎</div>
                 <div><div style="font-weight:bold; color:white;">Ya soy Socio J&J</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
             </div>
-            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:15px; cursor:pointer">Cerrar</button>
+
+            <hr style="border:0; border-top:1px solid #222; margin:15px 0;">
+
+            <button class="btn-tg" onclick="window.open('https://t.me/+B50m1g0NBM1mNzU5', '_blank')">🔵 GRUPO GRATUITO TELEGRAM</button>
+            <button class="btn-wa-renew" onclick="window.open('https://wa.me/51904503246?text=Hola%20J&J,%20quiero%20renovar%20mi%20membresía%20VIP', '_blank')">🟢 RENOVAR SOCIOS VIP</button>
+            <button class="btn-new" onclick="window.open('https://wa.me/51916689969?text=Hola,%20soy%20nuevo%20y%20quiero%20información%20de%20la%20membresía', '_blank')">⚪ SOY NUEVO / INFORMES</button>
+
+            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cerrar Herramienta</button>
         </div>
     </div>
 
@@ -85,7 +89,7 @@
                     <select id="rzUnit" class="m-input">
                         <option value="px">px</option>
                         <option value="cm">cm</option>
-                        <option value="in">in (pulgadas)</option>
+                        <option value="in">in</option>
                     </select>
                 </div>
                 <div style="grid-column: span 2">
@@ -97,7 +101,7 @@
                     </select>
                 </div>
                 <div style="grid-column: span 2; display:flex; gap:10px; align-items:center; margin-top:10px;">
-                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción Vincular</small>
+                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción</small>
                 </div>
             </div>
             <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:15px;" onclick="finalDownload()">DESCARGAR PNG</button>
@@ -162,7 +166,7 @@
             updateUI();
         };
 
-        // --- SISTEMA GOTERO MANUAL ---
+        // GOTERO MANUAL
         canvas.addEventListener('click', (e) => {
             if (document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
             const rect = canvas.getBoundingClientRect();
@@ -175,7 +179,7 @@
             process();
         });
 
-        // --- SISTEMA EXPORTAR ---
+        // EXPORTACIÓN
         const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect'), unit = document.getElementById('rzUnit'), dpi = document.getElementById('rzDPI');
         rzW.oninput = () => { if(lock.checked) rzH.value = (rzW.value / aspectRatio).toFixed(2); };
         rzH.oninput = () => { if(lock.checked) rzW.value = (rzH.value * aspectRatio).toFixed(2); };
@@ -192,7 +196,7 @@
             closeModal('modalExport');
         }
 
-        // --- PROCESAMIENTO ---
+        // PROCESAMIENTO
         function applyAutoRemove() {
             if(!oCanvas.width) return;
             const d = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height).data;
@@ -207,8 +211,8 @@
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value), contract = parseInt(document.getElementById('contract').value);
             let tc = targetColor;
-            const m = document.getElementById('mode').value;
-            if(m === 'white') tc = [255,255,255]; if(m === 'black') tc = [0,0,0];
+            if(document.getElementById('mode').value === 'white') tc = [255,255,255];
+            if(document.getElementById('mode').value === 'black') tc = [0,0,0];
             const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
             const out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
             const threshold = (fuzz*2.5)+(contract*10), soft = (feather*15)+1;
@@ -222,7 +226,6 @@
             canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out, 0, 0);
         }
 
-        // --- ACCESO Y LOGIN ---
         async function validateAccess() {
             const u = document.getElementById('user-id').value.trim();
             if(!u) return;
@@ -231,19 +234,18 @@
                 const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
                 const data = await res.json();
                 if(data.access) { sessionStorage.setItem('jj_session', 'active'); location.reload(); }
-                else if(data.status === "vencido" || data.status === "vencida") {
+                else if(data.status === "vencido") {
                     btn.innerText = "RENOVAR VIP"; btn.classList.add('btn-renew');
                     btn.onclick = () => window.open('https://wa.me/51904503246?text=Hola%20J&J,%20mi%20membresía%20está%20vencida%20y%20quiero%20renovar', '_blank');
                 } else alert("Número no registrado.");
-            } catch(e) { alert("Error de conexión."); } finally { btn.innerText = "INGRESAR"; }
+            } catch(e) { alert("Error."); } finally { btn.innerText = "INGRESAR"; }
         }
 
         function handleDownload() { if(!oCanvas.width) return; if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden'); rzW.value = canvas.width; rzH.value = canvas.height; document.getElementById('modalExport').classList.remove('hidden'); }
         function logout() { sessionStorage.clear(); location.reload(); }
-        function updateUI() { document.getElementById('count-free').innerText = freeCount; if(freeCount <= 0 && !isVip) { document.getElementById('btn-free-dl').classList.add('hidden'); document.getElementById('btn-subscribe-wa').classList.remove('hidden'); } }
+        function updateUI() { document.getElementById('count-free').innerText = freeCount; if(freeCount <= 0 && !isVip) { document.getElementById('btn-free-dl').classList.add('hidden'); } }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
-        function contactSupport() { window.open('https://wa.me/51916689969?text=Hola,%20quiero%20información%20sobre%20la%20membresía%20VIP', '_blank'); }
         function startTrial() { window.isTrial = true; closeModal('access-modal'); }
         function resetImg() { oCanvas.width=backup.width; oCanvas.height=backup.height; oCtx.drawImage(backup,0,0); process(); }
         document.getElementById('file').onchange = e => { const f = e.target.files[0]; if(!f) return; const img = new Image(); img.onload = () => { oCanvas.width=backup.width=img.width; oCanvas.height=backup.height=img.height; aspectRatio=img.width/img.height; oCtx.drawImage(img,0,0); bCtx.drawImage(img,0,0); process(); }; img.src = URL.createObjectURL(f); };
