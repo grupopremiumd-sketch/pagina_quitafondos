@@ -25,7 +25,6 @@
         .btn-art { width: 49%; padding: 10px; background: #222; color: #fff; border: 1px solid #333; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
         .btn-secondary { width: 100%; padding: 10px; background: #1a1a1a; color: #555; border: 1px solid #222; border-radius: 8px; cursor: pointer; font-size: 10px; margin-bottom: 10px; }
 
-        /* BOTONES DE GESTIÓN */
         .btn-tg { width: 100%; padding: 12px; background: #0088cc; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-wa-renew { width: 100%; padding: 12px; background: var(--wa); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-new { width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 8px; }
@@ -51,21 +50,16 @@
     <div id="access-modal" class="modal-back hidden">
         <div class="modal">
             <h3 style="color:var(--accent); margin-bottom: 20px;">J&J Comunidad Pro</h3>
-            
             <button class="btn-ia" id="btn-free-dl" onclick="startTrial()">🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
-            
             <div class="choice-card" onclick="openLogin()">
                 <div style="font-size:24px">💎</div>
                 <div><div style="font-weight:bold; color:white;">Ya soy Socio J&J</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
             </div>
-
             <hr style="border:0; border-top:1px solid #222; margin:15px 0;">
-
             <button class="btn-tg" onclick="window.open('https://t.me/+B50m1g0NBM1mNzU5', '_blank')">🔵 GRUPO GRATUITO TELEGRAM</button>
             <button class="btn-wa-renew" onclick="window.open('https://wa.me/51904503246?text=Hola%20J&J,%20quiero%20renovar%20mi%20membresía%20VIP', '_blank')">🟢 RENOVAR SOCIOS VIP</button>
             <button class="btn-new" onclick="window.open('https://wa.me/51916689969?text=Hola,%20soy%20nuevo%20y%20quiero%20información%20de%20la%20membresía', '_blank')">⚪ SOY NUEVO / INFORMES</button>
-
-            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cerrar Herramienta</button>
+            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cerrar</button>
         </div>
     </div>
 
@@ -87,21 +81,12 @@
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label>
                     <select id="rzUnit" class="m-input">
-                        <option value="px">px</option>
-                        <option value="cm">cm</option>
-                        <option value="in">in</option>
+                        <option value="px">px</option><option value="cm">cm</option><option value="in">in</option>
                     </select>
                 </div>
                 <div style="grid-column: span 2">
-                    <label>Interpolación de Calidad</label>
-                    <select id="rzMethod" class="m-input">
-                        <option value="high">Bicúbica (Pro)</option>
-                        <option value="medium">Bilinear</option>
-                        <option value="low">Nearest Neighbor</option>
-                    </select>
-                </div>
-                <div style="grid-column: span 2; display:flex; gap:10px; align-items:center; margin-top:10px;">
-                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción</small>
+                    <label>Calidad</label>
+                    <select id="rzMethod" class="m-input"><option value="high">Bicúbica (Pro)</option></select>
                 </div>
             </div>
             <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:15px;" onclick="finalDownload()">DESCARGAR PNG</button>
@@ -124,17 +109,11 @@
             <button class="btn-wa-renew" onclick="window.open('https://wa.me/51904503246?text=Hola%20J&J,%20quiero%20renovar%20mi%20membresía%20VIP', '_blank')">🟢 RENOVAR SOCIOS VIP</button>
             <button class="btn-new" onclick="window.open('https://wa.me/51916689969?text=Hola,%20soy%20nuevo%20y%20quiero%20información%20de%20la%20membresía', '_blank')">⚪ SOY NUEVO / INFORMES</button>
 
-            <h2>Arte Digital</h2>
-            <button class="btn-ia" onclick="applyRealisticBordado()">🧵 BORDADO FULL COLOR</button>
-            <button class="btn-art" style="width:100%" onclick="applyBlackAndWhite()">⚪ B&N PRO</button>
-            <button class="btn-secondary" style="margin-top:10px" onclick="resetImg()">🔄 REESTABLECER ORIGINAL</button>
-
             <h2>1. Carga</h2>
             <input type="file" id="file" accept="image/*" class="m-input">
 
             <h2>2. Quitar Fondo IA</h2>
             <button class="btn-ia" style="background:#6c5ce7; color:#fff;" onclick="applyAutoRemove()">✨ QUITAR FONDO AUTO</button>
-            
             <div class="control-row">
                 <select id="mode" class="m-input" style="margin:0">
                     <option value="white">Blanco</option><option value="black">Negro</option><option value="pick">🎨 Gotero Manual</option>
@@ -144,12 +123,8 @@
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.5"></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"></div>
 
-            <h2>3. Lienzo</h2>
-            <input type="color" id="bgColor" value="#080808" style="width:100%; height:45px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
-
             <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">Descargar PNG Pro</button>
         </aside>
-
         <section class="stage" id="stage"><canvas id="canvas"></canvas></section>
     </main>
 
@@ -158,80 +133,69 @@
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
         let backup = document.createElement('canvas'), bCtx = backup.getContext('2d');
         let targetColor = [255,255,255], aspectRatio = 1;
-        
-        // RECUPERACIÓN DE ESTADO DE DESCARGAS Y SESIÓN
-        let isVip = sessionStorage.getItem('jj_session') === 'active';
-        let freeCount = parseInt(localStorage.getItem('jj_free_count') || "2");
+        let isVip = sessionStorage.getItem('jj_session') === 'active', freeCount = parseInt(localStorage.getItem('jj_free_count') || "2");
 
         window.onload = () => {
             if(!isVip) document.getElementById('access-modal').classList.remove('hidden');
-            else { 
-                document.getElementById('status-tag').innerText = "SOCIO VIP"; 
-                document.getElementById('status-tag').style.color = "var(--success)"; 
-                document.getElementById('btnLogout').style.display = 'block'; 
-            }
+            else { document.getElementById('status-tag').innerText = "SOCIO VIP"; document.getElementById('status-tag').style.color = "var(--success)"; document.getElementById('btnLogout').style.display = 'block'; }
             updateUI();
         };
 
-        // GOTERO MANUAL
+        // GOTERO
         canvas.addEventListener('click', (e) => {
             if (document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
             const rect = canvas.getBoundingClientRect();
-            const scaleX = oCanvas.width / rect.width;
-            const scaleY = oCanvas.height / rect.height;
-            const x = (e.clientX - rect.left) * scaleX;
-            const y = (e.clientY - rect.top) * scaleY;
+            const x = (e.clientX - rect.left) * (oCanvas.width / rect.width), y = (e.clientY - rect.top) * (oCanvas.height / rect.height);
             const pixel = oCtx.getImageData(x, y, 1, 1).data;
-            targetColor = [pixel[0], pixel[1], pixel[2]];
-            process();
+            targetColor = [pixel[0], pixel[1], pixel[2]]; process();
         });
 
-        // LÓGICA DE EXPORTACIÓN Y DESCARGAS GRATUITAS
-        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect'), unit = document.getElementById('rzUnit'), dpi = document.getElementById('rzDPI');
-        rzW.oninput = () => { if(lock.checked) rzH.value = (rzW.value / aspectRatio).toFixed(2); };
-        rzH.oninput = () => { if(lock.checked) rzW.value = (rzH.value * aspectRatio).toFixed(2); };
+        // ACCESO Y VENCIMIENTO
+        async function validateAccess() {
+            const u = document.getElementById('user-id').value.trim();
+            if(!u) return;
+            const btn = document.getElementById('btn-login-text');
+            btn.innerText = "VERIFICANDO...";
+            btn.classList.remove('btn-renew');
+
+            try {
+                const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
+                const data = await res.json();
+
+                if(data.access) { 
+                    sessionStorage.setItem('jj_session', 'active'); 
+                    location.reload(); 
+                } else if(data.status === "vencido" || data.status === "vencida") {
+                    btn.innerText = "RENOVAR MEMBRESÍA VIP";
+                    btn.classList.add('btn-renew');
+                    btn.onclick = () => window.open('https://wa.me/51904503246?text=Hola%20J&J,%20mi%20membresía%20venció%20y%20quiero%20renovar', '_blank');
+                } else {
+                    alert("Número no registrado.");
+                    btn.innerText = "INGRESAR";
+                }
+            } catch(e) { 
+                alert("Error de conexión."); 
+                btn.innerText = "INGRESAR";
+            }
+        }
 
         function finalDownload() {
-            let fw = parseFloat(rzW.value), fh = parseFloat(rzH.value), dVal = parseInt(dpi.value);
-            if(unit.value === 'cm') { fw = Math.round((fw / 2.54) * dVal); fh = Math.round((fh / 2.54) * dVal); }
-            else if(unit.value === 'in') { fw = Math.round(fw * dVal); fh = Math.round(fh * dVal); }
-            
+            let fw = parseFloat(document.getElementById('rzW').value), fh = parseFloat(document.getElementById('rzH').value), dVal = parseInt(document.getElementById('rzDPI').value);
+            if(document.getElementById('rzUnit').value === 'cm') { fw = Math.round((fw / 2.54) * dVal); fh = Math.round((fh / 2.54) * dVal); }
             const temp = document.createElement('canvas'); temp.width = fw; temp.height = fh;
-            const tCtx = temp.getContext('2d'); tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
-            tCtx.drawImage(canvas, 0, 0, fw, fh);
-            
-            const link = document.createElement('a'); 
-            link.download = 'jj_studio_pro.png'; 
-            link.href = temp.toDataURL(); 
-            link.click();
-
-            // DESCONTAR DESCARGA GRATUITA SI NO ES VIP
-            if(!isVip && window.isTrial) { 
-                freeCount--; 
-                localStorage.setItem('jj_free_count', freeCount); 
-                if(freeCount <= 0) location.reload(); // Bloquea si llega a 0
-                else updateUI();
-            }
+            temp.getContext('2d').drawImage(canvas, 0, 0, fw, fh);
+            const link = document.createElement('a'); link.download = 'jj_comunidad.png'; link.href = temp.toDataURL(); link.click();
+            if(!isVip && window.isTrial) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
             closeModal('modalExport');
         }
 
-        function handleDownload() { 
-            if(!oCanvas.width) return; 
-            if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden'); 
-            rzW.value = canvas.width; 
-            rzH.value = canvas.height; 
-            document.getElementById('modalExport').classList.remove('hidden'); 
-        }
-
-        // PROCESAMIENTO
         function process() {
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value), contract = parseInt(document.getElementById('contract').value);
             let tc = targetColor;
             if(document.getElementById('mode').value === 'white') tc = [255,255,255];
             if(document.getElementById('mode').value === 'black') tc = [0,0,0];
-            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data;
-            const out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
+            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data, out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
             const threshold = (fuzz*2.5)+(contract*10), soft = (feather*15)+1;
             for (let i = 0; i < d.length; i += 4) {
                 const dist = Math.sqrt((d[i]-tc[0])**2 + (d[i+1]-tc[1])**2 + (d[i+2]-tc[2])**2);
@@ -243,38 +207,14 @@
             canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out, 0, 0);
         }
 
-        async function validateAccess() {
-            const u = document.getElementById('user-id').value.trim();
-            if(!u) return;
-            const btn = document.getElementById('btn-login-text'); btn.innerText = "VERIFICANDO...";
-            try {
-                const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
-                const data = await res.json();
-                if(data.access) { sessionStorage.setItem('jj_session', 'active'); location.reload(); }
-                else if(data.status === "vencido") {
-                    btn.innerText = "RENOVAR VIP"; btn.classList.add('btn-renew');
-                    btn.onclick = () => window.open('https://wa.me/51904503246?text=Hola%20J&J,%20mi%20membresía%20está%20vencida%20y%20quiero%20renovar', '_blank');
-                } else alert("Número no registrado.");
-            } catch(e) { alert("Error."); } finally { btn.innerText = "INGRESAR"; }
-        }
-
-        function logout() { sessionStorage.clear(); location.reload(); }
-        function updateUI() { 
-            document.getElementById('count-free').innerText = freeCount; 
-            if(freeCount <= 0 && !isVip) { 
-                document.getElementById('btn-free-dl').style.opacity = "0.5";
-                document.getElementById('btn-free-dl').onclick = null;
-                document.getElementById('btn-free-dl').innerText = "DESCARGAS AGOTADAS";
-            } 
-        }
+        function handleDownload() { if(!oCanvas.width) return; if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden'); rzW.value = canvas.width; rzH.value = canvas.height; document.getElementById('modalExport').classList.remove('hidden'); }
+        function updateUI() { document.getElementById('count-free').innerText = freeCount; if(freeCount <= 0 && !isVip) { document.getElementById('btn-free-dl').style.opacity = "0.5"; document.getElementById('btn-free-dl').onclick = null; } }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
         function startTrial() { if(freeCount > 0) { window.isTrial = true; closeModal('access-modal'); } }
-        function resetImg() { oCanvas.width=backup.width; oCanvas.height=backup.height; oCtx.drawImage(backup,0,0); process(); }
+        function logout() { sessionStorage.clear(); location.reload(); }
         document.getElementById('file').onchange = e => { const f = e.target.files[0]; if(!f) return; const img = new Image(); img.onload = () => { oCanvas.width=backup.width=img.width; oCanvas.height=backup.height=img.height; aspectRatio=img.width/img.height; oCtx.drawImage(img,0,0); bCtx.drawImage(img,0,0); process(); }; img.src = URL.createObjectURL(f); };
-        function applyBlackAndWhite() { if(!oCanvas.width) return; const id=oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d=id.data; for(let i=0;i<d.length;i+=4){let g=d[i]*0.3+d[i+1]*0.59+d[i+2]*0.11;d[i]=d[i+1]=d[i+2]=g;}oCtx.putImageData(id,0,0); process(); }
-        function applyRealisticBordado() { if(!oCanvas.width) return; const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data, w = oCanvas.width, h = oCanvas.height; for (let y = 0; y < h; y++) { for (let x = 0; x < w; x++) { const i = (y * w + x) * 4; if(d[i+3] > 15) { const stitch = (x % 4 === 0 || y % 4 === 0) ? 0.75 : 1.3; d[i] = Math.min(255, d[i] * stitch); d[i+1] = Math.min(255, d[i+1] * stitch); d[i+2] = Math.min(255, d[i+2] * stitch); } } } oCtx.putImageData(id, 0, 0); process(); }
-        document.getElementById('bgColor').oninput = e => document.getElementById('stage').style.backgroundColor = e.target.value;
+        function applyAutoRemove() { if(!oCanvas.width) return; const d = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height).data; targetColor = [d[0], d[1], d[2]]; process(); }
         ['fuzz', 'feather', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
 </body>
