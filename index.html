@@ -158,11 +158,18 @@
         let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
         let backup = document.createElement('canvas'), bCtx = backup.getContext('2d');
         let targetColor = [255,255,255], aspectRatio = 1;
-        let isVip = sessionStorage.getItem('jj_session') === 'active', freeCount = parseInt(localStorage.getItem('jj_free_count') || "2");
+        
+        // RECUPERACIÓN DE ESTADO DE DESCARGAS Y SESIÓN
+        let isVip = sessionStorage.getItem('jj_session') === 'active';
+        let freeCount = parseInt(localStorage.getItem('jj_free_count') || "2");
 
         window.onload = () => {
             if(!isVip) document.getElementById('access-modal').classList.remove('hidden');
-            else { document.getElementById('status-tag').innerText = "SOCIO VIP"; document.getElementById('status-tag').style.color = "var(--success)"; document.getElementById('btnLogout').style.display = 'block'; }
+            else { 
+                document.getElementById('status-tag').innerText = "SOCIO VIP"; 
+                document.getElementById('status-tag').style.color = "var(--success)"; 
+                document.getElementById('btnLogout').style.display = 'block'; 
+            }
             updateUI();
         };
 
@@ -179,7 +186,7 @@
             process();
         });
 
-        // EXPORTACIÓN
+        // LÓGICA DE EXPORTACIÓN Y DESCARGAS GRATUITAS
         const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect'), unit = document.getElementById('rzUnit'), dpi = document.getElementById('rzDPI');
         rzW.oninput = () => { if(lock.checked) rzH.value = (rzW.value / aspectRatio).toFixed(2); };
         rzH.oninput = () => { if(lock.checked) rzW.value = (rzH.value * aspectRatio).toFixed(2); };
@@ -188,25 +195,35 @@
             let fw = parseFloat(rzW.value), fh = parseFloat(rzH.value), dVal = parseInt(dpi.value);
             if(unit.value === 'cm') { fw = Math.round((fw / 2.54) * dVal); fh = Math.round((fh / 2.54) * dVal); }
             else if(unit.value === 'in') { fw = Math.round(fw * dVal); fh = Math.round(fh * dVal); }
+            
             const temp = document.createElement('canvas'); temp.width = fw; temp.height = fh;
             const tCtx = temp.getContext('2d'); tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
             tCtx.drawImage(canvas, 0, 0, fw, fh);
-            const link = document.createElement('a'); link.download = 'jj_comunidad_pro.png'; link.href = temp.toDataURL(); link.click();
-            if(!isVip && window.isTrial) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
+            
+            const link = document.createElement('a'); 
+            link.download = 'jj_studio_pro.png'; 
+            link.href = temp.toDataURL(); 
+            link.click();
+
+            // DESCONTAR DESCARGA GRATUITA SI NO ES VIP
+            if(!isVip && window.isTrial) { 
+                freeCount--; 
+                localStorage.setItem('jj_free_count', freeCount); 
+                if(freeCount <= 0) location.reload(); // Bloquea si llega a 0
+                else updateUI();
+            }
             closeModal('modalExport');
         }
 
-        // PROCESAMIENTO
-        function applyAutoRemove() {
-            if(!oCanvas.width) return;
-            const d = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height).data;
-            const w = oCanvas.width, h = oCanvas.height;
-            const p = [0, (w-1)*4, (w*h-w)*4, (w*h-1)*4];
-            let r=0, g=0, b=0; p.forEach(x => { r+=d[x]; g+=d[x+1]; b+=d[x+2]; });
-            targetColor = [r/4, g/4, b/4]; document.getElementById('fuzz').value = 75;
-            process();
+        function handleDownload() { 
+            if(!oCanvas.width) return; 
+            if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden'); 
+            rzW.value = canvas.width; 
+            rzH.value = canvas.height; 
+            document.getElementById('modalExport').classList.remove('hidden'); 
         }
 
+        // PROCESAMIENTO
         function process() {
             if(!oCanvas.width) return;
             const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value), contract = parseInt(document.getElementById('contract').value);
@@ -241,12 +258,18 @@
             } catch(e) { alert("Error."); } finally { btn.innerText = "INGRESAR"; }
         }
 
-        function handleDownload() { if(!oCanvas.width) return; if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden'); rzW.value = canvas.width; rzH.value = canvas.height; document.getElementById('modalExport').classList.remove('hidden'); }
         function logout() { sessionStorage.clear(); location.reload(); }
-        function updateUI() { document.getElementById('count-free').innerText = freeCount; if(freeCount <= 0 && !isVip) { document.getElementById('btn-free-dl').classList.add('hidden'); } }
+        function updateUI() { 
+            document.getElementById('count-free').innerText = freeCount; 
+            if(freeCount <= 0 && !isVip) { 
+                document.getElementById('btn-free-dl').style.opacity = "0.5";
+                document.getElementById('btn-free-dl').onclick = null;
+                document.getElementById('btn-free-dl').innerText = "DESCARGAS AGOTADAS";
+            } 
+        }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
-        function startTrial() { window.isTrial = true; closeModal('access-modal'); }
+        function startTrial() { if(freeCount > 0) { window.isTrial = true; closeModal('access-modal'); } }
         function resetImg() { oCanvas.width=backup.width; oCanvas.height=backup.height; oCtx.drawImage(backup,0,0); process(); }
         document.getElementById('file').onchange = e => { const f = e.target.files[0]; if(!f) return; const img = new Image(); img.onload = () => { oCanvas.width=backup.width=img.width; oCanvas.height=backup.height=img.height; aspectRatio=img.width/img.height; oCtx.drawImage(img,0,0); bCtx.drawImage(img,0,0); process(); }; img.src = URL.createObjectURL(f); };
         function applyBlackAndWhite() { if(!oCanvas.width) return; const id=oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d=id.data; for(let i=0;i<d.length;i+=4){let g=d[i]*0.3+d[i+1]*0.59+d[i+2]*0.11;d[i]=d[i+1]=d[i+2]=g;}oCtx.putImageData(id,0,0); process(); }
