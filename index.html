@@ -20,72 +20,95 @@
         .panel { padding: 20px; background: var(--panel); border-right: 1px solid var(--border); overflow-y: auto; }
         h2 { font-size: 10px; color: #666; text-transform: uppercase; margin: 20px 0 10px; letter-spacing: 1px; }
         
-        .btn-ia { width: 100%; padding: 14px; background: var(--success); color: #000; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 8px; text-transform: uppercase; font-size: 11px; }
-        .btn-renew { background: var(--warning) !important; color: #000 !important; }
+        .btn-ia { width: 100%; padding: 14px; background: var(--success); color: #000; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 8px; text-transform: uppercase; font-size: 11px; transition: 0.3s; }
+        .btn-ia:hover { transform: scale(1.02); filter: brightness(1.1); }
+        .btn-renew { background: var(--warning) !important; color: #000 !important; box-shadow: 0 0 15px rgba(255, 159, 67, 0.4); }
         .btn-art { width: 49%; padding: 10px; background: #222; color: #fff; border: 1px solid #333; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
         .btn-secondary { width: 100%; padding: 10px; background: #1a1a1a; color: #555; border: 1px solid #222; border-radius: 8px; cursor: pointer; font-size: 10px; margin-bottom: 10px; }
 
-        .btn-tg { width: 100%; padding: 12px; background: #0088cc; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-wa-renew { width: 100%; padding: 12px; background: var(--wa); color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-new { width: 100%; padding: 12px; background: #fff; color: #000; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 8px; font-size: 11px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        /* BOTONES LLAMATIVOS */
+        .btn-tg { width: 100%; padding: 14px; background: linear-gradient(135deg, #0088cc, #00aaff); color: #fff; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 10px; font-size: 11px; text-transform: uppercase; }
+        .btn-wa-renew { width: 100%; padding: 14px; background: linear-gradient(135deg, #25d366, #128c7e); color: #fff; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 10px; font-size: 11px; text-transform: uppercase; }
+        .btn-new { width: 100%; padding: 14px; background: #fff; color: #000; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 10px; font-size: 11px; text-transform: uppercase; border: 2px solid var(--accent); }
 
         .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
         label { font-size: 11px; color: #aaa; }
         input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
         
-        .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 10px; border-radius: 8px; width: 100%; font-size: 13px; outline: none; margin-bottom: 8px; }
+        .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; font-size: 13px; outline: none; margin-bottom: 8px; }
 
         .stage { background: #080808; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; min-height: 400px; }
-        canvas#canvas { max-width: 90%; max-height: 90%; object-fit: contain; cursor: crosshair; }
+        canvas#canvas { max-width: 95%; max-height: 95%; cursor: crosshair; }
 
-        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; }
-        .modal { background: #111; padding: 25px; border-radius: 15px; width: 100%; max-width: 440px; border: 1px solid #222; text-align: center; }
+        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; backdrop-filter: blur(10px); }
+        .modal { background: #111; padding: 30px; border-radius: 20px; width: 100%; max-width: 440px; border: 1px solid #222; text-align: center; }
         .hidden { display: none !important; }
         .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-top: 15px; }
-        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; cursor: pointer; margin-bottom: 10px; display: flex; align-items: center; gap: 15px; text-align: left; }
+        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 20px; border-radius: 12px; cursor: pointer; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; text-align: left; transition: 0.3s; }
+        .choice-card:hover { border-color: var(--accent); background: #222; }
     </style>
 </head>
 <body>
 
     <div id="access-modal" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--accent); margin-bottom: 20px;">J&J Comunidad Pro</h3>
-            <button class="btn-ia" id="btn-free-dl" onclick="startTrial()">🎁 PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
+            <h2 style="color:var(--accent); font-size: 24px; margin-bottom: 5px;">¡BIENVENIDO A J&J!</h2>
+            <p style="color:#666; font-size: 12px; margin-bottom: 25px;">Elige una opción para comenzar a diseñar</p>
+            
+            <button class="btn-ia" id="btn-free-dl" onclick="startTrial()">🎁 USAR PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
+            
             <div class="choice-card" onclick="openLogin()">
-                <div style="font-size:24px">💎</div>
-                <div><div style="font-weight:bold; color:white;">Ya soy Socio J&J</div><div style="font-size:11px; color:#666">Ingresa con tu número móvil.</div></div>
+                <div style="font-size:30px">🚀</div>
+                <div><div style="font-weight:900; color:white; font-size: 14px;">ACCESO SOCIO VIP</div><div style="font-size:11px; color:#888">Ingresa aquí si ya tienes tu membresía.</div></div>
             </div>
-            <hr style="border:0; border-top:1px solid #222; margin:15px 0;">
-            <button class="btn-tg" onclick="window.open('https://t.me/+B50m1g0NBM1mNzU5', '_blank')">🔵 GRUPO GRATUITO TELEGRAM</button>
-            <button class="btn-wa-renew" onclick="window.open('https://wa.me/51904503246?text=quiero%20renovar%20mi%20suscripcion', '_blank')">🟢 RENOVAR SOCIOS VIP</button>
-            <button class="btn-new" onclick="window.open('https://wa.me/51916689969?text=quiero%20mas%20informacion', '_blank')">⚪ SOY NUEVO / INFORMES</button>
-            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cerrar</button>
+
+            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
+
+            <button class="btn-tg" onclick="window.open('https://t.me/+B50m1g0NBM1mNzU5', '_blank')">📢 UNIRSE AL GRUPO GRATUITO</button>
+            <button class="btn-wa-renew" onclick="window.open('https://wa.me/51904503246?text=quiero%20renovar%20mi%20suscripcion', '_blank')">🔥 RENOVAR MI MEMBRESÍA VIP</button>
+            <button class="btn-new" onclick="window.open('https://wa.me/51916689969?text=quiero%20mas%20informacion', '_blank')">💎 SER SOCIO NUEVO / INFORMES</button>
+
+            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#444; margin-top:15px; cursor:pointer; font-size: 11px;">Omitir por ahora</button>
         </div>
     </div>
 
     <div id="login-modal" class="modal-back hidden">
         <div class="modal" style="max-width:350px;">
-            <h3 style="color:var(--accent)">Acceso VIP</h3>
-            <input type="text" id="user-id" placeholder="Número Celular" class="m-input">
-            <button class="btn-ia" onclick="validateAccess()" id="btn-login-text">INGRESAR</button>
+            <h3 style="color:var(--accent)">ACCESO VIP</h3>
+            <p style="color:#666; font-size: 11px; margin-bottom: 15px;">Escribe tu número celular registrado</p>
+            <input type="text" id="user-id" placeholder="Ej: 999888777" class="m-input">
+            <button class="btn-ia" onclick="validateAccess()" id="btn-login-text">VALIDAR ACCESO</button>
             <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Volver</button>
         </div>
     </div>
 
     <div id="modalExport" class="modal-back hidden">
         <div class="modal">
-            <h3 style="color:var(--accent)">Configuración de Exportación</h3>
+            <h3 style="color:var(--accent)">CONFIGURACIÓN DE EXPORTACIÓN</h3>
             <div class="grid-export">
                 <div><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
                 <div><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label>
                     <select id="rzUnit" class="m-input">
-                        <option value="px">px</option><option value="cm">cm</option><option value="in">in</option>
+                        <option value="px">px</option>
+                        <option value="cm">cm</option>
+                        <option value="in">in</option>
                     </select>
                 </div>
+                <div style="grid-column: span 2">
+                    <label>Calidad de Escalado</label>
+                    <select id="rzMethod" class="m-input">
+                        <option value="high">Bicúbica (Profesional)</option>
+                        <option value="medium">Bilinear (Estándar)</option>
+                        <option value="low">Nearest Neighbor (Pixelado)</option>
+                    </select>
+                </div>
+                <div style="grid-column: span 2; display:flex; gap:10px; align-items:center; margin-top:10px;">
+                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción</small>
+                </div>
             </div>
-            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:15px;" onclick="finalDownload()">DESCARGAR PNG</button>
+            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:15px;" onclick="finalDownload()">DESCARGAR EN ALTA CALIDAD</button>
             <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cancelar</button>
         </div>
     </div>
@@ -93,28 +116,28 @@
     <header>
         <div class="logo">J&J COMUNIDAD PRO</div>
         <div style="display:flex; align-items:center; gap:10px;">
-            <div id="status-tag" style="font-size:9px; background:#222; padding:4px 8px; border-radius:4px; font-weight:bold;">INVITADO</div>
-            <button id="btnLogout" onclick="logout()" style="display:none; background:none; border:1px solid #333; color:#555; font-size:10px; cursor:pointer; border-radius:4px; padding:4px 8px;">SALIR</button>
+            <div id="status-tag" style="font-size:9px; background:#222; padding:4px 8px; border-radius:4px; font-weight:bold;">MODO INVITADO</div>
+            <button id="btnLogout" onclick="logout()" style="display:none; background:none; border:1px solid #333; color:#555; font-size:10px; cursor:pointer; border-radius:4px; padding:4px 8px;">CERRAR SESIÓN</button>
         </div>
     </header>
 
     <main class="wrap">
         <aside class="panel">
-            <h2>Gestión Membresía</h2>
+            <h2>✨ Gestión de Membresía</h2>
             <button class="btn-tg" onclick="window.open('https://t.me/+B50m1g0NBM1mNzU5', '_blank')">🔵 GRUPO GRATUITO TELEGRAM</button>
             <button class="btn-wa-renew" onclick="window.open('https://wa.me/51904503246?text=quiero%20renovar%20mi%20suscripcion', '_blank')">🟢 RENOVAR SOCIOS VIP</button>
             <button class="btn-new" onclick="window.open('https://wa.me/51916689969?text=quiero%20mas%20informacion', '_blank')">⚪ SOY NUEVO / INFORMES</button>
 
-            <h2>Arte Digital</h2>
+            <h2>🎨 Efectos de Arte</h2>
             <button class="btn-ia" onclick="applyRealisticBordado()">🧵 BORDADO FULL COLOR</button>
-            <button class="btn-art" style="width:100%" onclick="applyBlackAndWhite()">⚪ B&N PRO</button>
-            <button class="btn-secondary" style="margin-top:10px" onclick="resetImg()">🔄 REESTABLECER ORIGINAL</button>
+            <button class="btn-art" style="width:100%" onclick="applyBlackAndWhite()">⚪ B&N PROFESIONAL</button>
+            <button class="btn-secondary" style="margin-top:10px" onclick="resetImg()">🔄 RESTAURAR ORIGINAL</button>
 
-            <h2>1. Carga</h2>
+            <h2>1️⃣ Cargar Imagen</h2>
             <input type="file" id="file" accept="image/*" class="m-input">
 
-            <h2>2. Quitar Fondo IA</h2>
-            <button class="btn-ia" style="background:#6c5ce7; color:#fff;" onclick="applyAutoRemove()">✨ QUITAR FONDO AUTO</button>
+            <h2>2️⃣ Quitar Fondo IA</h2>
+            <button class="btn-ia" style="background:#6c5ce7; color:#fff;" onclick="applyAutoRemove()">✨ ELIMINAR FONDO AUTO</button>
             <div class="control-row">
                 <select id="mode" class="m-input" style="margin:0">
                     <option value="white">Blanco</option><option value="black">Negro</option><option value="pick">🎨 Gotero Manual</option>
@@ -124,7 +147,10 @@
             <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.5"></div>
             <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"></div>
 
-            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">Descargar PNG Pro</button>
+            <h2>3️⃣ Fondo</h2>
+            <input type="color" id="bgColor" value="#080808" style="width:100%; height:45px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
+
+            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">🚀 EXPORTAR PNG PROFESIONAL</button>
         </aside>
         <section class="stage" id="stage"><canvas id="canvas"></canvas></section>
     </main>
@@ -138,10 +164,11 @@
 
         window.onload = () => {
             if(!isVip) document.getElementById('access-modal').classList.remove('hidden');
-            else { document.getElementById('status-tag').innerText = "SOCIO VIP"; document.getElementById('status-tag').style.color = "var(--success)"; document.getElementById('btnLogout').style.display = 'block'; }
+            else { document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO"; document.getElementById('status-tag').style.color = "var(--success)"; document.getElementById('btnLogout').style.display = 'block'; }
             updateUI();
         };
 
+        // GOTERO MANUAL
         canvas.addEventListener('click', (e) => {
             if (document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
             const rect = canvas.getBoundingClientRect();
@@ -150,6 +177,7 @@
             targetColor = [pixel[0], pixel[1], pixel[2]]; process();
         });
 
+        // VALIDACIÓN DE ACCESO
         async function validateAccess() {
             const u = document.getElementById('user-id').value.trim();
             if(!u) return;
@@ -160,19 +188,27 @@
                 const data = await res.json();
                 if(data.access) { sessionStorage.setItem('jj_session', 'active'); location.reload(); }
                 else if(data.status === "vencido") {
-                    btn.innerText = "RENOVAR MEMBRESÍA VIP";
+                    btn.innerText = "🆘 ¡MEMBRESÍA VENCIDA! RENOVAR AQUÍ";
                     btn.classList.add('btn-renew');
                     btn.onclick = () => window.open('https://wa.me/51904503246?text=quiero%20renovar%20mi%20suscripcion', '_blank');
-                } else alert("Número no registrado.");
-            } catch(e) { alert("Error de conexión."); } finally { if(!btn.classList.contains('btn-renew')) btn.innerText = "INGRESAR"; }
+                } else alert("El número ingresado no es socio activo.");
+            } catch(e) { alert("Error de conexión."); } finally { if(!btn.classList.contains('btn-renew')) btn.innerText = "VALIDAR ACCESO"; }
         }
 
+        // EXPORTACIÓN AUTOMATIZADA
+        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect');
+        rzW.oninput = () => { if(lock.checked) rzH.value = (rzW.value / aspectRatio).toFixed(2); };
+        rzH.oninput = () => { if(lock.checked) rzW.value = (rzH.value * aspectRatio).toFixed(2); };
+
         function finalDownload() {
-            let fw = parseFloat(document.getElementById('rzW').value), fh = parseFloat(document.getElementById('rzH').value), dVal = parseInt(document.getElementById('rzDPI').value);
-            if(document.getElementById('rzUnit').value === 'cm') { fw = Math.round((fw / 2.54) * dVal); fh = Math.round((fh / 2.54) * dVal); }
+            let fw = parseFloat(rzW.value), fh = parseFloat(rzH.value), dVal = parseInt(document.getElementById('rzDPI').value);
+            const unit = document.getElementById('rzUnit').value;
+            if(unit === 'cm') { fw = Math.round((fw / 2.54) * dVal); fh = Math.round((fh / 2.54) * dVal); }
+            else if(unit === 'in') { fw = Math.round(fw * dVal); fh = Math.round(fh * dVal); }
             const temp = document.createElement('canvas'); temp.width = fw; temp.height = fh;
-            temp.getContext('2d').drawImage(canvas, 0, 0, fw, fh);
-            const link = document.createElement('a'); link.download = 'jj_studio.png'; link.href = temp.toDataURL(); link.click();
+            const tCtx = temp.getContext('2d'); tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
+            tCtx.drawImage(canvas, 0, 0, fw, fh);
+            const link = document.createElement('a'); link.download = 'jj_premium_design.png'; link.href = temp.toDataURL(); link.click();
             if(!isVip && window.isTrial) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
             closeModal('modalExport');
         }
@@ -196,7 +232,7 @@
         }
 
         function handleDownload() { if(!oCanvas.width) return; if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden'); rzW.value = canvas.width; rzH.value = canvas.height; document.getElementById('modalExport').classList.remove('hidden'); }
-        function updateUI() { document.getElementById('count-free').innerText = freeCount; if(freeCount <= 0 && !isVip) { document.getElementById('btn-free-dl').style.opacity = "0.5"; document.getElementById('btn-free-dl').onclick = null; } }
+        function updateUI() { document.getElementById('count-free').innerText = freeCount; if(freeCount <= 0 && !isVip) { document.getElementById('btn-free-dl').style.opacity = "0.5"; document.getElementById('btn-free-dl').onclick = null; document.getElementById('btn-free-dl').innerText = "PRUEBAS AGOTADAS"; } }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
         function startTrial() { if(freeCount > 0) { window.isTrial = true; closeModal('access-modal'); } }
@@ -205,6 +241,8 @@
         document.getElementById('file').onchange = e => { const f = e.target.files[0]; if(!f) return; const img = new Image(); img.onload = () => { oCanvas.width=backup.width=img.width; oCanvas.height=backup.height=img.height; aspectRatio=img.width/img.height; oCtx.drawImage(img,0,0); bCtx.drawImage(img,0,0); process(); }; img.src = URL.createObjectURL(f); };
         function applyBlackAndWhite() { if(!oCanvas.width) return; const id=oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d=id.data; for(let i=0;i<d.length;i+=4){let g=d[i]*0.3+d[i+1]*0.59+d[i+2]*0.11;d[i]=d[i+1]=d[i+2]=g;}oCtx.putImageData(id,0,0); process(); }
         function applyRealisticBordado() { if(!oCanvas.width) return; const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data, w = oCanvas.width, h = oCanvas.height; for (let y = 0; y < h; y++) { for (let x = 0; x < w; x++) { const i = (y * w + x) * 4; if(d[i+3] > 15) { const stitch = (x % 4 === 0 || y % 4 === 0) ? 0.75 : 1.3; d[i] = Math.min(255, d[i] * stitch); d[i+1] = Math.min(255, d[i+1] * stitch); d[i+2] = Math.min(255, d[i+2] * stitch); } } } oCtx.putImageData(id, 0, 0); process(); }
+        function applyAutoRemove() { if(!oCanvas.width) return; const d = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height).data; targetColor = [d[0], d[1], d[2]]; document.getElementById('fuzz').value = 75; process(); }
+        document.getElementById('bgColor').oninput = e => document.getElementById('stage').style.backgroundColor = e.target.value;
         ['fuzz', 'feather', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
     </script>
 </body>
