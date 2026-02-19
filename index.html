@@ -26,7 +26,6 @@
         .btn-art { width: 49%; padding: 10px; background: #222; color: #fff; border: 1px solid #333; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
         .btn-secondary { width: 100%; padding: 10px; background: #1a1a1a; color: #555; border: 1px solid #222; border-radius: 8px; cursor: pointer; font-size: 10px; margin-bottom: 10px; }
 
-        /* BOTONES LLAMATIVOS */
         .btn-tg { width: 100%; padding: 14px; background: linear-gradient(135deg, #0088cc, #00aaff); color: #fff; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 10px; font-size: 11px; text-transform: uppercase; }
         .btn-wa-renew { width: 100%; padding: 14px; background: linear-gradient(135deg, #25d366, #128c7e); color: #fff; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 10px; font-size: 11px; text-transform: uppercase; }
         .btn-new { width: 100%; padding: 14px; background: #fff; color: #000; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 10px; font-size: 11px; text-transform: uppercase; border: 2px solid var(--accent); }
@@ -54,20 +53,15 @@
         <div class="modal">
             <h2 style="color:var(--accent); font-size: 24px; margin-bottom: 5px;">¡BIENVENIDO A J&J!</h2>
             <p style="color:#666; font-size: 12px; margin-bottom: 25px;">Elige una opción para comenzar a diseñar</p>
-            
             <button class="btn-ia" id="btn-free-dl" onclick="startTrial()">🎁 USAR PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
-            
             <div class="choice-card" onclick="openLogin()">
                 <div style="font-size:30px">🚀</div>
                 <div><div style="font-weight:900; color:white; font-size: 14px;">ACCESO SOCIO VIP</div><div style="font-size:11px; color:#888">Ingresa aquí si ya tienes tu membresía.</div></div>
             </div>
-
-            <hr style="border:0; border-top:1px solid #222; margin:20px 0;">
-
+            <hr style="border:0; border-top:1px solid #222; margin:15px 0;">
             <button class="btn-tg" onclick="window.open('https://t.me/+B50m1g0NBM1mNzU5', '_blank')">📢 UNIRSE AL GRUPO GRATUITO</button>
             <button class="btn-wa-renew" onclick="window.open('https://wa.me/51904503246?text=quiero%20renovar%20mi%20suscripcion', '_blank')">🔥 RENOVAR MI MEMBRESÍA VIP</button>
             <button class="btn-new" onclick="window.open('https://wa.me/51916689969?text=quiero%20mas%20informacion', '_blank')">💎 SER SOCIO NUEVO / INFORMES</button>
-
             <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#444; margin-top:15px; cursor:pointer; font-size: 11px;">Omitir por ahora</button>
         </div>
     </div>
@@ -75,7 +69,6 @@
     <div id="login-modal" class="modal-back hidden">
         <div class="modal" style="max-width:350px;">
             <h3 style="color:var(--accent)">ACCESO VIP</h3>
-            <p style="color:#666; font-size: 11px; margin-bottom: 15px;">Escribe tu número celular registrado</p>
             <input type="text" id="user-id" placeholder="Ej: 999888777" class="m-input">
             <button class="btn-ia" onclick="validateAccess()" id="btn-login-text">VALIDAR ACCESO</button>
             <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Volver</button>
@@ -91,17 +84,15 @@
                 <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
                 <div><label>Unidad</label>
                     <select id="rzUnit" class="m-input">
-                        <option value="px">px</option>
-                        <option value="cm">cm</option>
-                        <option value="in">in</option>
+                        <option value="px">px</option><option value="cm">cm</option><option value="in">in</option>
                     </select>
                 </div>
                 <div style="grid-column: span 2">
                     <label>Calidad de Escalado</label>
                     <select id="rzMethod" class="m-input">
                         <option value="high">Bicúbica (Profesional)</option>
-                        <option value="medium">Bilinear (Estándar)</option>
-                        <option value="low">Nearest Neighbor (Pixelado)</option>
+                        <option value="medium">Bilinear</option>
+                        <option value="low">Nearest Neighbor</option>
                     </select>
                 </div>
                 <div style="grid-column: span 2; display:flex; gap:10px; align-items:center; margin-top:10px;">
@@ -123,10 +114,12 @@
 
     <main class="wrap">
         <aside class="panel">
-            <h2>✨ Gestión de Membresía</h2>
-            <button class="btn-tg" onclick="window.open('https://t.me/+B50m1g0NBM1mNzU5', '_blank')">🔵 GRUPO GRATUITO TELEGRAM</button>
-            <button class="btn-wa-renew" onclick="window.open('https://wa.me/51904503246?text=quiero%20renovar%20mi%20suscripcion', '_blank')">🟢 RENOVAR SOCIOS VIP</button>
-            <button class="btn-new" onclick="window.open('https://wa.me/51916689969?text=quiero%20mas%20informacion', '_blank')">⚪ SOY NUEVO / INFORMES</button>
+            <div id="guest-management-section">
+                <h2>✨ Gestión de Membresía</h2>
+                <button class="btn-tg" onclick="window.open('https://t.me/+B50m1g0NBM1mNzU5', '_blank')">🔵 GRUPO GRATUITO TELEGRAM</button>
+                <button class="btn-wa-renew" onclick="window.open('https://wa.me/51904503246?text=quiero%20renovar%20mi%20suscripcion', '_blank')">🟢 RENOVAR SOCIOS VIP</button>
+                <button class="btn-new" onclick="window.open('https://wa.me/51916689969?text=quiero%20mas%20informacion', '_blank')">⚪ SOY NUEVO / INFORMES</button>
+            </div>
 
             <h2>🎨 Efectos de Arte</h2>
             <button class="btn-ia" onclick="applyRealisticBordado()">🧵 BORDADO FULL COLOR</button>
@@ -163,8 +156,16 @@
         let isVip = sessionStorage.getItem('jj_session') === 'active', freeCount = parseInt(localStorage.getItem('jj_free_count') || "2");
 
         window.onload = () => {
-            if(!isVip) document.getElementById('access-modal').classList.remove('hidden');
-            else { document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO"; document.getElementById('status-tag').style.color = "var(--success)"; document.getElementById('btnLogout').style.display = 'block'; }
+            if(!isVip) {
+                document.getElementById('access-modal').classList.remove('hidden');
+                document.getElementById('guest-management-section').style.display = 'block';
+            } else {
+                document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO";
+                document.getElementById('status-tag').style.color = "var(--success)";
+                document.getElementById('btnLogout').style.display = 'block';
+                // OCULTAR SECCIÓN GESTIÓN PARA VIPS
+                document.getElementById('guest-management-section').style.display = 'none';
+            }
             updateUI();
         };
 
@@ -195,7 +196,6 @@
             } catch(e) { alert("Error de conexión."); } finally { if(!btn.classList.contains('btn-renew')) btn.innerText = "VALIDAR ACCESO"; }
         }
 
-        // EXPORTACIÓN AUTOMATIZADA
         const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect');
         rzW.oninput = () => { if(lock.checked) rzH.value = (rzW.value / aspectRatio).toFixed(2); };
         rzH.oninput = () => { if(lock.checked) rzW.value = (rzH.value * aspectRatio).toFixed(2); };
