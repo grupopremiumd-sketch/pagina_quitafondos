@@ -3,247 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>J&J Comunidad Pro — Master Pro</title>
+    <title>J&J STUDIO v41.7 - ELITE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #0a0a0a; --panel: #111; --text: #eee; --accent: #00f2ff; --border: #222; --success: #00ff88; --wa: #25d366; --warning: #ff9f43;
-        }
-        * { box-sizing: border-box; }
-        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow: hidden; }
-
-        header { padding: 0 20px; border-bottom: 1px solid var(--border); background: #000; display: flex; align-items: center; justify-content: space-between; height: 60px; z-index: 1000; position: relative; }
-        .logo { font-weight: 900; color: var(--accent); letter-spacing: 1px; }
-
-        .wrap { display: grid; grid-template-columns: 320px 1fr; height: calc(100vh - 60px); }
-        @media (max-width: 900px) { .wrap { grid-template-columns: 1fr; height: auto; overflow-y: auto; } }
-
-        .panel { padding: 20px; background: var(--panel); border-right: 1px solid var(--border); overflow-y: auto; }
-        h2 { font-size: 10px; color: #666; text-transform: uppercase; margin: 20px 0 10px; letter-spacing: 1px; }
-        
-        .btn-ia { width: 100%; padding: 14px; background: var(--success); color: #000; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 8px; text-transform: uppercase; font-size: 11px; transition: 0.3s; }
-        .btn-ia:hover { transform: scale(1.02); filter: brightness(1.1); }
-        .btn-renew { background: var(--warning) !important; color: #000 !important; box-shadow: 0 0 15px rgba(255, 159, 67, 0.4); }
-        .btn-art { width: 49%; padding: 10px; background: #222; color: #fff; border: 1px solid #333; border-radius: 6px; cursor: pointer; font-size: 10px; font-weight: bold; }
-        .btn-secondary { width: 100%; padding: 10px; background: #1a1a1a; color: #555; border: 1px solid #222; border-radius: 8px; cursor: pointer; font-size: 10px; margin-bottom: 10px; }
-
-        .btn-tg { width: 100%; padding: 14px; background: linear-gradient(135deg, #0088cc, #00aaff); color: #fff; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 10px; font-size: 11px; text-transform: uppercase; }
-        .btn-wa-renew { width: 100%; padding: 14px; background: linear-gradient(135deg, #25d366, #128c7e); color: #fff; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 10px; font-size: 11px; text-transform: uppercase; }
-        .btn-new { width: 100%; padding: 14px; background: #fff; color: #000; border: none; border-radius: 8px; font-weight: 900; cursor: pointer; margin-bottom: 10px; font-size: 11px; text-transform: uppercase; border: 2px solid var(--accent); }
-
-        .control-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; gap: 10px; }
-        label { font-size: 11px; color: #aaa; }
-        input[type="range"] { flex: 1; accent-color: var(--accent); cursor: pointer; }
-        
-        .m-input { background: #000; color: #fff; border: 1px solid #333; padding: 12px; border-radius: 8px; width: 100%; font-size: 13px; outline: none; margin-bottom: 8px; }
-
-        .stage { background: #080808; display: flex; align-items: center; justify-content: center; position: relative; overflow: auto; min-height: 400px; }
-        canvas#canvas { max-width: 95%; max-height: 95%; cursor: crosshair; }
-
-        .modal-back { position: fixed; inset: 0; background: rgba(0,0,0,0.98); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 15px; backdrop-filter: blur(10px); }
-        .modal { background: #111; padding: 30px; border-radius: 20px; width: 100%; max-width: 440px; border: 1px solid #222; text-align: center; }
-        .hidden { display: none !important; }
-        .grid-export { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; margin-top: 15px; }
-        .choice-card { background: #1a1a1a; border: 1px solid #333; padding: 20px; border-radius: 12px; cursor: pointer; margin-bottom: 15px; display: flex; align-items: center; gap: 15px; text-align: left; transition: 0.3s; }
-        .choice-card:hover { border-color: var(--accent); background: #222; }
+        body { font-family: 'Lato', sans-serif; background: #050505; color: white; margin: 0; overflow: hidden; position: fixed; width: 100%; height: 100%; }
+        .bg-premium { background: radial-gradient(circle at center, #1a0000 0%, #050505 100%); }
+        .tool-view { display: none; height: calc(100vh - 65px); width: 100%; }
+        #auth-screen { position: fixed; inset: 0; z-index: 9999; background: #000; display: flex; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(10px); }
+        @media (min-width: 1025px) { .tool-view { display: flex; flex-direction: row; height: calc(100vh - 65px); } .viewport { flex-grow: 1; height: 100%; cursor: crosshair; } .sidebar { width: 350px; min-width: 350px; border-left: 2px solid #222; } }
+        @media (max-width: 1024px) { .tool-view { display: flex; flex-direction: column; height: calc(100vh - 65px); } .viewport { flex-grow: 1; width: 100%; } .sidebar { width: 100%; height: 450px; border-top: 2px solid #dc2626; overflow-y: auto; padding-bottom: 80px; } }
+        .active-view { display: flex !important; }
+        .viewport { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #0a0a0a; touch-action: none; }
+        #zoom-container { transform-origin: center center; position: absolute; pointer-events: none; }
+        canvas { box-shadow: 0 0 60px #000; pointer-events: auto; }
+        #selection-box { position: absolute; border: 1.5px solid #fff; display: none; pointer-events: none; z-index: 9999; background: rgba(100, 100, 100, 0.4); }
+        .sidebar { background: #0a0a0a; padding: 15px; display: flex; flex-direction: column; gap: 12px; z-index: 50; }
+        .card { background: #111; border: 1px solid #222; border-radius: 12px; padding: 12px; }
+        .btn-jj { background: #dc2626; font-weight: 900; text-transform: uppercase; border-radius: 10px; padding: 14px; width: 100%; color: white; border: none; cursor: pointer; }
+        .btn-renew { background: #ff9f43 !important; color: #000 !important; box-shadow: 0 0 15px rgba(255, 159, 67, 0.4); }
+        .label-tool { font-size: 9px; font-weight: 900; color: #666; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        .accordion-header { cursor: pointer; display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #1a1a1a; border-radius: 8px; margin-bottom: 5px; }
+        .accordion-content { display: none; padding: 10px; background: #0d0d0d; border-radius: 0 0 8px 8px; margin-bottom: 10px; border: 1px solid #222; }
+        input[type=range] { accent-color: #dc2626; height: 4px; width: 100%; }
+        #loading-overlay { position: fixed; inset:0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        .spinner { border: 4px solid rgba(255,255,255,0.1); border-left-color: #dc2626; border-radius: 50%; width: 50px; height: 50px; animation: spin 0.8s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div id="access-modal" class="modal-back hidden">
-        <div class="modal">
-            <h2 style="color:var(--accent); font-size: 24px; margin-bottom: 5px;">¡BIENVENIDO A J&J!</h2>
-            <p style="color:#666; font-size: 12px; margin-bottom: 25px;">Elige una opción para comenzar a diseñar</p>
-            <button class="btn-ia" id="btn-free-dl" onclick="startTrial()">🎁 USAR PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
-            <div class="choice-card" onclick="openLogin()">
-                <div style="font-size:30px">🚀</div>
-                <div><div style="font-weight:900; color:white; font-size: 14px;">ACCESO SOCIO VIP</div><div style="font-size:11px; color:#888">Ingresa aquí si ya tienes tu membresía.</div></div>
+    <div id="loading-overlay"><div class="spinner"></div><p id="loading-text" class="font-black italic text-red-500 uppercase text-sm">SINCRONIZANDO CON J&J...</p></div>
+
+    <div id="auth-screen">
+        <div class="max-w-md w-full bg-zinc-900 p-8 rounded-[2rem] border border-red-600/30 text-center shadow-2xl text-white">
+            <div class="w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center font-black text-3xl mx-auto mb-6 shadow-xl">J&J</div>
+            <h2 class="text-2xl font-black italic uppercase mb-2">¡BIENVENIDO A J&J!</h2>
+            <p class="text-zinc-500 text-[11px] mb-6 uppercase font-bold tracking-widest">Premium Creative Studio</p>
+            
+            <input type="tel" id="user-id" placeholder="Ingresa tu número registrado" class="w-full bg-black border border-zinc-800 rounded-xl p-4 text-center text-xl font-black text-red-500 mb-4 focus:border-red-600 outline-none">
+            
+            <button id="btn-login" onclick="validateAccess()" class="w-full btn-jj py-4 mb-4">VALIDAR ACCESO VIP</button>
+            <button id="btn-free-dl" onclick="startTrial()" class="w-full bg-zinc-800 py-3 rounded-xl text-[10px] font-black uppercase text-zinc-400 mb-8">USAR PRUEBA GRATUITA (<span id="count-free">2</span>)</button>
+            
+            <div class="border-t border-zinc-800 pt-6 space-y-3">
+                <button class="w-full py-3 bg-blue-600/10 border border-blue-600/30 rounded-xl text-[10px] font-black text-blue-400 uppercase" onclick="window.open('https://t.me/+B50m1g0NBM1mNzU5', '_blank')">📢 GRUPO TELEGRAM</button>
+                <button class="w-full py-3 bg-orange-600/10 border border-orange-600/30 rounded-xl text-[10px] font-black text-orange-500 uppercase" onclick="window.open('https://wa.me/51904503246?text=quiero%20renovar%20mi%20suscripcion', '_blank')">🔥 RENOVAR MEMBRESÍA VIP</button>
+                <button class="w-full py-3 bg-green-600/10 border border-green-600/30 rounded-xl text-[10px] font-black text-green-500 uppercase" onclick="window.open('https://wa.me/51916689969?text=quiero%20mas%20informacion', '_blank')">💎 SOCIO NUEVO / INFORMES</button>
             </div>
-            <hr style="border:0; border-top:1px solid #222; margin:15px 0;">
-            <button class="btn-tg" onclick="window.open('https://t.me/+B50m1g0NBM1mNzU5', '_blank')">📢 UNIRSE AL GRUPO GRATUITO</button>
-            <button class="btn-wa-renew" onclick="window.open('https://wa.me/51904503246?text=quiero%20renovar%20mi%20suscripcion', '_blank')">🔥 RENOVAR MI MEMBRESÍA VIP</button>
-            <button class="btn-new" onclick="window.open('https://wa.me/51916689969?text=quiero%20mas%20informacion', '_blank')">💎 SER SOCIO NUEVO / INFORMES</button>
-            <button onclick="closeModal('access-modal')" style="background:none; border:none; color:#444; margin-top:15px; cursor:pointer; font-size: 11px;">Omitir por ahora</button>
         </div>
     </div>
 
-    <div id="login-modal" class="modal-back hidden">
-        <div class="modal" style="max-width:350px;">
-            <h3 style="color:var(--accent)">ACCESO VIP</h3>
-            <input type="text" id="user-id" placeholder="Ej: 999888777" class="m-input">
-            <button class="btn-ia" onclick="validateAccess()" id="btn-login-text">VALIDAR ACCESO</button>
-            <button onclick="closeModal('login-modal')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Volver</button>
-        </div>
+    <div id="main-content" style="display:none;">
+        <header class="h-[65px] px-4 flex justify-between items-center bg-black border-b border-red-900/40 z-[100]">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="window.location.reload()">
+                <div class="w-10 h-10 bg-red-600 rounded flex items-center justify-center font-black text-xl shadow-lg text-white">J&J</div>
+                <h1 class="font-black text-sm uppercase italic text-white tracking-widest tracking-tighter">J&J STUDIO <span id="status-label" class="text-[9px] bg-zinc-800 px-2 py-1 rounded ml-2">INVITADO</span></h1>
+            </div>
+            <button onclick="downloadPNGWith300DPI()" class="bg-yellow-500 text-black font-black text-[10px] px-4 py-2 rounded shadow-lg uppercase italic tracking-tighter">📥 Descargar Master 300DPI</button>
+        </header>
+
+        <section id="view-home" class="h-[calc(100vh-65px)] bg-premium flex flex-col items-center py-10 px-6 overflow-y-auto">
+            <h2 class="text-5xl md:text-7xl font-black italic mb-10 uppercase text-center text-white tracking-tighter italic">STUDIO TOOLS</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl">
+                <div onclick="initTool('color')" class="bg-black/40 p-8 rounded-[2rem] border border-white/5 cursor-pointer hover:border-red-600 text-center transition-all group"><h3 class="font-black uppercase text-xl italic text-white italic">MASTER COLOR CHANGER</h3></div>
+                <div onclick="initTool('bg')" class="bg-black/40 p-8 rounded-[2rem] border border-white/5 cursor-pointer hover:border-red-600 text-center transition-all group"><h3 class="font-black uppercase text-xl italic text-red-600 italic">Quitar Fondo</h3></div>
+                <div onclick="initTool('ia')" class="bg-black/40 p-8 rounded-[2rem] border border-white/5 cursor-pointer hover:border-red-600 text-center transition-all group"><h3 class="font-black uppercase text-xl italic text-white italic">Mejorador IA Pro</h3></div>
+            </div>
+        </section>
+
+        <section id="view-tool" class="tool-view">
+            <main class="viewport" id="viewport">
+                <div id="zoom-container"><canvas id="canvas"></canvas></div>
+                <div id="selection-box"></div>
+            </main>
+            <aside class="sidebar">
+                <button onclick="goBack()" class="bg-zinc-900 text-red-500 font-black py-4 rounded-xl text-[10px] uppercase border border-red-900/20 w-full mb-2">← VOLVER AL MENÚ</button>
+                <div class="card"><input type="file" id="upload" class="text-[10px] w-full text-zinc-500" accept="image/*"/></div>
+                
+                <div class="card border-zinc-800">
+                    <p class="label-tool text-center mb-2">Mesa de Trabajo</p>
+                    <div class="flex justify-center gap-4">
+                        <div onclick="setBg('#0a0a0a')" class="w-6 h-6 rounded-full bg-black border border-white/10 cursor-pointer shadow-lg"></div>
+                        <div onclick="setBg('#ffffff')" class="w-6 h-6 rounded-full bg-white border border-black/10 cursor-pointer shadow-lg"></div>
+                        <div onclick="setBg('#dc2626')" class="w-6 h-6 rounded-full bg-red-600 cursor-pointer shadow-lg"></div>
+                        <input type="color" oninput="setBg(this.value)" class="w-6 h-6 bg-transparent border-none p-0 cursor-pointer">
+                    </div>
+                </div>
+
+                <div id="panel-color" class="hidden card border-red-600/30 space-y-4">
+                    <p class="label-tool text-red-500 text-center italic font-black">Selector Gris Precisión</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center"><p class="text-[8px] font-black mb-1 text-zinc-500 uppercase">Origen</p><div id="color-old" class="w-full h-10 rounded border border-white/10 bg-zinc-900 shadow-inner"></div></div>
+                        <div class="text-center"><p class="text-[8px] text-red-500 font-black mb-1 uppercase">Nuevo</p><input type="color" id="custom-picker" class="w-full h-10 bg-transparent border-none p-0 cursor-pointer"></div>
+                    </div>
+                    <button onclick="applyColor()" class="btn-jj text-[10px] shadow-2xl">Cambiar Color en Zona</button>
+                </div>
+
+                <div id="panel-ia" class="hidden space-y-2">
+                    <button onclick="superUpscaleIA()" class="w-full py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-red-600 text-white font-black text-[11px] rounded-xl shadow-lg uppercase mb-3 border border-white/10">💎 RECONSTRUCCIÓN IA 4K</button>
+                    <div onclick="toggleAccordion('acc-raw')" class="accordion-header"><span class="text-[9px] font-black text-blue-400 uppercase">Revelado RAW</span><span>▼</span></div>
+                    <div id="acc-raw" class="accordion-content space-y-4">
+                        <div><label class="label-tool flex justify-between">Exposición: <span id="v-exp">0</span></label><input type="range" id="ia-exp" min="-100" max="100" value="0" oninput="applyFilters()"></div>
+                        <div><label class="label-tool flex justify-between">Sombras: <span id="v-shadows">0</span></label><input type="range" id="ia-shadows" min="-100" max="100" value="0" oninput="applyFilters()"></div>
+                        <div><label class="label-tool flex justify-between">Altas Luces: <span id="v-highlights">0</span></label><input type="range" id="ia-highlights" min="-100" max="100" value="0" oninput="applyFilters()"></div>
+                    </div>
+                    <div onclick="toggleAccordion('acc-cal')" class="accordion-header"><span class="text-[9px] font-black text-yellow-500 uppercase">Ajustes Calidad</span><span>▼</span></div>
+                    <div id="acc-cal" class="accordion-content space-y-4">
+                        <div><label class="label-tool flex justify-between">Brillo: <span id="v-bright">100%</span></label><input type="range" id="ia-bright" min="50" max="150" value="100" oninput="applyFilters()"></div>
+                        <div><label class="label-tool flex justify-between">Saturación: <span id="v-sat">100%</span></label><input type="range" id="ia-sat" min="0" max="200" value="100" oninput="applyFilters()"></div>
+                        <div><label class="label-tool flex justify-between">Nitidez: <span id="v-sharp">1.0</span></label><input type="range" id="ia-sharp" min="1.0" max="2.5" step="0.1" value="1.0" oninput="applyFilters()"></div>
+                    </div>
+                </div>
+
+                <div id="panel-bg" class="hidden card border-red-600/30 space-y-4">
+                    <div id="bg-color-preview" class="w-full h-8 rounded border border-white/10 bg-zinc-900 shadow-inner"></div>
+                    <div><label class="label-tool flex justify-between">Tolerancia: <span id="val-tol">40</span></label><input type="range" id="bg-tolerance" min="1" max="150" value="40" oninput="updateBG()"></div>
+                    <div><label class="label-tool flex justify-between">Contraer: <span id="val-choke">0</span></label><input type="range" id="bg-choke" min="0" max="5" value="0" oninput="updateBG()"></div>
+                    <div><label class="label-tool flex justify-between">Suavizado: <span id="val-feather">0</span></label><input type="range" id="bg-feather" min="0" max="10" value="0" step="0.5" oninput="updateBG()"></div>
+                    <button onclick="confirmBG()" class="btn-jj text-[10px]">Confirmar Recorte</button>
+                </div>
+                
+                <button onclick="hardReset()" class="w-full py-3 bg-zinc-900 text-yellow-500 font-black rounded-xl text-[10px] uppercase mt-auto shadow-lg">REESTABLECER</button>
+            </aside>
+        </section>
     </div>
-
-    <div id="modalExport" class="modal-back hidden">
-        <div class="modal">
-            <h3 style="color:var(--accent)">CONFIGURACIÓN DE EXPORTACIÓN</h3>
-            <div class="grid-export">
-                <div><label>Ancho</label><input type="number" id="rzW" class="m-input"></div>
-                <div><label>Alto</label><input type="number" id="rzH" class="m-input"></div>
-                <div><label>DPI</label><input type="number" id="rzDPI" class="m-input" value="300"></div>
-                <div><label>Unidad</label>
-                    <select id="rzUnit" class="m-input">
-                        <option value="px">px</option><option value="cm">cm</option><option value="in">in</option>
-                    </select>
-                </div>
-                <div style="grid-column: span 2">
-                    <label>Calidad de Escalado</label>
-                    <select id="rzMethod" class="m-input">
-                        <option value="high">Bicúbica (Profesional)</option>
-                        <option value="medium">Bilinear</option>
-                        <option value="low">Nearest Neighbor</option>
-                    </select>
-                </div>
-                <div style="grid-column: span 2; display:flex; gap:10px; align-items:center; margin-top:10px;">
-                    <input type="checkbox" id="lockAspect" checked> <small>Mantener Proporción</small>
-                </div>
-            </div>
-            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:15px;" onclick="finalDownload()">DESCARGAR EN ALTA CALIDAD</button>
-            <button onclick="closeModal('modalExport')" style="background:none; border:none; color:#555; margin-top:10px; cursor:pointer">Cancelar</button>
-        </div>
-    </div>
-
-    <header>
-        <div class="logo">J&J COMUNIDAD PRO</div>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <div id="status-tag" style="font-size:9px; background:#222; padding:4px 8px; border-radius:4px; font-weight:bold;">MODO INVITADO</div>
-            <button id="btnLogout" onclick="logout()" style="display:none; background:none; border:1px solid #333; color:#555; font-size:10px; cursor:pointer; border-radius:4px; padding:4px 8px;">CERRAR SESIÓN</button>
-        </div>
-    </header>
-
-    <main class="wrap">
-        <aside class="panel">
-            <div id="guest-management-section">
-                <h2>✨ Gestión de Membresía</h2>
-                <button class="btn-tg" onclick="window.open('https://t.me/+B50m1g0NBM1mNzU5', '_blank')">🔵 GRUPO GRATUITO TELEGRAM</button>
-                <button class="btn-wa-renew" onclick="window.open('https://wa.me/51904503246?text=quiero%20renovar%20mi%20suscripcion', '_blank')">🟢 RENOVAR SOCIOS VIP</button>
-                <button class="btn-new" onclick="window.open('https://wa.me/51916689969?text=quiero%20mas%20informacion', '_blank')">⚪ SOY NUEVO / INFORMES</button>
-            </div>
-
-            <h2>🎨 Efectos de Arte</h2>
-            <button class="btn-ia" onclick="applyRealisticBordado()">🧵 BORDADO FULL COLOR</button>
-            <button class="btn-art" style="width:100%" onclick="applyBlackAndWhite()">⚪ B&N PROFESIONAL</button>
-            <button class="btn-secondary" style="margin-top:10px" onclick="resetImg()">🔄 RESTAURAR ORIGINAL</button>
-
-            <h2>1️⃣ Cargar Imagen</h2>
-            <input type="file" id="file" accept="image/*" class="m-input">
-
-            <h2>2️⃣ Quitar Fondo IA</h2>
-            <button class="btn-ia" style="background:#6c5ce7; color:#fff;" onclick="applyAutoRemove()">✨ ELIMINAR FONDO AUTO</button>
-            <div class="control-row">
-                <select id="mode" class="m-input" style="margin:0">
-                    <option value="white">Blanco</option><option value="black">Negro</option><option value="pick">🎨 Gotero Manual</option>
-                </select>
-            </div>
-            <div class="control-row"><label>Tolerancia</label><input type="range" id="fuzz" min="0" max="200" value="60"></div>
-            <div class="control-row"><label>Suavizado</label><input type="range" id="feather" min="0" max="10" step="0.1" value="0.5"></div>
-            <div class="control-row"><label>Contraer</label><input type="range" id="contract" min="-10" max="10" value="0"></div>
-
-            <h2>3️⃣ Fondo</h2>
-            <input type="color" id="bgColor" value="#080808" style="width:100%; height:45px; border:2px solid #222; border-radius:8px; cursor:pointer; background:none;">
-
-            <button class="btn-ia" style="background:var(--accent); color:#000; margin-top:20px;" onclick="handleDownload()">🚀 EXPORTAR PNG PROFESIONAL</button>
-        </aside>
-        <section class="stage" id="stage"><canvas id="canvas"></canvas></section>
-    </main>
 
     <script>
         const canvas = document.getElementById('canvas'), ctx = canvas.getContext('2d', {willReadFrequently:true});
-        let oCanvas = document.createElement('canvas'), oCtx = oCanvas.getContext('2d');
-        let backup = document.createElement('canvas'), bCtx = backup.getContext('2d');
-        let targetColor = [255,255,255], aspectRatio = 1;
-        let isVip = sessionStorage.getItem('jj_session') === 'active', freeCount = parseInt(localStorage.getItem('jj_free_count') || "2");
+        const viewport = document.getElementById('viewport'), zoomContainer = document.getElementById('zoom-container');
+        const upload = document.getElementById('upload'), selectionBox = document.getElementById('selection-box');
+        const loader = document.getElementById('loading-overlay');
+        
+        let originalImg = null, liveSnapshot = null, initialSnapshot = null; 
+        let scale = 1, posX = 0, posY = 0, targetRGB = [255,255,255], isPanning = false, isSelecting = false, startX_PX, startY_PX, startX_View, startY_View, selectArea = null, currentTool = '';
+        let isVIP = false;
 
-        window.onload = () => {
-            if(!isVip) {
-                document.getElementById('access-modal').classList.remove('hidden');
-                document.getElementById('guest-management-section').style.display = 'block';
-            } else {
-                document.getElementById('status-tag').innerText = "SOCIO VIP ACTIVO";
-                document.getElementById('status-tag').style.color = "var(--success)";
-                document.getElementById('btnLogout').style.display = 'block';
-                // OCULTAR SECCIÓN GESTIÓN PARA VIPS
-                document.getElementById('guest-management-section').style.display = 'none';
-            }
-            updateUI();
-        };
+        // --- SISTEMA DE CONTADOR PERSISTENTE (BASADO EN TU CÓDIGO) ---
+        let trialsStored = localStorage.getItem('jj_free_count');
+        let freeCount = (trialsStored !== null) ? parseInt(trialsStored) : 2;
+        document.getElementById('count-free').innerText = freeCount;
 
-        // GOTERO MANUAL
-        canvas.addEventListener('click', (e) => {
-            if (document.getElementById('mode').value !== 'pick' || !oCanvas.width) return;
-            const rect = canvas.getBoundingClientRect();
-            const x = (e.clientX - rect.left) * (oCanvas.width / rect.width), y = (e.clientY - rect.top) * (oCanvas.height / rect.height);
-            const pixel = oCtx.getImageData(x, y, 1, 1).data;
-            targetColor = [pixel[0], pixel[1], pixel[2]]; process();
-        });
-
-        // VALIDACIÓN DE ACCESO
+        // --- VALIDACIÓN POR API GOOGLE SHEETS ---
         async function validateAccess() {
             const u = document.getElementById('user-id').value.trim();
             if(!u) return;
-            const btn = document.getElementById('btn-login-text');
+            const btn = document.getElementById('btn-login');
+            const originalText = btn.innerText;
             btn.innerText = "VERIFICANDO...";
+            btn.disabled = true;
+
             try {
                 const res = await fetch(`https://script.google.com/macros/s/AKfycbzwIHNPwRi4x_oQHIYIvMYRD7HbZD-dkwo7bEdH3Zc9yN4-TwfURjSd1TcgNKPqYJxo/exec?user=${u}`);
                 const data = await res.json();
-                if(data.access) { sessionStorage.setItem('jj_session', 'active'); location.reload(); }
+                
+                if(data.access) { 
+                    isVIP = true; 
+                    sessionStorage.setItem('jj_session', 'active');
+                    document.getElementById('status-label').innerText = "SOCIO VIP ACTIVO";
+                    document.getElementById('status-label').style.color = "#00ff88";
+                    enterApp(); 
+                } 
                 else if(data.status === "vencido") {
-                    btn.innerText = "🆘 ¡MEMBRESÍA VENCIDA! RENOVAR AQUÍ";
+                    btn.innerText = "🆘 MEMBRESÍA VENCIDA - RENOVAR";
                     btn.classList.add('btn-renew');
+                    btn.disabled = false;
                     btn.onclick = () => window.open('https://wa.me/51904503246?text=quiero%20renovar%20mi%20suscripcion', '_blank');
-                } else alert("El número ingresado no es socio activo.");
-            } catch(e) { alert("Error de conexión."); } finally { if(!btn.classList.contains('btn-renew')) btn.innerText = "VALIDAR ACCESO"; }
-        }
-
-        const rzW = document.getElementById('rzW'), rzH = document.getElementById('rzH'), lock = document.getElementById('lockAspect');
-        rzW.oninput = () => { if(lock.checked) rzH.value = (rzW.value / aspectRatio).toFixed(2); };
-        rzH.oninput = () => { if(lock.checked) rzW.value = (rzH.value * aspectRatio).toFixed(2); };
-
-        function finalDownload() {
-            let fw = parseFloat(rzW.value), fh = parseFloat(rzH.value), dVal = parseInt(document.getElementById('rzDPI').value);
-            const unit = document.getElementById('rzUnit').value;
-            if(unit === 'cm') { fw = Math.round((fw / 2.54) * dVal); fh = Math.round((fh / 2.54) * dVal); }
-            else if(unit === 'in') { fw = Math.round(fw * dVal); fh = Math.round(fh * dVal); }
-            const temp = document.createElement('canvas'); temp.width = fw; temp.height = fh;
-            const tCtx = temp.getContext('2d'); tCtx.imageSmoothingQuality = document.getElementById('rzMethod').value;
-            tCtx.drawImage(canvas, 0, 0, fw, fh);
-            const link = document.createElement('a'); link.download = 'jj_premium_design.png'; link.href = temp.toDataURL(); link.click();
-            if(!isVip && window.isTrial) { freeCount--; localStorage.setItem('jj_free_count', freeCount); location.reload(); }
-            closeModal('modalExport');
-        }
-
-        function process() {
-            if(!oCanvas.width) return;
-            const fuzz = parseInt(document.getElementById('fuzz').value), feather = parseFloat(document.getElementById('feather').value), contract = parseInt(document.getElementById('contract').value);
-            let tc = targetColor;
-            if(document.getElementById('mode').value === 'white') tc = [255,255,255];
-            if(document.getElementById('mode').value === 'black') tc = [0,0,0];
-            const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data, out = ctx.createImageData(oCanvas.width, oCanvas.height), o = out.data;
-            const threshold = (fuzz*2.5)+(contract*10), soft = (feather*15)+1;
-            for (let i = 0; i < d.length; i += 4) {
-                const dist = Math.sqrt((d[i]-tc[0])**2 + (d[i+1]-tc[1])**2 + (d[i+2]-tc[2])**2);
-                o[i]=d[i]; o[i+1]=d[i+1]; o[i+2]=d[i+2];
-                if(dist < threshold-soft) o[i+3]=0;
-                else if(dist < threshold) o[i+3]=((dist-(threshold-soft))/soft)*255;
-                else o[i+3]=d[i+3];
+                } else {
+                    alert("El número ingresado no es socio activo.");
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }
+            } catch(e) { 
+                alert("Error de conexión con la base de datos J&J."); 
+                btn.innerText = originalText;
+                btn.disabled = false;
             }
-            canvas.width = oCanvas.width; canvas.height = oCanvas.height; ctx.putImageData(out, 0, 0);
         }
 
-        function handleDownload() { if(!oCanvas.width) return; if(!isVip && freeCount <= 0) return document.getElementById('access-modal').classList.remove('hidden'); rzW.value = canvas.width; rzH.value = canvas.height; document.getElementById('modalExport').classList.remove('hidden'); }
-        function updateUI() { document.getElementById('count-free').innerText = freeCount; if(freeCount <= 0 && !isVip) { document.getElementById('btn-free-dl').style.opacity = "0.5"; document.getElementById('btn-free-dl').onclick = null; document.getElementById('btn-free-dl').innerText = "PRUEBAS AGOTADAS"; } }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        function openLogin() { closeModal('access-modal'); document.getElementById('login-modal').classList.remove('hidden'); }
-        function startTrial() { if(freeCount > 0) { window.isTrial = true; closeModal('access-modal'); } }
-        function logout() { sessionStorage.clear(); location.reload(); }
-        function resetImg() { oCanvas.width=backup.width; oCanvas.height=backup.height; oCtx.drawImage(backup,0,0); process(); }
-        document.getElementById('file').onchange = e => { const f = e.target.files[0]; if(!f) return; const img = new Image(); img.onload = () => { oCanvas.width=backup.width=img.width; oCanvas.height=backup.height=img.height; aspectRatio=img.width/img.height; oCtx.drawImage(img,0,0); bCtx.drawImage(img,0,0); process(); }; img.src = URL.createObjectURL(f); };
-        function applyBlackAndWhite() { if(!oCanvas.width) return; const id=oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d=id.data; for(let i=0;i<d.length;i+=4){let g=d[i]*0.3+d[i+1]*0.59+d[i+2]*0.11;d[i]=d[i+1]=d[i+2]=g;}oCtx.putImageData(id,0,0); process(); }
-        function applyRealisticBordado() { if(!oCanvas.width) return; const id = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height), d = id.data, w = oCanvas.width, h = oCanvas.height; for (let y = 0; y < h; y++) { for (let x = 0; x < w; x++) { const i = (y * w + x) * 4; if(d[i+3] > 15) { const stitch = (x % 4 === 0 || y % 4 === 0) ? 0.75 : 1.3; d[i] = Math.min(255, d[i] * stitch); d[i+1] = Math.min(255, d[i+1] * stitch); d[i+2] = Math.min(255, d[i+2] * stitch); } } } oCtx.putImageData(id, 0, 0); process(); }
-        function applyAutoRemove() { if(!oCanvas.width) return; const d = oCtx.getImageData(0,0,oCanvas.width,oCanvas.height).data; targetColor = [d[0], d[1], d[2]]; document.getElementById('fuzz').value = 75; process(); }
-        document.getElementById('bgColor').oninput = e => document.getElementById('stage').style.backgroundColor = e.target.value;
-        ['fuzz', 'feather', 'contract', 'mode'].forEach(id => document.getElementById(id).oninput = process);
+        function startTrial() { 
+            if(freeCount > 0) { isVIP = false; enterApp(); } 
+            else { alert("Pruebas agotadas. Suscríbete para continuar."); }
+        }
+
+        function enterApp() { document.getElementById('auth-screen').style.display = 'none'; document.getElementById('main-content').style.display = 'block'; }
+        
+        function clearMemory() {
+            originalImg = null; liveSnapshot = null; initialSnapshot = null;
+            canvas.width = 0; canvas.height = 0; upload.value = ""; selectionBox.style.display = 'none'; selectArea = null;
+            posX = 0; posY = 0; scale = 1; updateTransform();
+        }
+        function goBack() { clearMemory(); document.getElementById('view-tool').classList.remove('active-view'); document.getElementById('view-home').style.display = 'flex'; currentTool = ''; }
+        function initTool(t) { clearMemory(); currentTool = t; document.getElementById('view-home').style.display = 'none'; document.getElementById('view-tool').classList.add('active-view'); document.getElementById('panel-color').classList.toggle('hidden', t !== 'color'); document.getElementById('panel-bg').classList.toggle('hidden', t !== 'bg'); document.getElementById('panel-ia').classList.toggle('hidden', t !== 'ia'); }
+
+        upload.onchange = (e) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const img = new Image();
+                img.onload = () => {
+                    canvas.width = img.width; canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0); originalImg = img;
+                    liveSnapshot = ctx.getImageData(0,0,canvas.width,canvas.height);
+                    initialSnapshot = ctx.getImageData(0,0,canvas.width,canvas.height);
+                    const pad = 40;
+                    scale = Math.min((viewport.offsetWidth - pad) / img.width, (viewport.offsetHeight - pad) / img.height, 1);
+                    posX = 0; posY = 0; updateTransform();
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(e.target.files[0]);
+        };
+
+        // --- SELECTOR ZONAS ---
+        let panSX, panSY;
+        viewport.addEventListener('mousedown', (e) => {
+            if (!originalImg) return;
+            const rect = canvas.getBoundingClientRect(), vRect = viewport.getBoundingClientRect();
+            const tx = (e.clientX - rect.left) / (rect.width / canvas.width);
+            const ty = (e.clientY - rect.top) / (rect.height / canvas.height);
+            if (e.button === 0) { 
+                const p = ctx.getImageData(Math.floor(tx), Math.floor(ty), 1, 1).data;
+                targetRGB = [p[0], p[1], p[2]];
+                document.getElementById('color-old').style.backgroundColor = `rgb(${p[0]},${p[1]},${p[2]})`;
+                document.getElementById('bg-color-preview').style.backgroundColor = `rgb(${p[0]},${p[1]},${p[2]})`;
+                if(currentTool === 'color') { isSelecting = true; startX_PX = tx; startY_PX = ty; startX_View = e.clientX - vRect.left; startY_View = e.clientY - vRect.top; }
+                if(currentTool === 'bg') updateBG(); 
+            }
+            isPanning = true; panSX = e.clientX - posX; panSY = e.clientY - posY;
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (isPanning && !isSelecting) { posX = e.clientX - panSX; posY = e.clientY - panSY; updateTransform(); }
+            if (isSelecting) {
+                const vRect = viewport.getBoundingClientRect();
+                const curVX = e.clientX - vRect.left, curVY = e.clientY - vRect.top;
+                selectionBox.style.display = 'block';
+                selectionBox.style.left = Math.min(startX_View, curVX) + 'px';
+                selectionBox.style.top = Math.min(startY_View, curVY) + 'px';
+                selectionBox.style.width = Math.abs(curVX - startX_View) + 'px';
+                selectionBox.style.height = Math.abs(curVY - startY_View) + 'px';
+                const rect = canvas.getBoundingClientRect();
+                const endX_PX = (e.clientX - rect.left) / (rect.width / canvas.width), endY_PX = (e.clientY - rect.top) / (rect.height / canvas.height);
+                selectArea = { x: Math.min(startX_PX, endX_PX), y: Math.min(startY_PX, endY_PX), w: Math.abs(endX_PX - startX_PX), h: Math.abs(endY_PX - startY_PX) };
+            }
+        });
+        window.addEventListener('mouseup', () => { isSelecting = isPanning = false; });
+
+        function applyColor() {
+            if(!originalImg) return;
+            const area = selectArea || {x:0, y:0, w:canvas.width, h:canvas.height};
+            const id = ctx.getImageData(area.x, area.y, area.w, area.h);
+            const d = id.data, hex = document.getElementById('custom-picker').value, rN = parseInt(hex.slice(1,3),16), gN = parseInt(hex.slice(3,5),16), bN = parseInt(hex.slice(5,7),16);
+            for(let i=0; i<d.length; i+=4) {
+                const diff = Math.sqrt(Math.pow(d[i]-targetRGB[0],2)+Math.pow(d[i+1]-targetRGB[1],2)+Math.pow(d[i+2]-targetRGB[2],2));
+                if(diff < 80) { d[i]=rN; d[i+1]=gN; d[i+2]=bN; }
+            }
+            ctx.putImageData(id, area.x, area.y);
+            liveSnapshot = ctx.getImageData(0,0,canvas.width,canvas.height);
+            selectionBox.style.display='none'; selectArea = null;
+        }
+
+        function updateBG() {
+            if(!liveSnapshot) return;
+            const tol = parseInt(document.getElementById('bg-tolerance').value), choke = parseInt(document.getElementById('bg-choke').value), feather = parseFloat(document.getElementById('bg-feather').value);
+            document.getElementById('val-tol').innerText = tol;
+            const tempId = new ImageData(new Uint8ClampedArray(liveSnapshot.data), canvas.width, canvas.height);
+            const d = tempId.data; const mask = new Uint8ClampedArray(canvas.width * canvas.height);
+            for(let i=0; i<d.length; i+=4) {
+                const diff = Math.sqrt(Math.pow(d[i]-targetRGB[0],2)+Math.pow(d[i+1]-targetRGB[1],2)+Math.pow(d[i+2]-targetRGB[2],2));
+                if(diff < tol) { d[i+3] = 0; mask[i/4] = 0; } else { mask[i/4] = 255; }
+            }
+            if(choke > 0) { for(let c=0; c<choke; c++) { const m = new Uint8ClampedArray(mask); for(let y=1; y<canvas.height-1; y++) { for(let x=1; x<canvas.width-1; x++) { const idx = y * canvas.width + x; if(m[idx] === 255 && (m[idx-1]===0 || m[idx+1]===0 || m[idx-canvas.width]===0 || m[idx+canvas.width]===0)) { d[idx*4+3] = 0; mask[idx] = 0; } } } } }
+            ctx.putImageData(tempId, 0, 0);
+            if(feather > 0) { ctx.globalCompositeOperation = 'destination-out'; ctx.filter = `blur(${feather}px)`; ctx.drawImage(canvas, 0, 0); ctx.filter = 'none'; ctx.globalCompositeOperation = 'source-over'; }
+        }
+        function confirmBG() { liveSnapshot = ctx.getImageData(0,0,canvas.width,canvas.height); }
+
+        function applyFilters() {
+            if(!originalImg) return;
+            const exp = parseInt(document.getElementById('ia-exp').value), shad = parseInt(document.getElementById('ia-shadows').value), high = parseInt(document.getElementById('ia-highlights').value), sat = document.getElementById('ia-sat').value, sharp = document.getElementById('ia-sharp').value, bright = document.getElementById('ia-bright').value;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            const sAdj = 100 + (shad * -0.25), hAdj = 100 + (high * 0.25);
+            ctx.filter = `brightness(${parseInt(bright) + exp}%) saturate(${sat}%) contrast(${sAdj}%) brightness(${hAdj}%)`;
+            ctx.drawImage(originalImg, 0, 0, canvas.width, canvas.height);
+            if(sharp > 1.0) { ctx.globalAlpha = 0.4; ctx.drawImage(canvas, -1, -1); ctx.globalAlpha = 1.0; }
+            ctx.filter = 'none';
+        }
+        
+        async function superUpscaleIA() { if(!originalImg) return; loader.style.display = 'flex'; await new Promise(r => setTimeout(r, 1200)); const off = document.createElement('canvas'); const octx = off.getContext('2d'); off.width = canvas.width * 2; off.height = canvas.height * 2; octx.imageSmoothingEnabled = true; octx.imageSmoothingQuality = 'high'; octx.drawImage(canvas, 0, 0, off.width, off.height); const id = octx.getImageData(0,0,off.width, off.height); const d = id.data; for (let i = 0; i < d.length; i += 4) { for(let j=0; j<3; j++) d[i+j] = d[i+j] + (d[i+j] - 127) * 0.6; } octx.putImageData(id, 0, 0); canvas.width = off.width; canvas.height = off.height; ctx.drawImage(off, 0, 0); const newBase = new Image(); newBase.onload = () => { originalImg = newBase; liveSnapshot = ctx.getImageData(0,0,canvas.width,canvas.height); loader.style.display = 'none'; }; newBase.src = canvas.toDataURL(); }
+
+        // --- SISTEMA CORE ---
+        function updateTransform() { zoomContainer.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`; }
+        viewport.onwheel = (e) => { if(!originalImg) return; e.preventDefault(); scale = Math.max(0.01, scale * (e.deltaY > 0 ? 0.9 : 1.1)); updateTransform(); };
+        function setBg(c) { document.getElementById('viewport').style.backgroundColor = c; }
+        function hardReset() { if(initialSnapshot) { canvas.width = initialSnapshot.width; canvas.height = initialSnapshot.height; ctx.putImageData(initialSnapshot, 0, 0); const img = new Image(); img.onload = () => { originalImg = img; liveSnapshot = ctx.getImageData(0,0,canvas.width,canvas.height); applyFilters(); }; img.src = canvas.toDataURL(); posX = 0; posY = 0; scale = 0.5; updateTransform(); } }
+        
+        async function downloadPNGWith300DPI() {
+            if (!originalImg) return;
+            if(!isVIP) {
+                if(freeCount <= 0) { alert("Sin pruebas."); location.reload(); return; }
+                freeCount--; localStorage.setItem('jj_free_count', freeCount); document.getElementById('count-free').innerText = freeCount;
+            }
+            const dataUrl = canvas.toDataURL('image/png'); const response = await fetch(dataUrl); const buffer = await (await response.blob()).arrayBuffer(); const uint8 = new Uint8Array(buffer);
+            const pHYs = new Uint8Array(21); pHYs.set([0, 0, 0, 9, 112, 72, 89, 115]); const view = new DataView(pHYs.buffer); view.setUint32(8, 11811); view.setUint32(12, 11811); view.setUint8(16, 1);
+            const table = (function() { const t = new Int32Array(256); for (let i = 0; i < 256; i++) { let c = i; for (let j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); t[i] = c; } return t; })();
+            let crc = 0xFFFFFFFF; for (let i = 4; i < 17; i++) crc = table[(crc ^ pHYs[i]) & 0xFF] ^ (crc >>> 1); view.setUint32(17, crc ^ 0xFFFFFFFF);
+            const final = new Uint8Array(uint8.length + 21); final.set(uint8.slice(0, 33)); final.set(pHYs, 33); final.set(uint8.slice(33), 54);
+            const a = document.createElement('a'); a.download = `JJ_MASTER_300DPI.png`; a.href = URL.createObjectURL(new Blob([final])); a.click();
+            if(!isVIP && freeCount === 0) location.reload();
+        }
+
+        function toggleAccordion(id) { const el = document.getElementById(id); el.style.display = (el.style.display === 'block') ? 'none' : 'block'; }
+        function manualScan() { const data = ctx.getImageData(0,0,canvas.width,canvas.height).data; const colors = {}; for(let i=0; i<data.length; i+=Math.max(4, Math.floor(data.length/2000)*4)) { if(data[i+3] < 128) continue; const h = "#" + ((1 << 24) + (data[i] << 16) + (data[i+1] << 8) + data[i+2]).toString(16).slice(1).toUpperCase(); colors[h] = (colors[h] || 0) + 1; } const sorted = Object.keys(colors).sort((a,b) => colors[b]-colors[a]).slice(0, 10); const container = document.getElementById('design-palette'); container.innerHTML = ""; sorted.forEach(hex => { const div = document.createElement('div'); div.className = "w-8 h-8 rounded border border-zinc-800 cursor-pointer shadow-lg"; div.style.backgroundColor = hex; div.onclick = () => { targetRGB = [parseInt(hex.slice(1,3), 16), parseInt(hex.slice(3,5), 16), parseInt(hex.slice(5,7), 16)]; document.getElementById('color-old').style.backgroundColor = hex; }; container.appendChild(div); }); }
     </script>
 </body>
 </html>
